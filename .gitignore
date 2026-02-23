@@ -1,0 +1,29 @@
+# --- IDE configuration file ---
+.idea/
+
+# --- Python cached files (standard ignore) ---
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# --- environment ---
+.venv/
+
+# --- LOGS ---
+*.log
+
+# --- Sample Lgd ---
+.lgd_sample/
+
+test/
+
+# --- pyinstaller ---
+build/
+dist/
+
+*.asm
+*.lgd
+*.lgc
+*.csv
+*.c
