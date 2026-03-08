@@ -78,7 +78,7 @@ class LgcGenerator:
                         )
                     except Exception as e:
                         block.statements = []
-                        logger.error(f"    [LGC-GENERATOR] AST Error in block {block.id} of {method.name}: {e}")
+                        logger.error_and_stop(f"    [LGC-GENERATOR] AST Error in block {block.id} of {method.name}: {e}")
 
                 # 4.3 折叠控制流结构 (If, While 等)
                 structurer = FlowStructurer(blocks)

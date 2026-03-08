@@ -28,7 +28,7 @@ class P1LiteralParser(LgdBaseParser):
 
         # 1. get Literal Table header info
         if offset + LgdFileLayout.HEADER_SIZE > self.length:
-            logger.error("Data too short for Literal Table header")
+            logger.error_and_stop("Data too short for Literal Table header")
             return [], offset
 
         count = struct.unpack('<I', self.data[offset:offset + 4])[0]
@@ -154,7 +154,7 @@ class FixedTableParser(LgdBaseParser):
         entry_size = LgdFileLayout.FIXED_ENTRY_SIZE
 
         if offset + total_size > self.length:
-            logger.error(f"[Parser] Data too short for {table_name} table.")
+            logger.error_and_stop(f"[Parser] Data too short for {table_name} table.")
             return [], offset
 
         logger.debug(f"[Parser] Reading {table_name} Table @ 0x{offset:X}")
@@ -187,7 +187,7 @@ class BytecodeParser(LgdBaseParser):
 
         # 1. Read Total Bytecode Size (Unencrypted 4 bytes)
         if offset + 4 > self.length:
-            logger.error("[Parser] Data too short for Bytecode Header")
+            logger.error_and_stop("[Parser] Data too short for Bytecode Header")
             return [], offset
 
         bc_size = struct.unpack('<I', self.data[offset:offset + 4])[0]
@@ -233,11 +233,11 @@ class BytecodeParser(LgdBaseParser):
             # === [Debug] Collapse scene reconstruction ===
             # 1. Gap region check (0x2C - 0x40) -> This is a region that must not exist.
             if LgdOpcodes.MAX_STD_OPCODE < opcode < LgdOpcodes.MIN_EXT_OPCODE:
-                logger.error("=" * 60)
-                logger.error(f"[CRASH] Opcode Range Error: Found 0x{opcode:02X} @ 0x{current_file_offset:X}")
-                logger.error(
+                logger.error_and_stop("=" * 60)
+                logger.error_and_stop(f"[CRASH] Opcode Range Error: Found 0x{opcode:02X} @ 0x{current_file_offset:X}")
+                logger.error_and_stop(
                     f"This opcode falls into the INVALID GAP (0x{LgdOpcodes.MAX_STD_OPCODE + 1:02X} - 0x{LgdOpcodes.MIN_EXT_OPCODE - 1:02X})")
-                logger.error("=" * 60)
+                logger.error_and_stop("=" * 60)
                 break
 
             # 2. Extern Call handling (>= 0x41)

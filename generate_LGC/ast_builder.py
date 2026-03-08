@@ -35,7 +35,7 @@ class ASTBuilder:
         if stack:
             return stack.pop()
 
-        logger.error(f"[AST-BUILDER] Stack_In Triggered in '{self.current_method_name}'! Underflow at Addr: 0x{self.current_offset:X} | Instr: {self.current_mnemonic}")
+        logger.error_and_stop(f"[AST-BUILDER] Stack_In Triggered in '{self.current_method_name}'! Underflow at Addr: 0x{self.current_offset:X} | Instr: {self.current_mnemonic}")
         return VarNode("Stack_In")
 
     def build_block_ast(self, block: BasicBlock, is_last_physical_block: bool = False, method_name: str = "Unknown") -> List[ASTNode]:
@@ -161,6 +161,8 @@ class ASTBuilder:
                     match = re.match(r'^(?:Func_)?(\d+)$', raw_func_name, re.IGNORECASE)
                     if match:
                         func_id = int(match.group(1))
+                        if func_id not in self.FUNC_DEF_MAP:
+                            logger.error_and_stop(f"[AST-BUILDER] Missing Function definition for ID {func_id} at 0x{self.current_offset:X}. Using fallback '{raw_func_name}'.")
                         func_name = self.FUNC_DEF_MAP.get(func_id, raw_func_name)
 
                     args_to_pass = []
@@ -183,6 +185,8 @@ class ASTBuilder:
 
                 elif mne.startswith('CALL_EXT_'):
                     ext_id = int(mne.split('_')[-1])
+                    if ext_id not in self.EXT_DEF_MAP:
+                        logger.error_and_stop(f"[AST-BUILDER] Missing Extern Function definition for ID {ext_id} at 0x{self.current_offset:X}. Using fallback 'Unknown_Ext_{ext_id}'.")
                     func_name, arity = self.EXT_DEF_MAP.get(ext_id, (f"Unknown_Ext_{ext_id}", 1))
                     args = [self._safe_pop(stack) for _ in range(arity)][::-1]
                     # [修复]: 彻底删掉废弃的默认参数！
@@ -215,7 +219,7 @@ class ASTBuilder:
                     statements.append(ReturnNode(ret_val))
 
             except Exception as e:
-                logger.error(f"[AST-BUILDER] Error at 0x{instr.offset:X}: {e}")
+                logger.error_and_stop(f"[AST-BUILDER] Error at 0x{instr.offset:X}: {e}")
 
         while stack:
             top = stack.pop()

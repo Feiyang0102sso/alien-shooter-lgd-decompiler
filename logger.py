@@ -1,11 +1,39 @@
-# /logger.py
+"""
+/logger.py
+universal log config for the project
+"""
 import logging
 import sys
 from pathlib import Path
 
 # === config area ===
-# now the .log file name is fixed, no longer need to modify by user
-LOGGER_NAME = "Lgd_Tool"
+# e.g.  [ERROR] [Lgd_Decompiler - ast_builder.py:38]
+LOGGER_NAME = "Lgd_Decompiler"
+
+class FatalError(BaseException):
+    """Raised when an error occurs and stop_on_error is True."""
+    pass
+
+class ErrorLogger(logging.Logger):
+    def __init__(self, name, level=logging.NOTSET):
+        super().__init__(name, level)
+        self.stop_on_error = False
+
+    def set_stop_on_error(self, val: bool):
+        self.stop_on_error = val
+
+    def error_and_stop(self, msg: str, *args, **kwargs):
+        """
+        Log an error, and if stop_on_error is True, raise FatalError to stop pipeline.
+        """
+        if sys.version_info >= (3, 8):
+            # return the error message with its exact file, instead of logger.py
+            kwargs.setdefault("stacklevel", 2)
+        self.error(msg, *args, **kwargs)
+        if self.stop_on_error:
+            raise FatalError(msg)
+
+logging.setLoggerClass(ErrorLogger)
 
 class ColoredFormatter(logging.Formatter):
     """
@@ -39,11 +67,13 @@ class ColoredFormatter(logging.Formatter):
         return formatter.format(record)
 
 
-def setup_logger():
+def setup_logger() -> ErrorLogger:
     """
     Initializes a logger with console handlers for both stdout and stderr.
     """
-    logger = logging.getLogger(LOGGER_NAME)
+    # Cast to ErrorLogger so the IDE knows the actual return type
+    import typing
+    logger = typing.cast(ErrorLogger, logging.getLogger(LOGGER_NAME))
     logger.setLevel(logging.DEBUG)
     logger.propagate = False
 
@@ -66,7 +96,7 @@ def setup_logger():
 
 
 # Global logger instance for other modules
-logger = setup_logger()
+logger: ErrorLogger = setup_logger()
 
 
 def add_file_handler(log_path: Path):

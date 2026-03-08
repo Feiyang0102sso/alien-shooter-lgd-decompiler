@@ -63,7 +63,7 @@ class LgdCsvExporter:
             logger.info(f"[Exporter] CSV exported to: {output_path}")
 
         except Exception as e:
-            logger.error(f"[Exporter] Failed to write CSV: {e}")
+            logger.error_and_stop(f"[Exporter] Failed to write CSV: {e}")
             import traceback
             traceback.print_exc()
 
@@ -102,6 +102,10 @@ class LgdCsvExporter:
         file_id = symbol.file_id if symbol else "N/A"
 
         # Name defaults to UNK_{GID} if symbol is missing
+        if not symbol or not symbol.name:
+            err_msg = f"[Exporter] Missing symbol name for Global ID {gid}. Using fallback."
+            logger.error_and_stop(err_msg)
+        
         symbol_name = symbol.name if symbol else f"UNK_{gid}"
 
         # P1 Index: Use Head's index or Symbol's P1 pointer

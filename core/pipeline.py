@@ -23,16 +23,15 @@ class LgdPipeline:
 
     def run(self, is_debug: bool = False, keep_intermediate: bool = True):
         if not os.path.exists(self.file_path):
-            logger.error(f"File not found: {self.file_path}")
+            logger.error_and_stop(f"File not found: {self.file_path}")
             return
 
         # 1. Load File
         try:
             with open(self.file_path, 'rb') as f:
                 data = f.read()
-            logger.info(f"Loaded file: {self.file_path} ({len(data)} bytes)")
         except Exception as e:
-            logger.error(f"Failed to read file: {e}")
+            logger.error_and_stop(f"Failed to read file: {e}")
             return
 
         # Initialize Context
@@ -137,12 +136,23 @@ class LgdPipeline:
         threading.stack_size(64 * 1024 * 1024)
         logger.info(f"[Decompiling...] Launching Decompiler in 64MB high-capacity memory thread...")
 
+        thread_exc = []
+
+        def generate_lgc_wrapper(*args):
+            try:
+                LgcGenerator.generate_complete_lgc(*args)
+            except BaseException as e:
+                thread_exc.append(e)
+
         main_thread = threading.Thread(
-            target=LgcGenerator.generate_complete_lgc,
+            target=generate_lgc_wrapper,
             args=(asm_out_path, clean_output_lgc, csv_out_path)
         )
         main_thread.start()
         main_thread.join()
+
+        if thread_exc:
+            raise thread_exc[0]
 
         # --- 6.5. Refine Final LGC ---
         # logger.info("=== Phase 6.5: Refining Final LGC ===")
@@ -163,7 +173,7 @@ class LgdPipeline:
         #     else:
         #         logger.error(f"[Refiner] Could not find generated LGC file: {clean_output_lgc}")
         # except Exception as e:
-        #     logger.error(f"[Refiner] Failed to refine LGC code: {e}")
+        #     logger.error_and_stop(f"[Refiner] Failed to refine LGC code: {e}")
 
         # ==========================================
         # --- 7. Cleanup ---

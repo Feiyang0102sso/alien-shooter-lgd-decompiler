@@ -52,7 +52,7 @@ class AsmParser:
             if match_begin:
                 # If the previous one wasn't closed, report an error first.
                 if current_method:
-                    logger.error(
+                    logger.error_and_stop(
                         f"[ASM-PARSER] [Line {line_num}] Nested Begin detected! Previous method '{current_method.name}' (started at line {current_start_line}) was not closed.")
                     stats_fail += 1
                     # Force it to be closed
@@ -70,7 +70,7 @@ class AsmParser:
                 end_name = match_end.group(1)
 
                 if not current_method:
-                    logger.error(f"[ASM-PARSER] [Line {line_num}] Orphan 'End' tag found for '{end_name}' without matching 'Begin'.")
+                    logger.error_and_stop(f"[ASM-PARSER] [Line {line_num}] Orphan 'End' tag found for '{end_name}' without matching 'Begin'.")
                     continue
 
                 # check
@@ -79,18 +79,18 @@ class AsmParser:
 
                 # check A: name check
                 if current_method.name != end_name:
-                    logger.error(
+                    logger.error_and_stop(
                         f"[ASM-PARSER] [Line {line_num}] Method Name Mismatch! Begin: '{current_method.name}', End: '{end_name}'.")
                     has_error = True
 
                 # check B: Must End with RET
                 if not current_method.instructions:
-                    logger.error(f"[ASM-PARSER] [Line {line_num}] Method '{current_method.name}' is empty.")
+                    logger.error_and_stop(f"[ASM-PARSER] [Line {line_num}] Method '{current_method.name}' is empty.")
                     has_error = True
                 else:
                     last_instr = current_method.instructions[-1]
                     if last_instr.mnemonic != 'RET':
-                        logger.error(
+                        logger.error_and_stop(
                             f"[ASM-PARSER] [Line {line_num}] Method '{current_method.name}' does not end with RET. Last instruction: {last_instr.mnemonic} at Addr {last_instr.offset:X}.")
                         has_error = True
 
@@ -125,7 +125,7 @@ class AsmParser:
                         instr = AsmInstruction(offset, mnemonic, operands)
                         current_method.add_instruction(instr)
                     except Exception as e:
-                        logger.error(
+                        logger.error_and_stop(
                             f"[ASM-PARSER] [Line {line_num}] Instruction parse error in '{current_method.name}': {e} | Content: {line}")
                 # else:
                 #   ignore the second line if it is too long e.g. IFF / PUSH_STR
@@ -133,7 +133,7 @@ class AsmParser:
 
         # --- 4. check when file ended but function not end  ---
         if current_method:
-            logger.error(
+            logger.error_and_stop(
                 f"[ASM-PARSER] File ended but method '{current_method.name}' (started at line {current_start_line}) was not closed.")
             stats_fail += 1
             methods.append(current_method)
@@ -142,7 +142,7 @@ class AsmParser:
         logger.info("-" * 40)
         logger.info(f"[ASM-PARSER] Parsing Summary: Total: {stats_total} | Success: {stats_success} | Failed: {stats_fail}")
         if stats_fail > 0:
-            logger.error(f"[ASM-PARSER] Fail Function names: {', '.join(error_func_name)}")
+            logger.error_and_stop(f"[ASM-PARSER] Fail Function names: {', '.join(error_func_name)}")
         logger.info("-" * 40)
 
         return methods

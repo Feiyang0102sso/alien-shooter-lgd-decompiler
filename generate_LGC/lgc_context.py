@@ -46,7 +46,7 @@ class LgcContext:
     def load_from_csv(self, csv_path: str) -> None:
         """从指定的 CSV 文件读取配置，分类填充到上下文中，并执行严格的错误校验。"""
         if not os.path.exists(csv_path):
-            logger.error(f"[LGC-CONTEXT] Error: CSV map file '{csv_path}' not found. Decompilation may fail.")
+            logger.error_and_stop(f"[LGC-CONTEXT] Error: CSV map file '{csv_path}' not found. Decompilation may fail.")
             return
 
         logger.info(f"[LGC-CONTEXT] Loading context from '{csv_path}'...")
@@ -58,7 +58,7 @@ class LgcContext:
                 name = row.get('Name', '').strip()
 
                 if not cat or not name:
-                    logger.error(f"[LGC-CONTEXT] Row {row_idx}: Missing 'Category' or 'Name'. Skipped. Row data: {row}")
+                    logger.error_and_stop(f"[LGC-CONTEXT] Row {row_idx}: Missing 'Category' or 'Name'. Skipped. Row data: {row}")
                     continue
 
                 is_array = self._parse_bool(row.get('Is_Array'))
@@ -90,7 +90,7 @@ class LgcContext:
 
                         self.header_manager.add_extern(f"extern {name}({', '.join(args)}) {ext_id};")
                     except Exception as e:
-                        logger.error(f"[LGC-CONTEXT] EXTERN parse error at row {row_idx} ({name}): {e}")
+                        logger.error_and_stop(f"[LGC-CONTEXT] EXTERN parse error at row {row_idx} ({name}): {e}")
 
                 # --- 2. 解析 VAR (全局变量) ---
                 elif cat == 'VAR':
@@ -112,7 +112,7 @@ class LgcContext:
                                 init_str = ', '.join(formatted_vals)
                                 self.header_manager.add_global(f"{g_type} {name}[{size_str}] = {{ {init_str} }};")
                             except json.JSONDecodeError as e:
-                                logger.error(f"[LGC-CONTEXT] VAR array JSON decode error at row {row_idx} ({name}): {e}")
+                                logger.error_and_stop(f"[LGC-CONTEXT] VAR array JSON decode error at row {row_idx} ({name}): {e}")
                                 self.header_manager.add_global(f"{g_type} {name}[{size_str}]; // Init failed")
                     else:
                         if not is_init or raw_val in ('N/A', ''):
@@ -140,12 +140,12 @@ class LgcContext:
                         if name not in self.func_locals:
                             self.func_locals[name] = []
                     except Exception as e:
-                        logger.error(f"[LGC-CONTEXT] FUNC parse error at row {row_idx} ({name}): {e}")
+                        logger.error_and_stop(f"[LGC-CONTEXT] FUNC parse error at row {row_idx} ({name}): {e}")
 
                 # --- 4. 解析 PARAM (函数参数) ---
                 elif cat == 'PARAM':
                     if '_arg' not in name:
-                        logger.error(f"[LGC-CONTEXT] PARAM format error at row {row_idx} ({name}): Missing '_arg' separator.")
+                        logger.error_and_stop(f"[LGC-CONTEXT] PARAM format error at row {row_idx} ({name}): Missing '_arg' separator.")
                         continue
 
                     func_part = name.split('_arg')[0]
@@ -160,7 +160,7 @@ class LgcContext:
                             decl += f" = {raw_val}"
 
                     if func_part not in self.func_params:
-                        logger.error(
+                        logger.error_and_stop(
                             f"[LGC-CONTEXT] PARAM '{name}' mapped to unknown function '{func_part}' at row {row_idx}. Auto-registering.")
                         self.func_params[func_part] = []
                     self.func_params[func_part].append(decl)
@@ -168,7 +168,7 @@ class LgcContext:
                 # --- 5. 解析 LOCAL_VAR (局部变量) ---
                 elif cat == 'LOCAL_VAR':
                     if '@' not in name:
-                        logger.error(f"[LGC-CONTEXT] LOCAL_VAR format error at row {row_idx} ({name}): Missing '@' separator.")
+                        logger.error_and_stop(f"[LGC-CONTEXT] LOCAL_VAR format error at row {row_idx} ({name}): Missing '@' separator.")
                         continue
 
                     func_part = name.split('@')[0]
@@ -191,7 +191,7 @@ class LgcContext:
                                 init_str = ', '.join(formatted_vals)
                                 decl = f"static {l_type} {local_name}[{size_str}] = {{ {init_str} }};"
                             except json.JSONDecodeError as e:
-                                logger.error(f"[LGC-CONTEXT] LOCAL_VAR array JSON decode error at row {row_idx} ({name}): {e}")
+                                logger.error_and_stop(f"[LGC-CONTEXT] LOCAL_VAR array JSON decode error at row {row_idx} ({name}): {e}")
                                 decl = f"static {l_type} {local_name}[{size_str}]; // Parse Init failed"
                         else:
                             decl = f"static {l_type} {local_name}[{size_str}];"
@@ -207,7 +207,7 @@ class LgcContext:
                             decl = f"{l_type} {local_name};"
 
                     if func_part not in self.func_locals:
-                        logger.error(
+                        self._report_error(
                             f"[LGC-CONTEXT] LOCAL_VAR '{name}' mapped to unknown function '{func_part}' at row {row_idx}. Auto-registering.")
                         self.func_locals[func_part] = []
                     self.func_locals[func_part].append(decl)

@@ -182,7 +182,7 @@ class CFGBuilder:
                     target_block.predecessors.append(block)
                 else:
                     # 异常处理：跳转到了一个不存在 Block 的地址 (可能切分逻辑有误，或者跳转到了指令中间)
-                    logger.error(
+                    logger.error_and_stop(
                         f"[CFG-BUILDER] Method {method.name}: Block {block.id} tries to jump to 0x{t_addr:X}, but no block starts there.")
                     # raise
 
@@ -211,13 +211,13 @@ class CFGBuilder:
             # 异常检查: 目标地址必须存在于方法内
             if target is not None:
                 if target not in method.addr_map:
-                    logger.error(
+                    logger.error_and_stop(
                         f"[CFG-BUILDER] Method {method.name}: Instruction at 0x{instr.offset:X} ({instr.mnemonic}) targets 0x{target:X}, which is out of bounds.")
                     return None
                 return target
 
         except Exception as e:
-            logger.error(f"[CFG-BUILDER] Error resolving target for {instr}: {e}")
+            logger.error_and_stop(f"[CFG-BUILDER] Error resolving target for {instr}: {e}")
             # raise
             return None
 

@@ -348,7 +348,7 @@ extern MessageText(string text,int x,int y,int fontNvid = -1) 114;
 
 ```c++
 // 场景 A：仅仅调用，不管返回值
-CreateSprite(1, 10, 20, 0); 
+CreateSprite(1, 10, 20, 0); Z
 // 对应 Type -> 02 00 
 
 // 场景 B：将返回值赋给变量
@@ -436,8 +436,6 @@ ScriptEvent3( int val1, int val2, int val3 ){
     //id = 6
 }
 ```
-
-
 
 #### 规则 A：特殊变量 `int ActionX`
 

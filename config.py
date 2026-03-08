@@ -1,4 +1,7 @@
-# /config.py
+"""
+/config.py
+universal config for the exe and relevant paths
+"""
 import sys
 from pathlib import Path
 from logger import logger, add_file_handler, LOGGER_NAME

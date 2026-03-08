@@ -24,7 +24,7 @@ class HumanReadableCRenderer:
                 f.write("\n".join(lines))
             logger.info(f"[C-Renderer] Output written to: {output_path}")
         except Exception as e:
-            logger.error(f"[C-Renderer] Failed to write file: {e}")
+            logger.error_and_stop(f"[C-Renderer] Failed to write file: {e}")
 
     # --- private function to help in generating ---
 

@@ -144,7 +144,7 @@ class LgdAsmRenderer:
             logger.info(f"[AsmRenderer] Assembly dumped to: {output_path}")
 
         except Exception as e:
-            logger.error(f"[AsmRenderer] Failed to write ASM: {e}")
+            logger.error_and_stop(f"[AsmRenderer] Failed to write ASM: {e}")
             import traceback
             traceback.print_exc()
 
@@ -195,6 +195,10 @@ class LgdAsmRenderer:
         # 1. Build P1/Extern Maps
         total_p1_count = len(self.ctx.literal_table)
         for i, sym in enumerate(sorted_symbols_p1):
+            if not sym.name:
+                err_msg = f"[AsmRenderer] Missing symbol name for P1 index {sym.p1_idx}. Using fallback."
+                logger.error_and_stop(err_msg)
+            
             base_name = sym.name if sym.name else f"UnkSym_{i}"
             base_type = sym.type_val & 0xFF
             is_function = (base_type == LgdDefinitions.BASE_FUNCTION)
@@ -220,17 +224,28 @@ class LgdAsmRenderer:
                     self.p1_var_map[p1_idx] = base_name if p1_idx == start_idx else f"{base_name}_{offset_in_group}"
 
         # Global IDs
+        valid_symbols = [s for s in self.ctx.symbol_table if s.p1_idx < len(self.ctx.literal_table)]
+        sorted_symbols = sorted(valid_symbols, key=lambda s: s.p1_idx)
+        for gid, sym in enumerate(sorted_symbols):
+            if not sym.name:
+                err_msg = f"[AsmRenderer] Missing symbol name for Global ID {gid}. Using fallback."
+                logger.error_and_stop(err_msg)
+            self.global_func_map[gid] = sym.name if sym.name else f"UnkSym_{gid}"
+
         for idx, entry in enumerate(self.ctx.literal_table):
-            if entry.is_group_head and idx in self.p1_owner_map:
-                gid = entry.global_id
-                if gid != -1: self.global_func_map[gid] = self.p1_owner_map[idx]
-            if idx not in self.p1_var_map: self.p1_var_map[idx] = f"var_{idx}"
+            if idx not in self.p1_var_map:
+                err_msg = f"[AsmRenderer] Missing variable name mapping for P1 index {idx}. Using fallback."
+                logger.error_and_stop(err_msg)
+                self.p1_var_map[idx] = f"var_{idx}"
 
         # 2. Build Function Ranges
         func_starts = []
         for sym in all_symbols:
             if (sym.type_val & 0xFF) == LgdDefinitions.BASE_FUNCTION:
                 abs_start = bytecode_base + sym.meta
+                if not sym.name:
+                    err_msg = f"[AsmRenderer] Missing name for Function at P1 index {sym.p1_idx}. Using fallback."
+                    logger.error_and_stop(err_msg)
                 name = sym.name if sym.name else f"Func_{sym.p1_idx}"
                 func_starts.append((abs_start, name))
 
@@ -328,9 +343,17 @@ class LgdAsmRenderer:
             elif isinstance(op, int):
                 if entry.opcode in VAR_OPS:
                     if entry.opcode == 0x27 and idx == 1: val_str = LgdOpcodes.ASSIGN_OP_MAP.get(op, f"OP_{op:02X}")
-                    else: val_str = self.p1_var_map.get(op, f"var_{op}")
+                    else:
+                        if op not in self.p1_var_map:
+                            err_msg = f"[AsmRenderer] Instruction at {entry.offset:04X}: Unresolved variable {op}. Using fallback."
+                            logger.error_and_stop(err_msg)
+                        val_str = self.p1_var_map.get(op, f"var_{op}")
 
-                elif entry.opcode in FUNC_OPS: val_str = self.global_func_map.get(op, f"Func_{op}")
+                elif entry.opcode in FUNC_OPS:
+                    if op not in self.global_func_map:
+                        err_msg = f"[AsmRenderer] Instruction at {entry.offset:04X}: Unresolved global function {op}. Using fallback."
+                        logger.error_and_stop(err_msg)
+                    val_str = self.global_func_map.get(op, f"Func_{op}")
 
                 # add for await
                 elif entry.opcode in AWAIT and idx == 0:
