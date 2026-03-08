@@ -121,10 +121,10 @@ class LgdCsvExporter:
                 category = "EXTERN"
 
         # --- 2. Generate The "Header" Row (The Function/Global itself) ---
-        main_row: Dict[str, Any] = {h: "N/A" for h in self.headers}
-        main_row["Global_ID"] = gid
-        main_row["P1_Index"] = p1_index
-        main_row["File_ID"] = file_id
+        main_row: Dict[str, Any] = {h: "\tN/A" for h in self.headers}
+        main_row["Global_ID"] = f"\t{gid}"
+        main_row["P1_Index"] = f"\t{p1_index}"
+        main_row["File_ID"] = f"\t{file_id}" if file_id != "N/A" else "\tN/A"
         main_row["Name"] = symbol_name
         main_row["Category"] = category
 
@@ -132,10 +132,15 @@ class LgdCsvExporter:
         self._fill_main_row_details(main_row, category, head, symbol, entries)
         rows_to_return.append(main_row)
 
-        # --- 3. Generate Local Variable Rows (Only for FUNC with P1 entries) ---
-        if category == "FUNC" and entries:
+        # --- 3. Generate Parameter Rows (for FUNC and EXTERN) and Local Variable Rows (for FUNC) ---
+        if category in ("FUNC", "EXTERN") and entries:
             # For functions, Symbol Size represents the Parameter slots.
-            param_slots = symbol.size if symbol else 0
+            # For externs, there are no local variables, so all entries are parameters.
+            if category == "EXTERN":
+                param_slots = len(entries)
+            else:
+                param_slots = symbol.size if symbol else 0
+
             i = 0
             param_idx = 0
 
@@ -169,16 +174,16 @@ class LgdCsvExporter:
                             f"Check if the engine assigns values properly!"
                         )
 
-                sub_row: Dict[str, Any] = {h: "N/A" for h in self.headers}
-                sub_row["Global_ID"] = gid
-                sub_row["P1_Index"] = entry.index
-                sub_row["File_ID"] = file_id
+                sub_row: Dict[str, Any] = {h: "\tN/A" for h in self.headers}
+                sub_row["Global_ID"] = f"\t{gid}"
+                sub_row["P1_Index"] = f"\t{entry.index}"
+                sub_row["File_ID"] = f"\t{file_id}" if file_id != "N/A" else "\tN/A"
                 sub_row["Name"] = name
                 sub_row["Category"] = cat
-                sub_row["Type"] = data_type
-                sub_row["Is_Array"] = "True" if is_array else "False"
-                sub_row["Size"] = entry.id_size
-                sub_row["Is_Initialized"] = "False" if is_uninit else "True"
+                sub_row["Type"] = data_type if data_type != "N/A" else "\tN/A"
+                sub_row["Is_Array"] = "\tTrue" if is_array else "\tFalse"
+                sub_row["Size"] = f"\t{entry.id_size}"
+                sub_row["Is_Initialized"] = "\tFalse" if is_uninit else "\tTrue"
 
                 # Extract Init_Value dynamically like global variables
                 if not is_uninit:
@@ -193,7 +198,7 @@ class LgdCsvExporter:
                     else:
                         val = entry.str_val if data_type == "string" else entry.int_val
                         if data_type == "string" and val is None: val = ""
-                        sub_row["Init_Value"] = str(val)
+                        sub_row["Init_Value"] = f"\t{val}" if data_type != "string" else val
 
                 rows_to_return.append(sub_row)
 
@@ -215,20 +220,20 @@ class LgdCsvExporter:
         else:
             # Fallback if no P1 data (e.g. Size 0 Extern)
             mode = 'scalar'
-            data_type = 'N/A'
+            data_type = '\tN/A'
 
         # Symbol size is authoritative
         size = symbol.size if symbol else (head.id_size if head else 0)
-        row["Size"] = size
+        row["Size"] = f"\t{size}"
 
         if category == "VAR":
             row["Type"] = data_type
-            row["Is_Array"] = "True" if "array" in mode else "False"
+            row["Is_Array"] = "\tTrue" if "array" in mode else "\tFalse"
 
             # Variables strictly require P1 entries to determine value
             if head:
                 is_uninit = mode in ["def_only", "array_def"]
-                row["Is_Initialized"] = "False" if is_uninit else "True"
+                row["Is_Initialized"] = "\tFalse" if is_uninit else "\tTrue"
 
                 if not is_uninit:
                     if "array" in mode:
@@ -241,11 +246,11 @@ class LgdCsvExporter:
                     else:
                         val = head.str_val if data_type == "string" else head.int_val
                         if data_type == "string" and val is None: val = ""
-                        row["Init_Value"] = str(val)
+                        row["Init_Value"] = f"\t{val}" if data_type != "string" else val
 
         elif category == "FUNC":
-            row["Type"] = "N/A"
-            row["Is_Array"] = "False"
+            row["Type"] = "\tN/A"
+            row["Is_Array"] = "\tFalse"
 
             # Construct Param Types if entries exist
             if size > 0 and entries:
@@ -255,12 +260,12 @@ class LgdCsvExporter:
                     p_types.append(p_info['type'])
                 row["Param_Types"] = ";".join(p_types)
             else:
-                row["Param_Types"] = "N/A"
+                row["Param_Types"] = "\tN/A"
 
         elif category == "EXTERN":
-            row["Type"] = "N/A"
-            row["Is_Array"] = "False"
-            row["Extern_ID"] = symbol.meta if symbol else "N/A"
+            row["Type"] = "\tN/A"
+            row["Is_Array"] = "\tFalse"
+            row["Extern_ID"] = f"\t{symbol.meta}" if symbol else "\tN/A"
 
             # Construct Param Types if entries exist
             if size > 0 and entries:

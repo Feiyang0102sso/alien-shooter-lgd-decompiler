@@ -54,22 +54,24 @@ class LgcContext:
         with open(csv_path, 'r', encoding='utf-8-sig') as f:
             reader = csv.DictReader(f)
             for row_idx, row in enumerate(reader, start=2):  # header is row 1
-                cat = row.get('Category', '').strip()
-                name = row.get('Name', '').strip()
+                cat = row.get('Category', '').lstrip('\t').strip()
+                name = row.get('Name', '').lstrip('\t').strip()
 
                 if not cat or not name:
                     logger.error_and_stop(f"[LGC-CONTEXT] Row {row_idx}: Missing 'Category' or 'Name'. Skipped. Row data: {row}")
                     continue
 
-                is_array = self._parse_bool(row.get('Is_Array'))
-                is_init = self._parse_bool(row.get('Is_Initialized'))
-                raw_val = row.get('Init_Value', 'N/A')
-                size_str = row.get('Size', '1')
+                is_array = self._parse_bool(row.get('Is_Array', '').lstrip('\t'))
+                is_init = self._parse_bool(row.get('Is_Initialized', '').lstrip('\t'))
+                raw_val = row.get('Init_Value', 'N/A').lstrip('\t')
+                if raw_val == '':
+                    raw_val = 'N/A'
+                size_str = row.get('Size', '1').lstrip('\t')
 
                 # --- 1. 解析 EXTERN (外部函数) ---
                 if cat == 'EXTERN':
                     try:
-                        ext_id_str = row.get('Extern_ID', '')
+                        ext_id_str = row.get('Extern_ID', '').lstrip('\t')
                         if not ext_id_str.isdigit():
                             raise ValueError(f"Invalid or missing Extern_ID: '{ext_id_str}'")
 
@@ -77,24 +79,16 @@ class LgcContext:
                         size_int = int(size_str) if size_str.isdigit() else 1
                         self.ext_map[ext_id] = (name, size_int)
 
-                        param_str = row.get('Param_Types', 'N/A').strip()
-                        if param_str == "N/A" or not param_str:
-                            args = []
-                        else:
-                            types = param_str.split(';')
-                            # 避免 f-string 内部判断逻辑，提取出来
-                            args = []
-                            for i, t in enumerate(types):
-                                default_val = '""' if t == 'string' else '0'
-                                args.append(f"{t} {name}_arg{i} = {default_val}")
+                        # 参数推迟到所有的 PARAM 行解析完毕后，集中生成 EXTERN 文件头
+                        if name not in self.func_params:
+                            self.func_params[name] = []
 
-                        self.header_manager.add_extern(f"extern {name}({', '.join(args)}) {ext_id};")
                     except Exception as e:
                         logger.error_and_stop(f"[LGC-CONTEXT] EXTERN parse error at row {row_idx} ({name}): {e}")
 
                 # --- 2. 解析 VAR (全局变量) ---
                 elif cat == 'VAR':
-                    g_type = row.get('Type', 'int')
+                    g_type = row.get('Type', 'int').lstrip('\t')
                     if is_array:
                         if not is_init or raw_val in ('N/A', ''):
                             self.header_manager.add_global(f"{g_type} {name}[{size_str}];")
@@ -128,7 +122,7 @@ class LgcContext:
                 # --- 3. 解析 FUNC (内部函数标识) ---
                 elif cat == 'FUNC':
                     try:
-                        g_id_str = row.get('Global_ID', '')
+                        g_id_str = row.get('Global_ID', '').lstrip('\t')
                         if not g_id_str.isdigit():
                             raise ValueError(f"Invalid or missing Global_ID: '{g_id_str}'")
 
@@ -149,7 +143,7 @@ class LgcContext:
                         continue
 
                     func_part = name.split('_arg')[0]
-                    p_type = row.get('Type', 'int')
+                    p_type = row.get('Type', 'int').lstrip('\t')
 
                     decl = f"{p_type} {name}"
                     if is_init and raw_val not in ('N/A', ''):
@@ -173,7 +167,7 @@ class LgcContext:
 
                     func_part = name.split('@')[0]
                     local_name = name.replace('@', '_')
-                    l_type = row.get('Type', 'int')
+                    l_type = row.get('Type', 'int').lstrip('\t')
 
                     decl = ""
                     if is_array:
@@ -211,3 +205,9 @@ class LgcContext:
                             f"[LGC-CONTEXT] LOCAL_VAR '{name}' mapped to unknown function '{func_part}' at row {row_idx}. Auto-registering.")
                         self.func_locals[func_part] = []
                     self.func_locals[func_part].append(decl)
+
+        # 在所有的 CSV 行解析完毕后，集中生成 EXTERN 文件头
+        # 此时已经拿到了所有的 PARAM 参数（如果有），带上了初始值
+        for ext_id, (name, size_int) in self.ext_map.items():
+            params = self.func_params.get(name, [])
+            self.header_manager.add_extern(f"extern {name}({', '.join(params)}) {ext_id};")

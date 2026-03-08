@@ -136,8 +136,17 @@ class BytecodeEntry:
                 if isinstance(op, str):
                     formatted_ops.append(f'"{op}"')
                 elif isinstance(op, int):
-                    # Show hex for large IDs/Addrs, decimal for small
-                    val = f"0x{op:X}" if abs(op) > 9 else str(op)
+                    # [修复] 启发式双轨显示: 解决大掩码(0x80000004)变成无意义大负数, 小逻辑负数(-999999, -1)变成无意义大正十六进制的问题
+                    if 0 <= op <= 0xFFFF:
+                        # 1. 常规小正数(0~65535)，保留最直观的十进制显示
+                        val = str(op)
+                    elif -9999999 <= op < 0:
+                        # 2. 常规逻辑负数(如 -1, -10000, -999999)，直接展示十进制负数
+                        val = str(op)
+                    else:
+                        # 3. 超出常规范围(极大的正负数, 如 0x80000004 被算作 -2147483644)，极大概率是位掩码或内存常量。统一以 32位无符号 HEX 展现
+                        u_op = op & 0xFFFFFFFF
+                        val = f"0x{u_op:X}"
                     formatted_ops.append(val)
                 else:
                     formatted_ops.append(str(op))
