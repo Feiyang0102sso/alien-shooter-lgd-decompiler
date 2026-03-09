@@ -225,8 +225,8 @@ class LgdAsmRenderer:
                     self.p1_var_map[p1_idx] = base_name if p1_idx == start_idx else f"{base_name}_{offset_in_group}"
 
         # Global IDs
-        valid_symbols = [s for s in self.ctx.symbol_table if s.p1_idx < len(self.ctx.literal_table)]
-        sorted_symbols = sorted(valid_symbols, key=lambda s: s.p1_idx)
+        # 移除限制 p1_idx < len(literal_table)，因为部分纯空函数可能其 p1_idx 正好等于总长度
+        sorted_symbols = sorted(all_symbols, key=lambda s: s.p1_idx)
         for gid, sym in enumerate(sorted_symbols):
             if not sym.name:
                 err_msg = f"[AsmRenderer] Missing symbol name for Global ID {gid}. Using fallback."

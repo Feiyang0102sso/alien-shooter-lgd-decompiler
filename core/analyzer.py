@@ -69,7 +69,8 @@ class LgdAnalyzer:
                to the p1_idx of the next symbol.
         """
         # 1. Filter and sort the symbol table (only take valid symbols that point to table P1).
-        valid_symbols = [s for s in self.ctx.symbol_table if s.p1_idx < len(self.ctx.literal_table)]
+        # Use <= instead of < to ensure empty functions at the very end are included
+        valid_symbols = [s for s in self.ctx.symbol_table if s.p1_idx <= len(self.ctx.literal_table)]
         sorted_symbols = sorted(valid_symbols, key=lambda s: s.p1_idx)
 
         global_counter = 0
