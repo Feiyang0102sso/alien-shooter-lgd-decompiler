@@ -58,9 +58,8 @@ class ASTBuilder:
             try:
                 # --- 1. Push Operations ---
                 if mne == 'PUSH_INT':
-                    val_str = ops[0].strip()
-                    val = -int(val_str[3:], 16) if val_str.startswith('0x-') else int(val_str, 0)
-                    stack.append(ConstNode(val, 'int'))
+                    val_str = str(ops[0]).strip()
+                    stack.append(ConstNode(val_str, 'int'))
                 elif mne == 'PUSH_STR':
                     val = " ".join(ops) if ops else ""
                     if val.startswith('"') and val.endswith('"'):
