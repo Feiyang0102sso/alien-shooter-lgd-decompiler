@@ -57,6 +57,8 @@ class LgdDefinitions:
         # --- Script Function ---
         # Hex: 03 00 -> 0x0003
         0x0003: "Function (Void)",
+        # Hex: 03 01 -> 0x0103
+        0x0103: "Function (Returns & Used By Await)",
         # Hex: 03 02 -> 0x0203
         0x0203: "Function (Returns Value)",
         # Hex: 03 03 -> 0x0303

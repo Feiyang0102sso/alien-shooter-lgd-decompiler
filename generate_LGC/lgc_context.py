@@ -64,7 +64,7 @@ class LgcContext:
                 is_array = self._parse_bool(row.get('Is_Array', '').lstrip('\t'))
                 is_init = self._parse_bool(row.get('Is_Initialized', '').lstrip('\t'))
                 raw_val = row.get('Init_Value', 'N/A').lstrip('\t')
-                if raw_val == '':
+                if raw_val == '' and cat != 'PARAM':
                     raw_val = 'N/A'
                 size_str = row.get('Size', '1').lstrip('\t')
 
@@ -146,10 +146,14 @@ class LgcContext:
                     p_type = row.get('Type', 'int').lstrip('\t')
 
                     decl = f"{p_type} {name}"
-                    if is_init and raw_val not in ('N/A', ''):
+                    if is_init and raw_val != 'N/A':
                         if p_type == 'string':
-                            safe_str = self._escape_string(raw_val)
-                            decl += f' = "{safe_str}"'
+                            # 对于 string 类型的 parameter，原样读取引号内的值如果自身是 "" 就直接赋
+                            if not raw_val.startswith('"') and raw_val != '""':
+                                safe_str = self._escape_string(raw_val)
+                                decl += f' = "{safe_str}"'
+                            else:
+                                decl += f" = {raw_val}"
                         else:
                             decl += f" = {raw_val}"
 

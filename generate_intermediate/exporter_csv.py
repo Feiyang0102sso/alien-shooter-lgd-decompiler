@@ -192,12 +192,14 @@ class LgdCsvExporter:
                         # Fetch all elements within the array bounds
                         for e in entries[i: i + entry.id_size]:
                             val = e.str_val if data_type == "string" else e.int_val
-                            if data_type == "string" and val is None: val = ""
+                            if data_type == "string":
+                                val = f'""' if val in (None, "") else val
                             vals.append(val)
                         sub_row["Init_Value"] = json.dumps(vals)
                     else:
                         val = entry.str_val if data_type == "string" else entry.int_val
-                        if data_type == "string" and val is None: val = ""
+                        if data_type == "string":
+                            val = f'""' if val in (None, "") else val
                         sub_row["Init_Value"] = f"\t{val}" if data_type != "string" else val
 
                 rows_to_return.append(sub_row)
@@ -240,12 +242,14 @@ class LgdCsvExporter:
                         vals = []
                         for e in entries[:size]:
                             val = e.str_val if data_type == "string" else e.int_val
-                            if data_type == "string" and val is None: val = ""
+                            if data_type == "string":
+                                val = f'""' if val in (None, "") else val
                             vals.append(val)
                         row["Init_Value"] = json.dumps(vals)
                     else:
                         val = head.str_val if data_type == "string" else head.int_val
-                        if data_type == "string" and val is None: val = ""
+                        if data_type == "string":
+                            val = f'""' if val in (None, "") else val
                         row["Init_Value"] = f"\t{val}" if data_type != "string" else val
 
         elif category == "FUNC":

@@ -100,9 +100,9 @@ class LgdPipeline:
         exporter = LgdCsvExporter(ctx)
         exporter.export(csv_out_path)
 
-        full_dec_path = self.file_path + ".decrypted.lgd"
-        full_decryptor = LgdDecryptor(ctx)
-        full_decryptor.export(full_dec_path)
+        # full_dec_path = self.file_path + ".decrypted.lgd"
+        # full_decryptor = LgdDecryptor(ctx)
+        # full_decryptor.export(full_dec_path)
 
 
         # --- 4. Parse Bytecode ---
@@ -185,7 +185,7 @@ class LgdPipeline:
                 asm_out_path,
                 csv_out_path,
                 self.file_path + ".c",
-                full_dec_path
+                # full_dec_path
             ]
             for file in intermediate_files:
                 if os.path.exists(file):
