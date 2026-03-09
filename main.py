@@ -1,6 +1,7 @@
 import os
 import argparse
 import config  # ini app
+from version import __version__, __app_name__
 from core.pipeline import LgdPipeline
 from logger import logger
 import sys
@@ -37,7 +38,7 @@ def process_single_file(file_path: str, keep_files: bool) -> bool:
 
 def main():
     parser = argparse.ArgumentParser(
-        description="LGD Decompiler Pipeline - V 0.1.0",
+        description=f"{__app_name__} Pipeline - V {__version__}",
         formatter_class=argparse.RawTextHelpFormatter
     )
 

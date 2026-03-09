@@ -1,4 +1,4 @@
-# LgdDecompiler V 0.1.0
+# LgdDecompiler V 0.2.0
 
 🌍 **Language / 语言**
 
@@ -8,6 +8,14 @@
 ------
 
 ## 🇺🇸 English Version
+
+### Changelog
+
+- **v0.2.0 (2026-03-09):**
+  - Added `stop_on_error` option and optimized error handling logic.
+  - Optimized CSV export and LGC decompilation logic for `extern` functions to appropriately record parameter counts and states.
+  - Optimized `PUSH_INT` processing during ASM and LGC decompilation. Extremely large or small integers are now automatically treated as constants or mask values instead of being strictly calculated as signed ints.
+- **v0.1.0 (Initial Release):** Initial release.
 
 ### lgd Manual
 
@@ -130,6 +138,14 @@ A "Loading" string occasionally gets stuck at fixed coordinates on the map. Susp
 ------
 
 ## 🇨🇳 中文版
+
+### 更新日志
+
+- **v0.2.0 (2026-03-09):**
+  - 添加 `stop_on_error` 选项，并且优化 error 处理逻辑。
+  - 优化 csv 导出和 lgc 反编译时处理 extern 函数的逻辑，现在可以记录它们的参数数量等状态。
+  - 优化 asm 和 lgc 反编译时对 `PUSH_INT` 的处理，现在特别大和特别小的 int 会自动被当作常量或 mask 值处理，而不是全算作 signed int。
+- **v0.1.0 (首发版本):** 初始发布 (Initial release)。
 
 ### lgd文档
 
