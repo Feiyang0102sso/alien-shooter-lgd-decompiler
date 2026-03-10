@@ -12,6 +12,7 @@ __pycache__/
 
 # --- LOGS ---
 *.log
+# !AlienShooterLastHope.log
 
 # --- Sample Lgd ---
 .lgd_sample/
@@ -29,3 +30,6 @@ dist/
 *.lgc
 *.csv
 *.c
+
+# !survive_01.lgc
+# !survive_01.lgd.asm
