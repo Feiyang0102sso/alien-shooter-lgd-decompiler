@@ -11,15 +11,27 @@ from pathlib import Path
 LOGGER_NAME = "Lgd_Decompiler"
 
 class FatalError(BaseException):
-    """Raised when an error occurs and stop_on_error is True."""
+    """
+    BaseException > Exception
+    Raised when an error occurs and stop_on_error is True.
+    make sure the error is caught correct and stop pipeline immediately
+    """
     pass
 
 class ErrorLogger(logging.Logger):
+    """
+    an extended version of current Logger
+    generally add stop on error in class
+    """
+
     def __init__(self, name, level=logging.NOTSET):
         super().__init__(name, level)
         self.stop_on_error = False
 
     def set_stop_on_error(self, val: bool):
+        """
+        whether to active stop on error
+        """
         self.stop_on_error = val
 
     def error_and_stop(self, msg: str, *args, **kwargs):
@@ -33,6 +45,7 @@ class ErrorLogger(logging.Logger):
         if self.stop_on_error:
             raise FatalError(msg)
 
+# use ErrorLogger instead of Logger
 logging.setLoggerClass(ErrorLogger)
 
 class ColoredFormatter(logging.Formatter):

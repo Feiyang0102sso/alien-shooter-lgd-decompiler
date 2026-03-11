@@ -41,161 +41,76 @@ class LgdAsmRenderer:
                 f.write("; Format: [File Offset] [Hex Dump]           [Mnemonic]     [Operands]     [Comments]\n")
                 f.write("; ===========================================================================\n")
 
-                # ========================================================
-                # 1. Bucket Instructions (Absolute Closure Rule)
-                # ========================================================
-                # 核心铁律：任何一个函数必须以 RET 闭合！
-                # 无论符号表 (sym.meta) 怎么指示下一个函数的开始，
-                # 只要当前函数还没有拿到它的 RET，就绝对不允许切换！
-
+                # 1. Bucket Instructions
                 func_bucket: Dict[str, List[BytecodeEntry]] = defaultdict(list)
                 orphan_instrs: List[BytecodeEntry] = []
-
                 sorted_instrs = sorted(self.ctx.bytecode_instructions, key=lambda x: x.offset)
-                func_starts = sorted([(st, end, name) for st, end, name in self.func_ranges], key=lambda x: x[0])
 
-                if not func_starts:
-                    orphan_instrs = sorted_instrs
-                else:
-                    current_func_idx = 0
+                for entry in sorted_instrs:
+                    owner_name = self._get_instruction_owner(entry.offset)
+                    if owner_name:
+                        func_bucket[owner_name].append(entry)
+                    else:
+                        orphan_instrs.append(entry)
 
-                    for entry in sorted_instrs:
-                        # 尝试推进到下一个函数
-                        while current_func_idx < len(func_starts) - 1:
-                            next_st = func_starts[current_func_idx + 1][0]
-                            curr_name = func_starts[current_func_idx][2]
-                            curr_list = func_bucket[curr_name]
+                # ========================================================
+                # 2. Boundary Refinement (Intelligent Correction for empty func)
+                # ========================================================
+                sorted_func_names = [r[2] for r in self.func_ranges]
 
-                            # 条件1：当前的指令地址已经达到或超过了下一个函数的理论起点
-                            if entry.offset >= next_st:
-                                # 条件2 (绝对防线)：当前函数必须已经“完美闭合”
-                                # （即当前函数拿到的最后一条指令必须是 RET 0x1F）
-                                is_closed = (len(curr_list) > 0 and curr_list[-1].opcode == 0x1F)
 
-                                if is_closed:
-                                    current_func_idx += 1
-                                    continue  # 继续 while 循环，应对可能连续跳过多个纯空函数的情况
-                            break
+                # for i in range(len(sorted_func_names) - 1):
+                # fix again foe empty func
+                # now use in reverse order
+                for i in range(len(sorted_func_names) - 2, -1, -1):
+                    curr_name = sorted_func_names[i]
+                    next_name = sorted_func_names[i+1]
 
-                        curr_name = func_starts[current_func_idx][2]
-                        curr_st = func_starts[current_func_idx][0]
+                    curr_list = func_bucket[curr_name]
+                    next_list = func_bucket[next_name]
 
-                        # 只有在遇到第一个函数起点之前的指令，才算作 orphan
-                        if entry.offset < curr_st and not func_bucket[curr_name] and current_func_idx == 0:
-                            orphan_instrs.append(entry)
+                    # Loop to continuously check the start of next_list
+                    while next_list:
+                        first_op = next_list[0]
+                        should_move = False
+                        items_to_move = 0
+
+                        # --- Case A: Starts with RET ---
+                        if first_op.opcode == 0x1F: # RET
+                            # If there are MORE instructions after this RET, this RET definitely belongs to Prev.
+                            if len(next_list) > 1:
+                                should_move = True
+                                items_to_move = 1
+                            else:
+                                # This is the ONLY instruction left in Next.
+                                # Only steal it if Curr DOES NOT end with RET.
+                                curr_has_ret = (curr_list and curr_list[-1].opcode == 0x1F)
+                                if not curr_has_ret:
+                                    should_move = True
+                                    items_to_move = 1
+
+                        # --- Case B: Starts with LINE_NUM followed by RET ---
+                        elif first_op.mnemonic == "LINE_NUM":
+                            if len(next_list) > 1 and next_list[1].opcode == 0x1F:
+                                # Found [LINE_NUM, RET, ...] sequence at start.
+                                # This block belongs to Prev.
+                                should_move = True
+                                items_to_move = 2
+
+                        # Execute Move
+                        if should_move:
+                            for _ in range(items_to_move):
+                                curr_list.append(next_list.pop(0))
                         else:
-                            func_bucket[curr_name].append(entry)
-
-                # ========================================================
-                # （请确保删除了原本的 # 2. Boundary Refinement，因为上面这个算法
-                # 直接在装桶阶段就划定了最完美的物理边界，再也不需要事后修补了！）
-                # ========================================================
-
-                # 1. Bucket Instructions
-                # func_bucket: Dict[str, List[BytecodeEntry]] = defaultdict(list)
-                # orphan_instrs: List[BytecodeEntry] = []
-                # sorted_instrs = sorted(self.ctx.bytecode_instructions, key=lambda x: x.offset)
-                #
-                # for entry in sorted_instrs:
-                #     owner_name = self._get_instruction_owner(entry.offset)
-                #     if owner_name:
-                #         func_bucket[owner_name].append(entry)
-                #     else:
-                #         orphan_instrs.append(entry)
-                #
-                #         # ========================================================
-                #         # 1. Flow-Aware Bucketing (Jump Override Rule)
-                #         # ========================================================
-                #         # 符号表(sym.meta)会给出函数的起始提示，但它可能与实际控制流冲突。
-                #         # 绝对真理：如果当前指令依然在当前函数 Jump/Await 的目标射程内，
-                #         # 则绝对不允许跨越到下一个函数。
-                #
-                #         sorted_hints = sorted([(start, name) for start, end, name in self.func_ranges],
-                #                               key=lambda x: x[0])
-                #
-                #         def get_desired_func(offset: int) -> Optional[str]:
-                #             best_name = None
-                #             for st, name in sorted_hints:
-                #                 if offset >= st:
-                #                     best_name = name
-                #                 else:
-                #                     break
-                #             return best_name
-                #
-                #         func_bucket: Dict[str, List[BytecodeEntry]] = defaultdict(list)
-                #         orphan_instrs: List[BytecodeEntry] = []
-                #         sorted_instrs = sorted(self.ctx.bytecode_instructions, key=lambda x: x.offset)
-                #
-                #         current_func = None
-                #         max_jump_target = -1
-                #
-                #         for entry in sorted_instrs:
-                #             desired_func = get_desired_func(entry.offset)
-                #
-                #             if current_func is None:
-                #                 current_func = desired_func
-                #
-                #             if desired_func != current_func:
-                #                 # 核心防线：只有当我们走出了当前函数的最远跳转射程，才允许切换函数
-                #                 if entry.offset > max_jump_target:
-                #                     current_func = desired_func
-                #                     max_jump_target = -1  # 切换成功，重置射程
-                #
-                #             if current_func:
-                #                 func_bucket[current_func].append(entry)
-                #             else:
-                #                 orphan_instrs.append(entry)
-                #
-                #             # 动态更新当前函数的最远跳转射程
-                #             if entry.opcode in {0x18, 0x1C, 0x2C, 0x2D}:
-                #                 if entry.operands and isinstance(entry.operands[0], int):
-                #                     target_abs = entry.offset + 1 + entry.operands[0]
-                #                     if target_abs > max_jump_target:
-                #                         max_jump_target = target_abs
-                #             elif entry.opcode == 0x1B:  # AWAIT
-                #                 if entry.operands and isinstance(entry.operands[0], int):
-                #                     target_abs = self.ctx.bytecode_offset_start + 4 + entry.operands[0]
-                #                     if target_abs > max_jump_target:
-                #                         max_jump_target = target_abs
-                #             elif entry.opcode == 0x1D:  # IFF
-                #                 if len(entry.operands) > 0 and isinstance(entry.operands[0], int):
-                #                     t1 = entry.offset + 1 + entry.operands[0]
-                #                     if t1 > max_jump_target: max_jump_target = t1
-                #                 if len(entry.operands) > 1 and isinstance(entry.operands[1], int):
-                #                     t2 = self.ctx.bytecode_offset_start + 4 + entry.operands[1]
-                #                     if t2 > max_jump_target: max_jump_target = t2
-
-                        # ========================================================
-                        # 2. Boundary Refinement (Safe Left-Pulling for Stray RETs)
-                        # ========================================================
-                        # 如果符号表偏移导致上一个函数的尾部 RET 掉进了下一个函数。
-                        # 物理规律：如果一个函数以 RET 开头，且它不是一个空函数(有多条指令)，
-                        # 那么这个 RET 百分百是前一个函数的残骸，我们安全地将其拉回。
-
-                        # sorted_func_names = [r[2] for r in self.func_ranges]
-                        #
-                        # for i in range(len(sorted_func_names) - 1):
-                        #     curr_name = sorted_func_names[i]
-                        #     next_name = sorted_func_names[i + 1]
-                        #
-                        #     curr_list = func_bucket[curr_name]
-                        #     next_list = func_bucket[next_name]
-                        #
-                        #     while next_list:
-                        #         first_op = next_list[0]
-                        #         # 遇到开头是 RET，且不是纯空函数（len > 1 防吞噬底线）
-                        #         if first_op.opcode == 0x1F and len(next_list) > 1:
-                        #             curr_list.append(next_list.pop(0))
-                        #         else:
-                        #             break
+                            # If we didn't move anything, stop checking this pair
+                            break
 
                 # ========================================================
                 # 2.5. Empty Function Boundary Fix (Double RET Split)
                 # ========================================================
                 # Run a secondary pass to detect empty functions (Func B) appearing as [RET, RET]
                 # resulting from Func A missing its RET.
-
-                # self._fix_empty_function_boundaries(func_bucket, sorted_func_names)
+                self._fix_empty_function_boundaries(func_bucket, sorted_func_names)
 
                 # ========================================================
                 # 3. Render
