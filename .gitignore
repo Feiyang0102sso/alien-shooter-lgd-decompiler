@@ -7,6 +7,9 @@ __pycache__/
 *$py.class
 .pytest_cache/
 
+# --- pyproject ---
+*.egg-info/
+
 # --- environment ---
 .venv/
 
@@ -14,22 +17,22 @@ __pycache__/
 *.log
 # !AlienShooterLastHope.log
 
-# --- Sample Lgd ---
-.lgd_sample/
-
-test/.test
-test/.lc
-test/.lh
-
 # --- pyinstaller ---
 build/
 dist/
 
+# --- Sample Lgd ---
+.lgd_sample/
 *.asm
 *.lgd
 *.lgc
 *.csv
 *.c
 
-# !survive_01.lgc
-# !survive_01.lgd.asm
+# --- allow test data ---
+!test/**/data/
+!test/**/data/*.lgd
+!test/**/data/*.csv
+
+
+

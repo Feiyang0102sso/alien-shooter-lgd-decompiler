@@ -5,35 +5,35 @@ test/test_asm/conftest.py
 测试全部结束后，等待用户按 Enter 清理生成的 .asm 文件。
 """
 
-import os
-import sys
 import pytest
-
-# 确保项目根在路径中
-_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-if _ROOT not in sys.path:
-    sys.path.insert(0, _ROOT)
-
-from test.test_utils import run_pipeline_to_asm, parse_asm_file, wait_and_cleanup
-
-LGD_PATH = os.path.join(_ROOT, ".lgd_sample", "tutorial_00.lgd")
+from pathlib import Path
 
 
-@pytest.fixture(scope="session")
-def tutorial00_session(request):
+from test.test_utils import wait_and_cleanup
+from test.test_asm.test_asm_util import run_pipeline_to_asm, parse_asm_file
+
+# datas
+ROOT_DIR = Path(__file__).resolve().parent
+DATA_DIR = ROOT_DIR / "data"
+LGD_FILES = list(DATA_DIR.glob("*.lgd"))
+LGD_NAMES = [p.name for p in LGD_FILES]
+
+
+@pytest.fixture(scope="session", params=LGD_FILES, ids=LGD_NAMES)
+def lgd_session(request):
     """
-    Session 级别 fixture：
-    - 运行 pipeline 到 ASM 生成
-    - 解析生成的 ASM 文件
-    - 测试结束后等用户按 Enter 清理
-    返回: (ctx, asm_path, asm_functions)
+    这个 fixture 会自动为每一个 .lgd 文件运行一次！
+    如果有 3 个文件，它就会为你生成 3 份独立的数据。
     """
-    ctx, asm_path = run_pipeline_to_asm(LGD_PATH)
+    # 拿到当前正在处理的那个 .lgd 文件的路径
+    current_lgd_path = request.param
+
+    # Setup
+    ctx, asm_path = run_pipeline_to_asm(str(current_lgd_path))
     asm_functions = parse_asm_file(asm_path)
 
-    def finalizer():
-        wait_and_cleanup([asm_path])
+    # 交给测试用例
+    yield ctx, asm_path, asm_functions, current_lgd_path.name
 
-    request.addfinalizer(finalizer)
-
-    return ctx, asm_path, asm_functions
+    # Teardown / Finalizer
+    wait_and_cleanup([asm_path])

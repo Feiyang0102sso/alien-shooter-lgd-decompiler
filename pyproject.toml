@@ -1,0 +1,23 @@
+# pip install -e .
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "LgdDecompiler"
+version = "0.2.0"
+
+[tool.setuptools]
+packages = [
+    "core",
+    "common",
+    "LGC_refiner",
+    "generate_LGC",
+    "generate_intermediate"
+]
+
+[tool.pytest.ini_options]
+addopts = "-v --tb=short --show-capture=no"
+testpaths = ["test"]
+pythonpath = ["."]
