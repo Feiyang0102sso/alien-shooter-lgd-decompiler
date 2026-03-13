@@ -1,0 +1,220 @@
+/*
+允许的（编译成功）： 操作符紧挨着括号 ( 或 )。
+if ( A && ) ✅ (操作符挨着右括号)
+if ( || B ) ✅ (操作符挨着左括号)
+if ( (A || B) && ) ✅ (操作符挨着右括号)
+	
+拒绝的（编译报错）： 两个二元操作符紧紧挨在一起。
+if ( A && || B ) ❌ (&& 挨着 ||)
+if ( A && && ) ❌ (&& 挨着 &&)
+*/
+
+
+
+
+// if (money > 50)
+test_ifdef_bug_and_end()
+{
+    int money = 10;
+    
+    if ( money > 100 && 
+#ifdef TARGET_PLATFORM_IOS
+         CheckIOSPurchase()
+#endif
+       )
+    {
+        money = 0;
+    }
+}
+
+// if (money > 50)
+test_ifdef_bug_or_end()
+{
+    int money = 10;
+    
+    if ( money > 100 || 
+#ifdef TARGET_PLATFORM_IOS
+         CheckIOSPurchase()
+#endif
+       )
+    {
+        money = 0;
+    }
+}
+
+// if (money > 50)
+test_ifdef_bug_or_start()
+{
+    int money = 100;
+
+    if (
+#ifdef TARGET_PLATFORM_ANDROID
+         CheckAndroidLicense() ||
+#endif
+         money > 50
+       )
+    {
+        money = 50;
+    }
+}
+
+
+// if (money > 50)
+test_ifdef_bug_and_start()
+{
+    int money = 100;
+
+    if (
+#ifdef TARGET_PLATFORM_ANDROID
+         CheckAndroidLicense() &&
+#endif
+         money > 50
+       )
+    {
+        money = 50;
+    }
+}
+
+
+// if ( (a == 1 || b == 2) )
+test_ifdef_bug_complex()
+{
+    int a = 1;
+    int b = 2;
+
+    if ( (a == 1 || b == 2) &&
+#ifdef DEBUG_GOD_MODE
+         (CheckGodModeA() || CheckGodModeB())
+#endif
+       )
+    {
+        a = 0;
+    }
+}
+ 
+ 
+// if ( ( a > 0 ) )
+test_ifdef_double_dangling()
+{
+    int a = 1;
+
+    if ( ( a > 0 &&
+#ifdef NOT_DEFINED_1
+           Check1()
+#endif
+         ) ||
+#ifdef NOT_DEFINED_2
+           Check2()
+#endif
+       )
+    {
+        a = 0;
+    }
+}
+
+getImplantPrice(int a){
+	return 123;
+}
+
+// if (getImplantPrice(a) > 0 )
+test_ifdef_func_arg()
+{
+    int a = 1;
+    
+    // 如果编译器连函数传参里的 && 都能容忍
+    if ( getImplantPrice( a && 
+#ifdef TARGET_PLATFORM_IOS
+                          CheckIOS()
+#endif
+                        ) > 0 )
+    {
+        a = 0;
+    }
+}
+
+
+
+// if ( money == ) 不实用
+/* test_ifdef_cmp_dangling()
+{
+    int money = 100;
+    if ( money == 
+#ifdef TARGET_PLATFORM_IOS
+         200
+#endif
+       )
+    {
+        money = 0;
+    }
+}
+ */
+
+// ==========================================
+// 3. 中间缺失：夹在两个操作符之间（史诗级灾难）
+// 预处理后变异为： if ( hp > 0 && || mp > 0 )
+// ==========================================
+// test_ifdef_bug_middle()
+// {
+    // int hp = 100;
+    // int mp = 50;
+
+    // if ( hp > 0 && 
+// #ifdef TARGET_PLATFORM_WP8
+         // CheckWindowsPhone() 
+// #endif
+			// || mp > 0 //error &&也报错
+       // )
+    // {
+        // hp = 100;
+    // }
+// }
+
+// ==========================================
+// 4. 连续缺失：一连串的宏被掏空
+// 预处理后变异为： if ( level > 5 && && )
+// ==========================================
+// test_ifdef_bug_multiple()
+// {
+    // int level = 10;
+
+    // if ( level > 5 &&
+// #ifdef ENABLE_DLC_1
+         // HasDLC1() 
+// #endif
+         // && //error 
+// #ifdef ENABLE_DLC_2
+         // HasDLC2()
+// #endif
+       // )
+    // {
+        // level = 100;
+    // }
+// }
+
+
+// ==========================================
+// 6. 终极混乱：左右中全方位混搭
+// 预处理后变异为： if ( || a == 1 && && b == 2 || )
+// ==========================================
+// test_ifdef_bug_ultimate_chaos()
+// {
+    // int a = 1;
+    // int b = 2;
+
+    // if ( 
+// #ifdef MACRO_1
+         // Check1() || 
+// #endif
+         // a == 1 && 
+// #ifdef MACRO_2
+         // Check2() 
+// #endif
+         // && b == 2 ||  //error at 135
+// #ifdef MACRO_3
+         // Check3()
+// #endif
+       // )
+    // {
+        // a = 100;
+    // }
+// }

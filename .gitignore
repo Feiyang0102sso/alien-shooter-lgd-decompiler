@@ -33,6 +33,8 @@ dist/
 !test/**/data/
 !test/**/data/*.lgd
 !test/**/data/*.csv
+!test/**/data/*.asm
+!test/**/data/LGC/*.lgc
 
 
 

@@ -1,0 +1,28 @@
+
+FunctionA_TheDevourer() {
+	int testVar = 100;
+	return;
+}
+
+FunctionB_Victim1() {
+	return;
+
+}
+
+
+FunctionC_Victim2() {
+	// a = 0;
+	return;
+
+}
+
+FunctionD_Victim3() {
+	return;
+
+}
+
+
+FunctionE_Normal() {
+	int endVar = 0;
+	return;
+}

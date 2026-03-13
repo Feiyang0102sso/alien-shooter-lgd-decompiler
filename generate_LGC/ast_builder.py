@@ -112,7 +112,23 @@ class ASTBuilder:
                     pending_array_index = self._safe_pop(stack)
 
                 # --- 3. Operations ---
+                # 处理编译器由于 #ifdef 掏空右操作数导致的悬空 LOG_AND LOG_OR
                 elif mne in self.BIN_OP_MAP:
+                    # 实际上这个定律对所有二元操作符都适用
+                    # 但我不想改 不会真有人写如此抽象的代码吧，不会吧不会吧...
+                    # if len(stack) < 2:
+                    if mne in ('LOG_AND', 'LOG_OR') and len(stack) < 2:
+                        logger.warning(
+                            f"[AST-BUILDER] Missing operand for {mne} at 0x{self.current_offset:X}. Recovering gracefully.")
+                        op_str = self.BIN_OP_MAP[mne]
+
+                        warn_line1 = f"[LGC-Decompiler] WARNING: Original compiler bug detected at 0x{self.current_offset:X}."
+                        warn_line2 = f"Operation '{op_str}' unexpectedly terminated by unused '#ifdef' or empty macro."
+
+                        statements.append(CommentNode(warn_line1))
+                        statements.append(CommentNode(warn_line2))
+                        continue # 直接忽略这个操作符，把栈顶剩下的左操作数当作整个表达式的结果
+
                     right = self._safe_pop(stack)
                     left = self._safe_pop(stack)
                     stack.append(BinaryOpNode(self.BIN_OP_MAP[mne], left, right))
