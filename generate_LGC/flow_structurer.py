@@ -496,8 +496,14 @@ class FlowStructurer:
         curr = current_block
         loop_headers = {loop.header.id: loop for loop in self.loops}
         visited = set()
+        is_first_block = True
 
-        while curr is not None and curr.id not in stop_blocks:
+        while curr is not None:
+            if not is_first_block and curr.id in stop_blocks:
+                break
+                
+            is_first_block = False
+
             if curr.id in visited:
                 break
 
@@ -517,21 +523,54 @@ class FlowStructurer:
             if curr.id in loop_headers and curr.id not in processed_loops:
                 processed_loops.add(curr.id)
                 loop_info = loop_headers[curr.id]
-                is_do_while = len(loop_info.body_blocks) == 1
-
-                if is_do_while:
-                    cond_str = self._extract_condition(curr)
+                
+                # ============== 强制捕捉 AWAIT 宏 ==============
+                last_instr = next((i for i in reversed(curr.instructions) if i.mnemonic != 'LINE_NUM'), None)
+                if last_instr and last_instr.mnemonic == 'AWAIT':
+                    seq.regions.append(AwaitRegion(BlockRegion(curr)))
                     exit_blocks = [s for s in curr.successors if s.id not in loop_info.body_blocks]
-                    exit_block = exit_blocks[0] if exit_blocks else None
+                    curr = exit_blocks[0] if exit_blocks else None
+                    continue
 
-                    # add algorithm for await();
-                    last_instr = next((i for i in reversed(curr.instructions) if i.mnemonic != 'LINE_NUM'), None)
-                    if last_instr and last_instr.mnemonic == 'AWAIT':
-                        seq.regions.append(AwaitRegion(BlockRegion(curr)))
-                    else:
+                # A loop is a while-loop (header exits) if any successor goes outside loop body
+                exit_from_header = [s for s in curr.successors if s.id not in loop_info.body_blocks]
+                is_while_loop = len(exit_from_header) > 0
+
+                if not is_while_loop:
+                    # Treat as do-while or robust while(1) loop
+                    loop_exits = set()
+                    for bid in loop_info.body_blocks:
+                        b = next((x for x in self.blocks if x.id == bid), None)
+                        if b:
+                            for s in b.successors:
+                                if s.id not in loop_info.body_blocks:
+                                    loop_exits.add(s.id)
+                    
+                    exit_block = None
+                    if loop_exits:
+                        exit_block_id = list(loop_exits)[0]
+                        exit_block = next((x for x in self.blocks if x.id == exit_block_id), None)
+                    
+                    loop_stops = stop_blocks.copy()
+                    if exit_block: 
+                        loop_stops.add(exit_block.id)
+
+                    next_loop_exits = active_loop_exits.copy()
+                    for e in loop_exits:
+                        next_loop_exits.add(e)
+
+                    # Extract the condition of the single-block do-while if possible to maintain old style
+                    if len(loop_info.body_blocks) == 1:
+                        cond_str = self._extract_condition(curr)
                         body_reg = SeqRegion([BlockRegion(curr)])
                         seq.regions.append(DoWhileRegion(body_reg, cond_str))
-
+                    else:
+                        # Multi-block robust while(1) processing
+                        loop_stops.add(curr.id)
+                        next_path_stack = path_stack.copy()
+                        body_region = self._build_region(curr, loop_stops, processed_loops.copy(), next_path_stack, next_loop_exits)
+                        seq.regions.append(LoopRegion(curr, body_region, "1"))
+                        
                     curr = exit_block
                 else:
                     cond_str = self._extract_condition(curr)
@@ -570,17 +609,17 @@ class FlowStructurer:
                 then_reg = SeqRegion()
                 else_reg = None
 
-                if true_block and true_block.id not in branch_stops:
-                    # 修改为强制拷贝 processed_loops
-                    # [传递防爆盾] 以及出口名单
-                    # then_reg = self._build_region(true_block, branch_stops, processed_loops, next_path_stack, active_loop_exits)
-                    then_reg = self._build_region(true_block, branch_stops, processed_loops.copy(), next_path_stack,
-                                                  active_loop_exits)
-                if false_block and false_block.id not in branch_stops:
-                    # [传递防爆盾] 以及出口名单
-                    # else_reg = self._build_region(false_block, branch_stops, processed_loops, next_path_stack, active_loop_exits)
-                    else_reg = self._build_region(false_block, branch_stops, processed_loops.copy(), next_path_stack,
-                                                  active_loop_exits)
+                if true_block:
+                    if true_block.id in active_loop_exits:
+                        then_reg.regions.append(BreakRegion())
+                    elif true_block.id not in branch_stops:
+                        then_reg = self._build_region(true_block, branch_stops, processed_loops.copy(), next_path_stack, active_loop_exits)
+                        
+                if false_block:
+                    if false_block.id in active_loop_exits:
+                        else_reg = SeqRegion([BreakRegion()])
+                    elif false_block.id not in branch_stops:
+                        else_reg = self._build_region(false_block, branch_stops, processed_loops.copy(), next_path_stack, active_loop_exits)
 
                 seq.regions.append(BlockRegion(curr))
                 seq.regions.append(IfRegion(curr, then_reg, else_reg, cond_str, is_iff=is_iff))

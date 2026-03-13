@@ -1,0 +1,5 @@
+# asm is only for testing purpose
+*.asm linguist-generated=true
+
+# ignore whole test/data
+test/data/** linguist-vendored

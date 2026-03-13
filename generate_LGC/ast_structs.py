@@ -48,9 +48,12 @@ class UnaryOpNode(ASTNode):
     is_postfix: bool = False  # 区分 ++i 和 i++
 
     def to_code(self) -> str:
+        op_code = self.operand.to_code()
+        if isinstance(self.operand, AssignNode):
+            op_code = f"({op_code})"
         if self.is_postfix:
-            return f"({self.operand.to_code()}{self.op})"
-        return f"({self.op}{self.operand.to_code()})"
+            return f"({op_code}{self.op})"
+        return f"({self.op}{op_code})"
 
 
 @dataclass
@@ -60,7 +63,15 @@ class BinaryOpNode(ASTNode):
     right: ASTNode
 
     def to_code(self) -> str:
-        return f"({self.left.to_code()} {self.op} {self.right.to_code()})"
+        l_code = self.left.to_code()
+        if isinstance(self.left, AssignNode):
+            l_code = f"({l_code})"
+            
+        r_code = self.right.to_code()
+        if isinstance(self.right, AssignNode):
+            r_code = f"({r_code})"
+            
+        return f"({l_code} {self.op} {r_code})"
 
 
 @dataclass
@@ -80,7 +91,10 @@ class ArrayAccessNode(ASTNode):
     index: ASTNode
 
     def to_code(self) -> str:
-        return f"{self.array.to_code()}[{self.index.to_code()}]"
+        array_code = self.array.to_code()
+        if isinstance(self.array, AssignNode):
+            array_code = f"({array_code})"
+        return f"{array_code}[{self.index.to_code()}]"
 
 
 @dataclass
@@ -89,7 +103,10 @@ class CastNode(ASTNode):
     operand: ASTNode
 
     def to_code(self) -> str:
-        return f"({self.target_type}){self.operand.to_code()}"
+        op_code = self.operand.to_code()
+        if isinstance(self.operand, AssignNode):
+            op_code = f"({op_code})"
+        return f"({self.target_type}){op_code}"
 
 
 # ==========================================

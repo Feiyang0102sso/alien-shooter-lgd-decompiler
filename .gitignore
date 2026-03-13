@@ -30,11 +30,11 @@ dist/
 *.c
 
 # --- allow test data ---
-!test/**/data/
-!test/**/data/*.lgd
-!test/**/data/*.csv
-!test/**/data/*.asm
-!test/**/data/LGC/*.lgc
+!tests/**/data/
+!tests/**/data/*.lgd
+!tests/**/data/*.csv
+!tests/**/data/*.asm
+!tests/**/data/LGC/*.lgc
 
 
 

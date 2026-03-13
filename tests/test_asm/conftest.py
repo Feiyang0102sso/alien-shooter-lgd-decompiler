@@ -9,8 +9,8 @@ import pytest
 from pathlib import Path
 
 
-from test.test_utils import wait_and_cleanup
-from test.test_asm.test_asm_util import run_pipeline_to_asm, parse_asm_file
+from tests.test_utils import wait_and_cleanup
+from tests.test_asm.test_asm_util import run_pipeline_to_asm, parse_asm_file
 
 # datas
 ROOT_DIR = Path(__file__).resolve().parent

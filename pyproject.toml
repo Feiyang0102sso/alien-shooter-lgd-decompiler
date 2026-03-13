@@ -19,5 +19,5 @@ packages = [
 
 [tool.pytest.ini_options]
 addopts = "-v --tb=short --show-capture=no"
-testpaths = ["test"]
+testpaths = ["tests"]
 pythonpath = ["."]

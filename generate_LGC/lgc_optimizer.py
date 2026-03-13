@@ -1,6 +1,7 @@
 """
 generate_LGC/lgc_optimizer.py
 负责对反编译生成的伪代码进行文本级别的后处理和优化。
+这些优化是必须的，因为没他们代码会有错误
 """
 
 from logger import logger
