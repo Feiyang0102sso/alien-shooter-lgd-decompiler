@@ -1,4 +1,4 @@
-# LgdDecompiler V 0.2.0
+# LgdDecompiler V 0.3.0
 
 🌍 **Language / 语言**
 
@@ -11,6 +11,12 @@
 
 ### Changelog
 
+- **v0.3.0 (2026-03-13):**
+  - Fixed the `do-while` infinite loop issue in the control flow.
+  - Fixed the logical error caused by nested assignment anomalies.
+  - **Known Fixes (*Note: All based on Alien Shooter Last Hope*):**
+    - Fixed the issue where survival mode gets stuck.
+    - Fixed the issue where monsters do not drop any loot
 - **v0.2.0 (2026-03-09):**
   - Added `stop_on_error` option and optimized error handling logic.
   - Optimized CSV export and LGC decompilation logic for `extern` functions to appropriately record parameter counts and states.
@@ -19,7 +25,7 @@
     - Fixed crash when clicking the mission success button in campaign mode.
     - Fixed random "Loading" icon appearing on campaign mode maps.
     - Fixed monster indicator arrow appearing only once.
-- **v0.1.0 (Initial Release):** Initial release.
+- **v0.1.0 (2026-02-24):** Initial release.
 
 ### lgd Manual
 
@@ -86,58 +92,6 @@ LgdDecompiler/
 └── test/                       # Test suites
 ```
 
-### Known Bugs
-
-Since this is an early v0.1.0 release, there are quite a few bugs. Currently, the decompiler barely reaches the point where the script can compile and load into the game.
-
-#### 1. Survival Mode Inevitable Crash
-
-- **Scenario 1:** Crashes immediately upon clicking the start button.
-
-![survive_bug1](./README.assets/survive_bug1.gif)
-
-- **Scenario 2:** Enters the game, but crashes immediately upon pressing ESC.
-
-![survive_bug2](./README.assets/survive_bug2.gif)
-
-- **Scenario 3:** Enters the game, successfully returns to the menu via ESC, but crashes shortly after.
-
-![survive_bug3](./README.assets/survive_bug3.gif)
-
-> **⚠️ Note:** After the crash, the program process will hang in the background and must be terminated manually via Task Manager.
->
-> ![image-20260222221955389](./README.assets/image-20260222221955389.png)
-
-#### 2. Crash After Mission Completion
-
-This is a random event, possibly related to runtime duration or whether screen recording is active. It might crash immediately after clicking the clear-stage button, shortly after entering the next level, or after powering up and returning to the main menu. The first scenario is the most frequent.
-
-![complete_bug1](./README.assets/complete_bug1.gif)
-
-**Crash Logs:**
-
-```bash
-# Crash immediately after clicking the button
-[E] 16:10:01.399 - [thread_2] Unexpected action: 120,  nVid = 0 in 'int __thiscall SPRITE::Action(int,int,int,int)' <H:\repository\sources\sprite.cpp> at 2872
-[E] 16:10:01.470 - [thread_2] SCRIPT Can't find variable "Action589943" in 'int __thiscall SCRIPT::GetVariableActionInt(unsigned int)' <H:\repository\sources\script.cpp> at 318
-[E] 16:10:01.470 - [thread_2] SCRIPT Can't find variable "Action589943" for SetVariableActionInt in 'void __thiscall SCRIPT::SetVariableActionInt(unsigned int,int)' <H:\repository\sources\script.cpp> at 334
-[E] 16:10:01.470 - [thread_2] Reference count non zero after delete -1,  nvid = 504 in '__thiscall SPRITE::~SPRITE(void)' <H:\repository\sources\sprite.cpp> at 463
-
-# Crash after entering the next level
-[I] 17:02:35.155 - [thread_2] Start to load map "maps\shop.map"
-...
-[E] 17:02:35.161 - [thread_2] Can't load menu ini: maps\shop.ini in 'void __thiscall MENU::fillMorphingList(const class STRING &)' <H:\repository\sources\menu.cpp> at 456
-```
-
-#### 3. Monster Indicator Arrow Logic Error
-
-The arrow cannot point to monsters dynamically. It currently spawns fixed on the ground and disappears only after all monsters are cleared. *Fix priority:* Moderate. Should be patchable by porting the logic from the *Lost City* version.
-
-#### 4. Lingering "Loading" Text on Maps
-
-A "Loading" string occasionally gets stuck at fixed coordinates on the map. Suspected to be present in every level (confirmed on the first two levels).
-
-![image-20260222232902621](./README.assets/image-20260222232902621.png)
 
 ------
 
@@ -145,6 +99,12 @@ A "Loading" string occasionally gets stuck at fixed coordinates on the map. Susp
 
 ### 更新日志
 
+- **v0.3.0 (2026-03-13):**
+  - 修复了控制流中造成`do-while`死循环的问题。
+  - 修复了嵌套赋值异常造成的逻辑谬误。
+  - **已知修复（*注：均以 Alien Shooter Last Hope 为准*）：**
+    - 修复生存模式会卡死的问题。
+    - 修复怪物不掉落装备的问题。
 - **v0.2.0 (2026-03-09):**
   - 添加 `stop_on_error` 选项，并且优化 error 处理逻辑。
   - 优化 csv 导出和 lgc 反编译时处理 extern 函数的逻辑，现在可以记录它们的参数数量等状态。
@@ -153,7 +113,7 @@ A "Loading" string occasionally gets stuck at fixed coordinates on the map. Susp
     - 修复战役模式点击通关按钮闪退的问题。
     - 修复战役模式地图中随机出现 loading 图标的问题。
     - 修复指向怪物的箭头只能出现一次的问题。
-- **v0.1.0 (首发版本):** 初始发布 (Initial release)。
+- **v0.1.0 (2026-02-24):** 初始发布 (Initial release)。
 
 ### lgd文档
 
@@ -221,55 +181,3 @@ LgdDecompiler/
 └── test/                       # 测试套件
 ```
 
-### 已知 BUG
-
-由于目前还是早期 0.1.0 版本，Bug 还比较多，目前仅能堪堪做到编译通过并且能挂载进游戏的地步。
-
-#### 1. 生存模式必定闪退
-
-- **情况 1：** 点击按钮后立刻崩溃。
-
-![survive_bug1](./README.assets/survive_bug1.gif)
-
-- **情况 2：** 进入游戏后，点击 ESC 立刻崩溃。
-
-![survive_bug2](./README.assets/survive_bug2.gif)
-
-- **情况 3：** 进入后点击 ESC 成功返回菜单，但停留一段时间后闪退。
-
-![survive_bug3](./README.assets/survive_bug3.gif)
-
-> **⚠️ 注意：** 闪退后程序会在后台幽灵挂载，需要打开任务管理器手动终止。
->
-> ![image-20260222221955389](./README.assets/image-20260222221955389.png)
-
-#### 2. 点击完成任务后闪退
-
-这是一个概率事件，可能和游戏运行时长有关，也有可能和是否开启了录屏有关。 有可能在点击通关按钮时立刻闪退，也可能在进入下一关一段时间后闪退，或者在升级加点后点击 main menu 时闪退。其中第一种情况发生概率最高。
-
-![complete_bug1](./README.assets/complete_bug1.gif)
-
-**崩溃日志参考：**
-
-```bash
-# 点击按钮后立刻报错
-[E] 16:10:01.399 - [thread_2] Unexpected action: 120,  nVid = 0 in 'int __thiscall SPRITE::Action(int,int,int,int)' <H:\repository\sources\sprite.cpp> at 2872
-[E] 16:10:01.470 - [thread_2] SCRIPT Can't find variable "Action589943" in 'int __thiscall SCRIPT::GetVariableActionInt(unsigned int)' <H:\repository\sources\script.cpp> at 318
-[E] 16:10:01.470 - [thread_2] SCRIPT Can't find variable "Action589943" for SetVariableActionInt in 'void __thiscall SCRIPT::SetVariableActionInt(unsigned int,int)' <H:\repository\sources\script.cpp> at 334
-[E] 16:10:01.470 - [thread_2] Reference count non zero after delete -1,  nvid = 504 in '__thiscall SPRITE::~SPRITE(void)' <H:\repository\sources\sprite.cpp> at 463
-
-# 进入下一关后报错
-[I] 17:02:35.155 - [thread_2] Start to load map "maps\shop.map"
-...
-[E] 17:02:35.161 - [thread_2] Can't load menu ini: maps\shop.ini in 'void __thiscall MENU::fillMorphingList(const class STRING &)' <H:\repository\sources\menu.cpp> at 456
-```
-
-#### 3. 指向怪物的箭头逻辑有误
-
-目前的脚本无法动态指向怪物。它只会在地上创建一个固定的箭头，并在全部杀完怪后才消失。 *修复思路：* 难度不大，后续可以从 *Lost City* 版本的源码中抄一份逻辑过来打补丁。
-
-#### 4. 地图上会残留 Loading 字样
-
-疑似被硬编码打在了某个地图的固定坐标上，可能会在每一个地图中都有出现（只仔细验证了前两关的地图，均存在此问题，后续关卡待确认）。
-
-![image-20260222232902621](./README.assets/image-20260222232902621.png)
