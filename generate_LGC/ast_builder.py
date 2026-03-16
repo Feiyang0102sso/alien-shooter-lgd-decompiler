@@ -220,9 +220,13 @@ class ASTBuilder:
                         if isinstance(top, (AssignNode, CallExprNode, UnaryOpNode)):
                             statements.append(ExprStmtNode(top))
                         else:
-                            statements.append(AssignNode("Stack_Out", top))
-                            logger.error_and_stop(
-                                f"[AST-BUILDER] Stack_Out Triggered in '{self.current_method_name}'! Overflow at Addr: 0x{self.current_offset:X} | Instr: {self.current_mnemonic}")
+                            # 宏展开导致的孤儿表达式，将其降级为 Warning 并转为注释
+                            # statements.append(AssignNode("Stack_Out", top))
+                            # logger.error_and_stop(
+                            #     f"[AST-BUILDER] Stack_Out Triggered in '{self.current_method_name}'! Overflow at Addr: 0x{self.current_offset:X} | Instr: {self.current_mnemonic}")
+                            logger.warning(
+                                f"[AST-BUILDER] Orphaned expression (Stack_Out) in '{self.current_method_name}' at 0x{self.current_offset:X}. Ignored and commented out.")
+                            statements.append(CommentNode(f"WARNING: Orphaned expression -> Stack_Out = {top.to_code()}"))
 
                     if mne == 'LINE_NUM':
                         statements.append(LineNumNode(int(ops[0], 0)))
@@ -243,9 +247,13 @@ class ASTBuilder:
             if isinstance(top, (AssignNode, CallExprNode, UnaryOpNode)):
                 statements.append(ExprStmtNode(top))
             else:
-                statements.append(AssignNode("Stack_Out", top))
-                logger.error_and_stop(
-                    f"[AST-BUILDER] Stack_Out Triggered in '{self.current_method_name}'! Overflow at Addr: 0x{self.current_offset:X} | Instr: {self.current_mnemonic}")
+                # 宏展开导致的孤儿表达式，将其降级为 Warning 并转为注释
+                # statements.append(AssignNode("Stack_Out", top))
+                # logger.error_and_stop(
+                #     f"[AST-BUILDER] Stack_Out Triggered in '{self.current_method_name}'! Overflow at Addr: 0x{self.current_offset:X} | Instr: {self.current_mnemonic}")
+                logger.warning(
+                    f"[AST-BUILDER] Orphaned expression (Stack_Out) in '{self.current_method_name}' at 0x{self.current_offset:X}. Ignored and commented out.")
+                statements.append(CommentNode(f"WARNING: Orphaned expression -> Stack_Out = {top.to_code()}"))
 
         return statements
 
