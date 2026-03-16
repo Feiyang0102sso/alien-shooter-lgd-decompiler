@@ -28,6 +28,8 @@ class LgcContext:
         self.func_params: Dict[str, List[str]] = {}
         # 函数局部变量列表字典: {"FuncName": ["int local0;", "static int local1 = 0;"]}
         self.func_locals: Dict[str, List[str]] = {}
+        # 非static局部数组元数据: {"FuncName": [{"name": "main_local16", "start_index": 16, "size": 6, "type": "int"}, ...]}
+        self.func_local_arrays: Dict[str, List[Dict]] = {}
 
         # 引入专用的 Header 管理器
         self.header_manager = LgcHeaderManager()
@@ -176,6 +178,7 @@ class LgcContext:
                     decl = ""
                     if is_array:
                         if is_init and raw_val not in ('N/A', ''):
+                            # static 数组：有预设初始值
                             try:
                                 val_list = json.loads(raw_val)
                                 formatted_vals = []
@@ -191,8 +194,24 @@ class LgcContext:
                             except json.JSONDecodeError as e:
                                 logger.error_and_stop(f"[LGC-CONTEXT] LOCAL_VAR array JSON decode error at row {row_idx} ({name}): {e}")
                                 decl = f"static {l_type} {local_name}[{size_str}]; // Parse Init failed"
-                        else:
+                        elif is_init:
+                            # static 数组：已初始化但无具体值
                             decl = f"static {l_type} {local_name}[{size_str}];"
+                        else:
+                            # 非 static 数组：未初始化，编译器会在函数体中逐元素赋值
+                            decl = f"{l_type} {local_name}[{size_str}];"
+                            # 从变量名提取 local index（如 local7 -> 7）
+                            # 注意：不能用 P1_Index，它是全局变量表索引，与变量名后缀不一致
+                            local_suffix = name.split('@')[1].replace("local", "")
+                            arr_meta = {
+                                "name": local_name,
+                                "start_index": int(local_suffix) if local_suffix.isdigit() else -1,
+                                "size": int(size_str) if size_str.isdigit() else 0,
+                                "type": l_type,
+                            }
+                            if func_part not in self.func_local_arrays:
+                                self.func_local_arrays[func_part] = []
+                            self.func_local_arrays[func_part].append(arr_meta)
                     else:
                         if is_init and raw_val not in ('N/A', ''):
                             if l_type == 'string' and not raw_val.startswith('"'):

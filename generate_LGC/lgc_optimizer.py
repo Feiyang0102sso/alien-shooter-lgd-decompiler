@@ -48,3 +48,107 @@ class LgcOptimizer:
             logger.warning(f"[LGC-OPTIMIZER] mark end of function 'return;' detected in {method_name}(), commented out.")
 
         return "\n".join(lines)
+
+    @staticmethod
+    def merge_array_element_assigns(pseudo_code: str, local_arrays: list, func_name: str) -> tuple:
+        """
+        提取非 static 数组的逐元素赋值，从函数体中移除，并返回初始化值映射。
+
+        编译器会把非 static 局部数组的每个元素当作独立变量逐个赋值，例如：
+            main_local16 = 1;
+            main_local17 = 2;
+        本方法将这些赋值行从函数体中删除，并返回 {数组名: 初始化字符串} 映射表，
+        由调用方合并到变量声明区。同时去重因移除赋值而产生的连续重复 line 注释。
+
+        :param pseudo_code: 伪代码字符串
+        :param local_arrays: 非 static 数组元数据列表，每项包含 name/start_index/size/type
+        :param func_name: 函数名（用于构造变量名前缀）
+        :return: (修改后的伪代码, {数组名: "{ val1, val2, ... }"})
+        """
+        if not pseudo_code or not local_arrays:
+            return pseudo_code, {}
+
+        # 构建 element_index -> array_meta 的映射
+        element_to_array = {}
+        for arr in local_arrays:
+            start = arr["start_index"]
+            size = arr["size"]
+            for offset in range(size):
+                element_to_array[start + offset] = arr
+
+        # 第一遍：移除数组元素赋值行，收集初始化值
+        lines = pseudo_code.split("\n")
+        kept_lines = []
+        array_inits = {}
+
+        for line in lines:
+            stripped = line.strip()
+            arr_meta = LgcOptimizer._match_array_element_assign(stripped, func_name, element_to_array)
+
+            if arr_meta is None:
+                kept_lines.append(line)
+                continue
+
+            # 数组元素赋值 -> 收集值，不输出此行
+            arr_name = arr_meta["name"]
+            value = LgcOptimizer._extract_assign_value(stripped)
+            if arr_name not in array_inits:
+                array_inits[arr_name] = []
+            array_inits[arr_name].append(value)
+
+        # 第二遍：去重连续重复的 line 注释（如多个 // --- Line 7 ---）
+        result = []
+        prev_stripped = None
+        for line in kept_lines:
+            stripped = line.strip()
+            is_line_comment = stripped.startswith("// --- Line") and stripped.endswith("---")
+            if is_line_comment and stripped == prev_stripped:
+                continue
+            prev_stripped = stripped if is_line_comment else None
+            result.append(line)
+
+        # 格式化初始化值字符串
+        if array_inits:
+            merged_names = ", ".join(array_inits.keys())
+            logger.debug(f"[LGC-OPTIMIZER] Merged element assigns into declarations for: {merged_names} in {func_name}()")
+
+        formatted_inits = {}
+        for name, values in array_inits.items():
+            init_str = ", ".join(values)
+            formatted_inits[name] = f"{{ {init_str} }}"
+
+        return "\n".join(result), formatted_inits
+
+    @staticmethod
+    def _match_array_element_assign(stripped: str, func_name: str, element_to_array: dict):
+        """
+        判断一行是否是数组元素赋值语句（如 main_local16 = 1;）。
+        如果是，返回对应的数组元数据；否则返回 None。
+        """
+        if "=" not in stripped or not stripped.endswith(";"):
+            return None
+
+        parts = stripped.split("=", 1)
+        var_name = parts[0].strip()
+
+        prefix = f"{func_name}_local"
+        if not var_name.startswith(prefix):
+            return None
+
+        suffix = var_name[len(prefix):]
+        if not suffix.isdigit():
+            return None
+
+        idx = int(suffix)
+        return element_to_array.get(idx)
+
+    @staticmethod
+    def _extract_assign_value(stripped: str) -> str:
+        """从赋值语句中提取右值。例如 'main_local16 = 1;' -> '1'"""
+        parts = stripped.split("=", 1)
+        if len(parts) != 2:
+            return None
+        value = parts[1].strip()
+        if value.endswith(";"):
+            value = value[:-1].strip()
+        return value

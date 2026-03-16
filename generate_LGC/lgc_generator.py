@@ -89,18 +89,29 @@ class LgcGenerator:
                 # 4.4 调用优化器清理双分号与无意义的占位返回
                 pseudo_code = LgcOptimizer.optimize(raw_pseudo_code, method.name)
 
-                # 4.5 写入函数签名（包含从 Context 中获取的带默认值的参数）
+                # 4.5 合并非 static 数组的逐元素赋值，从函数体中移除并收集初始化值
+                arr_metas = context.func_local_arrays.get(method.name, [])
+                array_inits = {}
+                if arr_metas:
+                    pseudo_code, array_inits = LgcOptimizer.merge_array_element_assigns(pseudo_code, arr_metas, method.name)
+
+                # 4.6 写入函数签名（包含从 Context 中获取的带默认值的参数）
                 params = context.func_params.get(method.name, [])
                 out_f.write(f"{method.name}({', '.join(params)})\n{{\n")
 
-                # 4.6 写入当前函数的局部变量（包含静态初始化数组等）
+                # 4.7 写入当前函数的局部变量，并将非 static 数组的初始化值合并到声明中
                 locals_list = context.func_locals.get(method.name, [])
                 if locals_list:
                     for loc_decl in locals_list:
+                        for arr_name, init_str in array_inits.items():
+                            marker = f"{arr_name}["
+                            if marker in loc_decl and loc_decl.rstrip().endswith(";"):
+                                loc_decl = loc_decl.rstrip()[:-1] + f" = {init_str};"
+                                break
                         out_f.write(f"    {loc_decl}\n")
                     out_f.write("\n")
 
-                # 4.7 写入反编译后清洗过的核心逻辑体
+                # 4.8 写入反编译后清洗过的核心逻辑体
                 if pseudo_code.strip():
                     out_f.write(pseudo_code + "\n")
 

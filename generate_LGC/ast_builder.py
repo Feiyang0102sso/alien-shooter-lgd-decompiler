@@ -221,6 +221,8 @@ class ASTBuilder:
                             statements.append(ExprStmtNode(top))
                         else:
                             statements.append(AssignNode("Stack_Out", top))
+                            logger.error_and_stop(
+                                f"[AST-BUILDER] Stack_Out Triggered in '{self.current_method_name}'! Overflow at Addr: 0x{self.current_offset:X} | Instr: {self.current_mnemonic}")
 
                     if mne == 'LINE_NUM':
                         statements.append(LineNumNode(int(ops[0], 0)))
@@ -242,6 +244,8 @@ class ASTBuilder:
                 statements.append(ExprStmtNode(top))
             else:
                 statements.append(AssignNode("Stack_Out", top))
+                logger.error_and_stop(
+                    f"[AST-BUILDER] Stack_Out Triggered in '{self.current_method_name}'! Overflow at Addr: 0x{self.current_offset:X} | Instr: {self.current_mnemonic}")
 
         return statements
 

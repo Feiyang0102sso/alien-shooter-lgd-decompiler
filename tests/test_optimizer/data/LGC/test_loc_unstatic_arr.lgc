@@ -1,0 +1,21 @@
+main(){
+	int val = 100;
+	static int stVal = 100;
+	
+	
+	static int intArray[] = {1,2,3,4};
+	static int intArray2[10];
+	int loc_iVarArr1[] = {1, 2, 3, 4, 5, 6};
+    int loc_iVarArr2[10] = {1, 2, 3, 4, 5, 6};
+	
+	
+	static string strAttay[] = {"111", "222", "333"};
+	static string strAttay2[10];
+	string loc_sVarArr1[] = {"111", "222", "333"};
+	string loc_sVarArr2[10];
+	
+	val = 50;
+	stVal = 150;
+	
+	loc_iVarArr1[1] = 100;
+}
