@@ -136,16 +136,7 @@ class IfRegion(Region):
         # 3. 处理正常的 else / else if 逻辑
         # ==========================================
         if self.else_region and isinstance(self.else_region, SeqRegion):
-
-            # [修复]: 避免对复合 Region 进行 to_code(0) 深层展开，防止 O(2^N) 性能爆炸！
-            valid_regs = []
-            for r in self.else_region.regions:
-                if isinstance(r, BlockRegion):
-                    if r.to_code(0).strip():  # 只有基本块才需要试探性生成看是不是空的
-                        valid_regs.append(r)
-                else:
-                    # 对于 IfRegion, LoopRegion 等复合结构，认为其一定有内容，直接纳入
-                    valid_regs.append(r)
+            valid_regs = [r for r in self.else_region.regions if str(r.to_code(0)).strip()]
 
             # 识别 Else-If 链
             if len(valid_regs) == 1 and isinstance(valid_regs[0], IfRegion):
@@ -605,41 +596,30 @@ class FlowStructurer:
                     curr = exit_block
                 continue
 
-
             elif len(curr.successors) > 1:
-                true_block, false_block = self._get_true_false_blocks(curr)
-                # ==========================================
-                # [终极修复]: 启用结构化启发式合并探测
-                # ==========================================
-                t_id = true_block.id if true_block else None
-                f_id = false_block.id if false_block else None
-                merge_id = None
-                if t_id is not None and f_id is not None:
-                    merge_id = self._find_structural_merge(curr.id, t_id, f_id)
-                else:
-                    merge_id = self.ipdom.get(curr.id)
-
+                merge_id = self.ipdom.get(curr.id)
                 branch_stops = stop_blocks.copy()
-                if merge_id is not None:
-                    branch_stops.add(merge_id)
+                if merge_id is not None: branch_stops.add(merge_id)
+
+                true_block, false_block = self._get_true_false_blocks(curr)
                 cond_str = self._extract_condition(curr)
                 last_instr = next((i for i in reversed(curr.instructions) if i.mnemonic != 'LINE_NUM'), None)
                 is_iff = last_instr and last_instr.mnemonic == 'IFF'
+
                 then_reg = SeqRegion()
                 else_reg = None
+
                 if true_block:
                     if true_block.id in active_loop_exits:
                         then_reg.regions.append(BreakRegion())
                     elif true_block.id not in branch_stops:
-                        then_reg = self._build_region(true_block, branch_stops, processed_loops.copy(), next_path_stack,
-                                                      active_loop_exits)
-
+                        then_reg = self._build_region(true_block, branch_stops, processed_loops.copy(), next_path_stack, active_loop_exits)
+                        
                 if false_block:
                     if false_block.id in active_loop_exits:
                         else_reg = SeqRegion([BreakRegion()])
                     elif false_block.id not in branch_stops:
-                        else_reg = self._build_region(false_block, branch_stops, processed_loops.copy(),
-                                                      next_path_stack, active_loop_exits)
+                        else_reg = self._build_region(false_block, branch_stops, processed_loops.copy(), next_path_stack, active_loop_exits)
 
                 seq.regions.append(BlockRegion(curr))
                 seq.regions.append(IfRegion(curr, then_reg, else_reg, cond_str, is_iff=is_iff))
@@ -663,50 +643,3 @@ class FlowStructurer:
                 curr = curr.successors[0] if curr.successors else None
 
         return seq
-
-    def _find_structural_merge(self, curr_id: int, t_id: int, f_id: int) -> Optional[int]:
-        """
-        [防爆盾核心] 启发式寻找物理合并点。
-        绕过提前 return 破坏的后向支配树，强制寻找最接近的物理合并块，防止 AST 生成时的指数级裂变。
-        """
-        block_map = {b.id: b for b in self.blocks}
-
-        # 1. 探索 True 分支的前向可达块
-        t_reachable = {t_id}
-        queue = [t_id]
-        while queue:
-            curr = queue.pop(0)
-            block = block_map.get(curr)
-            if block:
-                for s in block.successors:
-                    # 仅前向探索，避免陷入死循环背边
-                    if s.id not in t_reachable and s.start_offset > block.start_offset:
-                        t_reachable.add(s.id)
-                        queue.append(s.id)
-
-        if f_id in t_reachable:
-            return f_id  # True 分支会掉落到 False 分支 (这是一个纯粹的 If-Then)
-
-        # 2. 探索 False 分支的前向可达块
-        f_reachable = {f_id}
-        queue = [f_id]
-        while queue:
-            curr = queue.pop(0)
-            block = block_map.get(curr)
-            if block:
-                for s in block.successors:
-                    if s.id not in f_reachable and s.start_offset > block.start_offset:
-                        f_reachable.add(s.id)
-                        queue.append(s.id)
-
-        if t_id in f_reachable:
-            return t_id  # 倒置的条件
-
-        # 3. 如果都没有直接掉落，寻找最近的共同交点
-        intersection = t_reachable.intersection(f_reachable)
-        if intersection:
-            # 找到在汇编物理布局上最接近两者的交点
-            return min(intersection, key=lambda x: block_map[x].start_offset)
-
-        # 实在找不到，只能回退求助 ipdom
-        return self.ipdom.get(curr_id)

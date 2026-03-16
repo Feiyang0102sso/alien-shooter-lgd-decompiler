@@ -14,6 +14,7 @@
 - **v0.3.0 (2026-03-13):**
   - Fixed the `do-while` infinite loop issue in the control flow.
   - Fixed the logical error caused by nested assignment anomalies.
+  - Fixed the Stack_In error in  `&&` `||`caused by unused `#ifdef`
   - **Known Fixes (*Note: All based on Alien Shooter Last Hope*):**
     - Fixed the issue where survival mode gets stuck.
     - Fixed the issue where monsters do not drop any loot
@@ -102,6 +103,7 @@ LgdDecompiler/
 - **v0.3.0 (2026-03-13):**
   - 修复了控制流中造成`do-while`死循环的问题。
   - 修复了嵌套赋值异常造成的逻辑谬误。
+  - 修复了由未使用的 `#ifdef` 引起的 `&&` `||` 中的 Stack_In 错误
   - **已知修复（*注：均以 Alien Shooter Last Hope 为准*）：**
     - 修复生存模式会卡死的问题。
     - 修复怪物不掉落装备的问题。
