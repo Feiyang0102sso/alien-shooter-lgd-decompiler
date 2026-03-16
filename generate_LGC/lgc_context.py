@@ -19,8 +19,9 @@ class LgcContext:
 
     def __init__(self):
         """初始化上下文，准备各类映射表，并实例化 Header 管理器。"""
-        # 外部函数映射表: {Extern_ID: (Name, Size)}
-        self.ext_map: Dict[int, Tuple[str, int]] = {}
+        # 外部函数映射表: {Extern_ID: [(Name, Size), ...]}
+        # 同一个 Extern_ID 可能对应多个不同名/不同参数的 extern 函数
+        self.ext_map: Dict[int, List[Tuple[str, int]]] = {}
         # 内部函数映射表: {Global_ID: Name}
         self.func_map: Dict[int, str] = {}
 
@@ -79,7 +80,9 @@ class LgcContext:
 
                         ext_id = int(ext_id_str)
                         size_int = int(size_str) if size_str.isdigit() else 1
-                        self.ext_map[ext_id] = (name, size_int)
+                        if ext_id not in self.ext_map:
+                            self.ext_map[ext_id] = []
+                        self.ext_map[ext_id].append((name, size_int))
 
                         # 参数推迟到所有的 PARAM 行解析完毕后，集中生成 EXTERN 文件头
                         if name not in self.func_params:
@@ -231,6 +234,7 @@ class LgcContext:
 
         # 在所有的 CSV 行解析完毕后，集中生成 EXTERN 文件头
         # 此时已经拿到了所有的 PARAM 参数（如果有），带上了初始值
-        for ext_id, (name, size_int) in self.ext_map.items():
-            params = self.func_params.get(name, [])
-            self.header_manager.add_extern(f"extern {name}({', '.join(params)}) {ext_id};")
+        for ext_id, entries in self.ext_map.items():
+            for name, size_int in entries:
+                params = self.func_params.get(name, [])
+                self.header_manager.add_extern(f"extern {name}({', '.join(params)}) {ext_id};")

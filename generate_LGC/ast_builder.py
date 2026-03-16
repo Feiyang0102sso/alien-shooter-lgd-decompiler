@@ -215,18 +215,35 @@ class ASTBuilder:
                     stack.append(CastNode(target_type, operand))
 
                 elif mne in ('COMMA', 'LINE_NUM'):
+                    # 提前过滤出真正合法的独立语句（如函数调用、赋值、i++）
+                    valid_stmts = []
+                    invalid_leftovers = []
+
                     while stack:
                         top = stack.pop()
                         if isinstance(top, (AssignNode, CallExprNode, UnaryOpNode)):
-                            statements.append(ExprStmtNode(top))
+                            valid_stmts.append(ExprStmtNode(top))
                         else:
-                            # 宏展开导致的孤儿表达式，将其降级为 Warning 并转为注释
-                            # statements.append(AssignNode("Stack_Out", top))
-                            # logger.error_and_stop(
-                            #     f"[AST-BUILDER] Stack_Out Triggered in '{self.current_method_name}'! Overflow at Addr: 0x{self.current_offset:X} | Instr: {self.current_mnemonic}")
+                            invalid_leftovers.append(top)
+
+                    # 将合法的语句反转（因为入栈出栈顺序）并加入到 statements
+                    statements.extend(reversed(valid_stmts))
+
+                    # === [智能降级防御机制] ===
+                    if invalid_leftovers:
+                        # 如果残留数量为 1，且是纯表达式，大概率是宏展开遗留，降级为 Warning
+                        if len(invalid_leftovers) == 1:
+                            orphan = invalid_leftovers[0]
                             logger.warning(
-                                f"[AST-BUILDER] Orphaned expression (Stack_Out) in '{self.current_method_name}' at 0x{self.current_offset:X}. Ignored and commented out.")
-                            statements.append(CommentNode(f"WARNING: Orphaned expression -> Stack_Out = {top.to_code()}"))
+                                f"[AST-BUILDER] Orphaned expression in '{self.current_method_name}' at 0x{self.current_offset:X}. Ignored and commented out.")
+                            statements.append(CommentNode(f"WARNING: Orphaned expression -> Stack_Out = {orphan.to_code()}"))
+                        else:
+                            # 如果残留超过 1 个，说明堆栈严重失衡（极大概率是函数参数个数配错了！）
+                            # 坚决不掩盖，立刻抛出 Error 终止运行！
+                            logger.error_and_stop(
+                                f"[AST-BUILDER] SEVERE Stack_Out in '{self.current_method_name}' at 0x{self.current_offset:X}! "
+                                f"Found {len(invalid_leftovers)} orphaned items. Check Function/EXT arguments arity!"
+                            )
 
                     if mne == 'LINE_NUM':
                         statements.append(LineNumNode(int(ops[0], 0)))
@@ -238,22 +255,43 @@ class ASTBuilder:
                 elif mne == 'RET':
                     ret_val = self._safe_pop(stack) if stack else None
                     statements.append(ReturnNode(ret_val))
+                # [新增]: 修复 AWAIT 指令未消耗条件导致的 Stack_Out
+                elif mne == 'AWAIT':
+                    # AWAIT 消耗栈顶作为等待条件，并将其转换为表达式语句
+                    # 稍后 flow_structurer 会将其包裹为 await(condition);
+                    cond = self._safe_pop(stack)
+                    statements.append(ExprStmtNode(cond))
 
             except Exception as e:
                 logger.error_and_stop(f"[AST-BUILDER] Error at 0x{instr.offset:X}: {e}")
 
+        # === 4. 处理 Block 结束时的残留堆栈 ===
+        valid_stmts = []
+        invalid_leftovers = []
+
         while stack:
             top = stack.pop()
             if isinstance(top, (AssignNode, CallExprNode, UnaryOpNode)):
-                statements.append(ExprStmtNode(top))
+                valid_stmts.append(ExprStmtNode(top))
             else:
-                # 宏展开导致的孤儿表达式，将其降级为 Warning 并转为注释
-                # statements.append(AssignNode("Stack_Out", top))
-                # logger.error_and_stop(
-                #     f"[AST-BUILDER] Stack_Out Triggered in '{self.current_method_name}'! Overflow at Addr: 0x{self.current_offset:X} | Instr: {self.current_mnemonic}")
+                invalid_leftovers.append(top)
+
+        statements.extend(reversed(valid_stmts))
+
+        # === [智能降级防御机制 - Block末尾] ===
+        if invalid_leftovers:
+            if len(invalid_leftovers) == 1:
+                orphan = invalid_leftovers[0]
                 logger.warning(
-                    f"[AST-BUILDER] Orphaned expression (Stack_Out) in '{self.current_method_name}' at 0x{self.current_offset:X}. Ignored and commented out.")
-                statements.append(CommentNode(f"WARNING: Orphaned expression -> Stack_Out = {top.to_code()}"))
+                    f"[AST-BUILDER] Orphaned expression at block end in '{self.current_method_name}'. Ignored and commented out."
+                )
+                statements.append(CommentNode(f"WARNING: Orphaned expression -> Stack_Out = {orphan.to_code()}"))
+            else:
+                # 如果一个Block结束时，栈上居然剩了不止1个元素，这是致命的解析失衡！
+                logger.error_and_stop(
+                    f"[AST-BUILDER] SEVERE Stack_Out at block end in '{self.current_method_name}'! "
+                    f"Found {len(invalid_leftovers)} orphaned items. Check Function/EXT arguments arity!"
+                )
 
         return statements
 

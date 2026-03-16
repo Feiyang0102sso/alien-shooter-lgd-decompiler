@@ -184,7 +184,11 @@ class LgdAsmRenderer:
             is_extern = (base_type == LgdDefinitions.BASE_EXTERN)
 
             self.p1_owner_map[sym.p1_idx] = base_name
-            if is_extern: self.extern_id_map[sym.meta] = base_name
+            if is_extern:
+                # 同一个 extern ID 可能对应多个函数（不同参数数量）
+                # 保留 arity 最大的那个作为 ASM 注释中的显示名
+                if sym.meta not in self.extern_id_map or sym.size > self.extern_id_map[sym.meta][1]:
+                    self.extern_id_map[sym.meta] = (base_name, sym.size)
 
             start_idx = sym.p1_idx
             end_idx = sorted_symbols_p1[i+1].p1_idx if i + 1 < len(sorted_symbols_p1) else total_p1_count
@@ -282,7 +286,7 @@ class LgdAsmRenderer:
 
         comment = ""
         if LgdOpcodes.MIN_EXT_OPCODE <= entry.opcode <= LgdOpcodes.MAX_EXT_OPCODE:
-            if entry.opcode in self.extern_id_map: comment = f"; {self.extern_id_map[entry.opcode]}"
+            if entry.opcode in self.extern_id_map: comment = f"; {self.extern_id_map[entry.opcode][0]}"
 
         if entry.opcode == 0x1D: comment = "; Iff Jump"
         elif entry.mnemonic == "LINE_NUM" and entry.operands: comment = f"; Code Line {entry.operands[0]}"

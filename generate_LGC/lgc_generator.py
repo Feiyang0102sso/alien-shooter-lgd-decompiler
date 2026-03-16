@@ -68,7 +68,10 @@ class LgcGenerator:
                 blocks = cfg_builder.build_cfg(method)
 
                 # 4.2 准备抽象语法树 (AST) 转换器
-                ast_builder = ASTBuilder(ext_def_map=context.ext_map, func_def_map=context.func_map)
+                # ext_map 是一对多结构，AST builder 需要扁平的一对一映射
+                # 取每个 ext_id 中 arity 最大的定义（参数多的是主调用，参数少的靠 DUMMY_ARG 过滤）
+                flat_ext_map = {eid: max(entries, key=lambda e: e[1]) for eid, entries in context.ext_map.items()}
+                ast_builder = ASTBuilder(ext_def_map=flat_ext_map, func_def_map=context.func_map)
 
                 for i, block in enumerate(blocks):
                     is_last = (i == len(blocks) - 1)
