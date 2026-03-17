@@ -48,7 +48,7 @@ class LgdAnalyzer:
                     entry = self.ctx.literal_table[current_idx]
 
                     # Use Offset to get accurate Flag Info
-                    info = LgdDefinitions.get_flag_info(entry.flag, offset=entry.offset)
+                    info = LgdDefinitions.get_flag_info(entry.flag, offset=entry.offset, is_old_version=self.ctx.is_old_version)
 
                     count = entry.id_size
                     is_array = "array" in info.get('mode', '')

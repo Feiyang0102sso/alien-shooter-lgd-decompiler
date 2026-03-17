@@ -36,6 +36,21 @@ class LgdDefinitions:
         0x8E: {"type": "int", "mode": "array_init"},
     }
 
+    # === [Old Version] Flag Definition ===
+    _OLD_FLAG_INFO = {
+        # uninitialized (0x40 bit set)
+        0xC1: {"type": "string", "mode": "def_only"},   # 0x80 | 0x40 | 0x01
+        0xC2: {"type": "int", "mode": "def_only"},      # 0x80 | 0x40 | 0x02
+        0xC5: {"type": "string", "mode": "array_def"},  # 0x80 | 0x40 | 0x04 | 0x01
+        0xC6: {"type": "int", "mode": "array_def"},     # 0x80 | 0x40 | 0x04 | 0x02
+
+        # initialized (matches new version flags but explicitly listed for clarity)
+        0x89: {"type": "string", "mode": "scalar"},     # 0x80 | 0x08 | 0x01
+        0x8A: {"type": "int", "mode": "scalar"},        # 0x80 | 0x08 | 0x02
+        0x8D: {"type": "string", "mode": "array_init"}, # 0x80 | 0x08 | 0x04 | 0x01
+        0x8E: {"type": "int", "mode": "array_init"},    # 0x80 | 0x08 | 0x04 | 0x02
+    }
+
     # === Base Types ===
     BASE_VARIABLE = 0x01
     BASE_EXTERN = 0x02
@@ -67,21 +82,25 @@ class LgdDefinitions:
     }
 
     @classmethod
-    def get_flag_info(cls, flag: int, offset: int = None) -> dict:
+    def get_flag_info(cls, flag: int, offset: int = None, is_old_version: bool = False) -> dict:
         """
         Get Flag Info
         :param flag: Flag vals
         :param offset: (optional) Flag Offset, used to locate warnings
+        :param is_old_version: Whether to use old version flag mapping
         """
-        if flag not in cls._FLAG_INFO:
+        info_map = cls._OLD_FLAG_INFO if is_old_version else cls._FLAG_INFO
+
+        if flag not in info_map:
             # construct logging info
             msg = f"[Definitions] Found undefined FLAG: 0x{flag:02X}"
             if offset is not None:
                 msg += f" @ Offset: 0x{offset:X}"  # with offset to debug
+            msg += f" (Version: {'OLD' if is_old_version else 'NEW'})"
 
             logger.warning(msg)
             return {"type": "unknown_int", "mode": "scalar"}
-        return cls._FLAG_INFO[flag]
+        return info_map[flag]
 
     @classmethod
     def validate_and_get_desc(cls, type_val: int, offset: int = None) -> tuple[int, str]:

@@ -147,7 +147,7 @@ class LgdCsvExporter:
             # Use while loop to correctly skip array element entries
             while i < len(entries):
                 entry = entries[i]
-                info = LgdDefinitions.get_flag_info(entry.flag)
+                info = LgdDefinitions.get_flag_info(entry.flag, is_old_version=self.ctx.is_old_version)
                 mode = info.get('mode', 'scalar')
                 data_type = info['type']
                 is_array = "array" in mode
@@ -216,7 +216,7 @@ class LgdCsvExporter:
         """
         # Get Mode/Type info from P1 Head if available
         if head:
-            info = LgdDefinitions.get_flag_info(head.flag)
+            info = LgdDefinitions.get_flag_info(head.flag, is_old_version=self.ctx.is_old_version)
             mode = info.get('mode', 'scalar')
             data_type = info['type']
         else:
@@ -260,7 +260,7 @@ class LgdCsvExporter:
             if size > 0 and entries:
                 p_types = []
                 for i in range(min(size, len(entries))):
-                    p_info = LgdDefinitions.get_flag_info(entries[i].flag)
+                    p_info = LgdDefinitions.get_flag_info(entries[i].flag, is_old_version=self.ctx.is_old_version)
                     p_types.append(p_info['type'])
                 row["Param_Types"] = ";".join(p_types)
             else:
@@ -275,7 +275,7 @@ class LgdCsvExporter:
             if size > 0 and entries:
                 p_types = []
                 for i in range(min(size, len(entries))):
-                    p_info = LgdDefinitions.get_flag_info(entries[i].flag)
+                    p_info = LgdDefinitions.get_flag_info(entries[i].flag, is_old_version=self.ctx.is_old_version)
                     p_types.append(p_info['type'])
                 row["Param_Types"] = ";".join(p_types)
             else:

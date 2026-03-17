@@ -47,12 +47,20 @@ class LgdPipeline:
         # Parse P1
         ctx.p1_offset_start = 0
         p1_parser = P1LiteralParser(data)
-        ctx.literal_table, next_off = p1_parser.parse(ctx.p1_offset_start)
+        ctx.literal_table, next_off, ctx.is_old_version = p1_parser.parse(ctx.p1_offset_start)
         ctx.p1_offset_end = next_off
 
         # Log P1 Details
         logger.info(f"[Part 1 Literal] Count: {len(ctx.literal_table)}")
         logger.info(f"[Part 1 Literal] Offset Range: 0x{ctx.p1_offset_start:X} -> 0x{ctx.p1_offset_end:X}")
+
+        if ctx.is_old_version:
+            version_str = "OLD"
+        else:
+            version_str = "NEW"
+
+        msg = "[Parser] Version check finished. Detected " + version_str + " version flags."
+        logger.info(msg)
 
         # Parse P2
         ctx.p2_offset_start = next_off

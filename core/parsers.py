@@ -18,10 +18,12 @@ class LgdBaseParser:
 
 
 class P1LiteralParser(LgdBaseParser):
-    def parse(self, start_offset: int) -> Tuple[List[P1LiteralEntry], int]:
+    OLD_FLAGS_SET = {0xC1, 0xC2, 0xC5, 0xC6}
+
+    def parse(self, start_offset: int) -> Tuple[List[P1LiteralEntry], int, bool]:
         """
         parse Literal Table
-        Returns: (entry_list, next_offset)
+        Returns: (entry_list, next_offset, is_old_version)
         """
         entries = []
         offset = start_offset
@@ -72,7 +74,14 @@ class P1LiteralParser(LgdBaseParser):
             )
             entries.append(entry)
 
-        return entries, offset
+        # 3. Version Detection (Old vs New)
+        is_old_version = False
+        for e in entries:
+            if e.flag in self.OLD_FLAGS_SET:
+                is_old_version = True
+                break
+
+        return entries, offset, is_old_version
 
 
 class P2SymbolParser(LgdBaseParser):

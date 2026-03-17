@@ -36,7 +36,7 @@ class HumanReadableCRenderer:
             real_idx = start_idx + curr_idx
             if real_idx >= len(self.ctx.literal_table): break
             entry = self.ctx.literal_table[real_idx]
-            info = LgdDefinitions.get_flag_info(entry.flag, offset=entry.offset)
+            info = LgdDefinitions.get_flag_info(entry.flag, offset=entry.offset, is_old_version=self.ctx.is_old_version)
             type_name = info['type']
             count = entry.id_size
             if "array" in info['mode'] and count > 1:
@@ -54,7 +54,7 @@ class HumanReadableCRenderer:
             real_idx = start_idx + i
             if real_idx >= len(self.ctx.literal_table): break
             entry = self.ctx.literal_table[real_idx]
-            info = LgdDefinitions.get_flag_info(entry.flag, offset=entry.offset)
+            info = LgdDefinitions.get_flag_info(entry.flag, offset=entry.offset, is_old_version=self.ctx.is_old_version)
             type_name = info.get('type', 'int')
             val_str = f'"{entry.str_val}"' if type_name == "string" else str(entry.int_val)
             if type_name == "string" and not entry.str_val: val_str = '""'
@@ -64,7 +64,7 @@ class HumanReadableCRenderer:
     def _get_array_content(self, start_idx):
         entry = self.ctx.literal_table[start_idx]
         count = entry.id_size
-        info = LgdDefinitions.get_flag_info(entry.flag, offset=entry.offset)
+        info = LgdDefinitions.get_flag_info(entry.flag, offset=entry.offset, is_old_version=self.ctx.is_old_version)
         values = []
         limit = min(start_idx + count, len(self.ctx.literal_table))
         for i in range(start_idx, limit):
@@ -127,7 +127,7 @@ class HumanReadableCRenderer:
             symbol = self.ctx.idx_to_symbol.get(i)
 
             # get definition info refer in definitions.py
-            info = LgdDefinitions.get_flag_info(entry.flag, offset=entry.offset)
+            info = LgdDefinitions.get_flag_info(entry.flag, offset=entry.offset, is_old_version=self.ctx.is_old_version)
             type_name = info['type']
             mode = info.get('mode', 'scalar')  # def_only, array_def, scalar, array_init
 
