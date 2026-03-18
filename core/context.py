@@ -52,3 +52,6 @@ class LgdAnalysisContext:
     # Bytecode starts after these tables
     bytecode_offset_start: int = 0
     bytecode_instructions: List[BytecodeEntry] = field(default_factory=list)
+
+    # versioning
+    is_old_version: bool = False

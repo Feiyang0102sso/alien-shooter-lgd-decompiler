@@ -28,6 +28,9 @@ dist/
 *.lgc
 *.csv
 *.c
+*.h
+*.json
+constants_usage_results.ini
 
 # --- allow test data ---
 !tests/**/data/
