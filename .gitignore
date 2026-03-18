@@ -40,5 +40,7 @@ constants_usage_results.ini
 !tests/**/data/*.lgc
 !tests/**/data/LGC/*.lgc
 
+!refine_data_prepare/output/*.json
+
 
 
