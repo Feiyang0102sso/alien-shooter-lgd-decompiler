@@ -15,15 +15,19 @@ def get_app_root() -> Path:
     if getattr(sys, 'frozen', False):
         # If running as a bundled EXE
         return Path(sys.executable).parent.resolve()
-    return Path.cwd().resolve()
 
     # If running as a script, we use the directory of the main script being run
     # This ensures config.ini is found even if converter.py is in a subfolder
     import __main__
     if hasattr(__main__, "__file__"):
-        return Path(__main__.__file__).parent.resolve()
+        main_file = Path(__main__.__file__)
+        # Fix: PIP-installed entry wrappers act like `.exe/__main__.py`.
+        # Check if the parent is an actual directory to prevent FileExistsError!
+        if main_file.parent.is_dir():
+            return main_file.parent.resolve()
 
-    return Path(__file__).parent.resolve()
+    # Default fallback to current working directory when running globally via shim
+    return Path.cwd().resolve()
 
 # --- Absolute Path Configuration ---
 ROOT_DIR = get_app_root()
@@ -70,6 +74,8 @@ def update_paths(new_input: str = None, new_output: str = None):
     add_file_handler(log_file_path)
 
     # logger.debug(f"Paths updated - Input: {input_dir}, Output: {output_dir}")
+    logger.debug(f"Root Path: {ROOT_DIR}")
+    logger.debug(f"Log File Path: {log_file_path}")
 
 def init_app_env():
     """

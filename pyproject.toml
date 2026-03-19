@@ -7,7 +7,7 @@ build-backend = "setuptools.build_meta"
 [project]
 # 建议将项目名改为代表整个工具箱的名字，这样发布或安装时更统一
 name = "lgd_tool"
-version = "0.3.0"
+#version = "0.3.0"
 dynamic = ["version"]
 # 如果你的项目需要第三方库（比如 requests），以后加在这里：
 # dependencies = ["requests>=2.0"]

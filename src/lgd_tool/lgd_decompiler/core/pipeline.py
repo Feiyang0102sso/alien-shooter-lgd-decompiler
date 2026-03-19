@@ -2,9 +2,9 @@
 core/pipeline.py
 """
 
-import os
 import sys
 import threading
+from pathlib import Path
 
 from lgd_tool.lgd_decompiler.generate_LGC.lgc_generator import LgcGenerator
 from lgd_tool.lgd_decompiler.generate_intermediate.renderer_asm import LgdAsmRenderer
@@ -21,7 +21,8 @@ class LgdPipeline:
         self.file_path = file_path
 
     def run(self, is_debug: bool = False, keep_intermediate: bool = True):
-        if not os.path.exists(self.file_path):
+        file_p = Path(self.file_path)
+        if not file_p.exists():
             logger.error_and_stop(f"File not found: {self.file_path}")
             return
 
@@ -134,8 +135,10 @@ class LgdPipeline:
         print("\n")
         logger.info("=== Phase 6: Compiling Final LGC ===")
 
-        if self.file_path.endswith(".lgd"):
-            clean_output_lgc = self.file_path[:-4] + ".lgc"
+        # Ensure we use pathlib for cleaner extension modification
+        file_p = Path(self.file_path)
+        if file_p.suffix.lower() == ".lgd":
+            clean_output_lgc = str(file_p.with_suffix(".lgc"))
         else:
             clean_output_lgc = self.file_path + ".lgc"
 
@@ -195,9 +198,10 @@ class LgdPipeline:
                 # full_dec_path
             ]
             for file in intermediate_files:
-                if os.path.exists(file):
+                inter_p = Path(file)
+                if inter_p.exists():
                     try:
-                        os.remove(file)
+                        inter_p.unlink()
                         logger.info(f"[CLEAN-UP] Deleted: {file}")
                     except Exception as e:
                         logger.error(f"[CLEAN-UP] Failed to delete {file}: {e}")

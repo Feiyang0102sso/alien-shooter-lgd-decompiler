@@ -184,7 +184,7 @@ class FixedTableParser(LgdBaseParser):
                     offset=offset + (i * entry_size)
                 )
                 entries.append(entry)
-                logger.debug(f"    -> Found {table_name}{i}: points to ID {val}")
+                # logger.debug(f"    -> Found {table_name}{i}: points to ID {val}")
 
         return entries, offset + total_size
 

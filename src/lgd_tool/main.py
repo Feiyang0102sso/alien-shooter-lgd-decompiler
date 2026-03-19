@@ -1,5 +1,6 @@
-import os
+
 import argparse
+from pathlib import Path
 from . import config  # ini app
 from .version import __version__, __app_name__
 from lgd_tool.lgd_decompiler.core.pipeline import LgdPipeline
@@ -11,14 +12,10 @@ from .logger import FatalError
 def scan_lgd_files(target_dir: str) -> list:
     """
     scan all .lgd
+    Uses pathlib for recursive globbing
     """
-    lgd_files = []
-    for root, dirs, files in os.walk(target_dir):
-        for file in files:
-            if file.lower().endswith('.lgd'):
-                full_path = os.path.join(root, file)
-                lgd_files.append(full_path)
-    return lgd_files
+    target = Path(target_dir)
+    return [str(p) for p in target.rglob("*") if p.is_file() and p.suffix.lower() == '.lgd']
 
 
 def process_single_file(file_path: str, keep_files: bool) -> bool:
@@ -74,10 +71,12 @@ def main():
 
     try:
         logger.set_stop_on_error(stop_on_error)
+        
+        target_p = Path(target_path)
 
-        if os.path.isfile(target_path):
+        if target_p.is_file():
             # single mode
-            if not target_path.lower().endswith('.lgd'):
+            if target_p.suffix.lower() != '.lgd':
                 logger.error_and_stop(f"[PROCESSING] The specified file '{target_path}' is not a .lgd file.")
                 return
 
@@ -88,7 +87,7 @@ def main():
             else:
                 logger.error(f"[PROCESSING] Task Failed: {target_path}")
 
-        elif os.path.isdir(target_path):
+        elif target_p.is_dir():
             # batch mode
             logger.info(f"[PROCESSING] Scanning directory for .lgd files: {target_path}")
             lgd_files = scan_lgd_files(target_path)
