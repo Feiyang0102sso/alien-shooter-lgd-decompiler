@@ -33,6 +33,9 @@ def get_app_root() -> Path:
 ROOT_DIR = get_app_root()
 LOG_FILE_NAME = "LgdDecompiler.log"
 
+# Refiner 数据目录（存放 extern_database.json 和 constants_database.json）
+REFINER_DATA_DIR = ROOT_DIR / 'data' / 'decompiler_refiner'
+
 input_dir = ROOT_DIR / 'DATAS' # not used in this project
 output_dir = ROOT_DIR / 'OUTPUT' # not used in this project
 log_file_path = ROOT_DIR / "LgdDecompiler.log"

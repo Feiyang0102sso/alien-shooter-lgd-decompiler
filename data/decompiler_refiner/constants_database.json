@@ -1,0 +1,5658 @@
+{
+    "GENERAL": {
+        "false": {
+            "values": {
+                "0": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "true": {
+            "values": {
+                "1": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "bool": {
+            "values": {
+                "int": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "nullptr": {
+            "values": {
+                "0": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        },
+        "UNLIMITED": {
+            "values": {
+                "999999": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        }
+    },
+    "MAX": {
+        "MAX_INT_VALUE": {
+            "values": {
+                "2000000000": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        }
+    },
+    "GENDER": {
+        "GENDER_REG_KEY": {
+            "values": {
+                "\"PlayerSex\"": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB"
+                ]
+            }
+        },
+        "GENDER_FEMALE": {
+            "values": {
+                "\"female\"": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB"
+                ]
+            }
+        },
+        "GENDER_MALE": {
+            "values": {
+                "\"male\"": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB"
+                ]
+            }
+        }
+    },
+    "LOG": {
+        "LOG_ERROR": {
+            "values": {
+                "2": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "LOG_WARNING": {
+            "values": {
+                "3": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "LOG_INFO": {
+            "values": {
+                "4": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "LOG_DEBUG": {
+            "values": {
+                "5": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        }
+    },
+    "MENU": {
+        "MENU_ACTIVATION_NO_ACTION": {
+            "values": {
+                "0": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "MENU_ACTIVATION_LCLICK": {
+            "values": {
+                "1": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "MENU_ACTIVATION_RCLICK": {
+            "values": {
+                "2": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "MENU_ACTIVATION_KEYBOARD": {
+            "values": {
+                "4": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        }
+    },
+    "SOCIAL": {
+        "SOCIAL_OK": {
+            "values": {
+                "\"odnoklassniki\"": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "SOCIAL_FB": {
+            "values": {
+                "\"facebook\"": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        }
+    },
+    "VK": {
+        "VK_LBUTTON": {
+            "values": {
+                "0x01": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VK_RBUTTON": {
+            "values": {
+                "0x02": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VK_CANCEL": {
+            "values": {
+                "0x03": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VK_MBUTTON": {
+            "values": {
+                "0x04": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VK_BACK": {
+            "values": {
+                "0x08": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VK_TAB": {
+            "values": {
+                "0x09": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VK_CLEAR": {
+            "values": {
+                "0x0C": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VK_RETURN": {
+            "values": {
+                "0x0D": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VK_ESCAPE": {
+            "values": {
+                "0x1B": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VK_ESC": {
+            "values": {
+                "0x1B": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VK_SPACE": {
+            "values": {
+                "0x20": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VK_PRIOR": {
+            "values": {
+                "0x21": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ],
+                "0x2100": [
+                    "ASTB"
+                ]
+            }
+        },
+        "VK_NEXT": {
+            "values": {
+                "0x22": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ],
+                "0x2200": [
+                    "ASTB"
+                ]
+            }
+        },
+        "VK_END": {
+            "values": {
+                "0x23": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ],
+                "0x2300": [
+                    "ASTB"
+                ]
+            }
+        },
+        "VK_HOME": {
+            "values": {
+                "0x24": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ],
+                "0x2400": [
+                    "ASTB"
+                ]
+            }
+        },
+        "VK_LEFT": {
+            "values": {
+                "0x25": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ],
+                "0x2500": [
+                    "ASTB"
+                ]
+            }
+        },
+        "VK_UP": {
+            "values": {
+                "0x26": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ],
+                "0x2600": [
+                    "ASTB"
+                ]
+            }
+        },
+        "VK_RIGHT": {
+            "values": {
+                "0x27": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ],
+                "0x2700": [
+                    "ASTB"
+                ]
+            }
+        },
+        "VK_DOWN": {
+            "values": {
+                "0x28": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ],
+                "0x2800": [
+                    "ASTB"
+                ]
+            }
+        },
+        "VK_SELECT": {
+            "values": {
+                "0x29": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ],
+                "0x2900": [
+                    "ASTB"
+                ]
+            }
+        },
+        "VK_PRINT": {
+            "values": {
+                "0x2A": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ],
+                "0x2A00": [
+                    "ASTB"
+                ]
+            }
+        },
+        "VK_EXECUTE": {
+            "values": {
+                "0x2B": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ],
+                "0x2B00": [
+                    "ASTB"
+                ]
+            }
+        },
+        "VK_SNAPSHOT": {
+            "values": {
+                "0x2C": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ],
+                "0x2C00": [
+                    "ASTB"
+                ]
+            }
+        },
+        "VK_INSERT": {
+            "values": {
+                "0x2D": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ],
+                "0x2D00": [
+                    "ASTB"
+                ]
+            }
+        },
+        "VK_DELETE": {
+            "values": {
+                "0x2E": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ],
+                "0x2E00": [
+                    "ASTB"
+                ]
+            }
+        },
+        "VK_HELP": {
+            "values": {
+                "0x2F": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ],
+                "0x2F00": [
+                    "ASTB"
+                ]
+            }
+        },
+        "VK_NUMPAD0": {
+            "values": {
+                "0x60": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ],
+                "0x6000": [
+                    "ASTB"
+                ]
+            }
+        },
+        "VK_NUMPAD1": {
+            "values": {
+                "0x61": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ],
+                "0x6100": [
+                    "ASTB"
+                ]
+            }
+        },
+        "VK_NUMPAD2": {
+            "values": {
+                "0x62": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ],
+                "0x6200": [
+                    "ASTB"
+                ]
+            }
+        },
+        "VK_NUMPAD3": {
+            "values": {
+                "0x63": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ],
+                "0x6300": [
+                    "ASTB"
+                ]
+            }
+        },
+        "VK_NUMPAD4": {
+            "values": {
+                "0x64": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ],
+                "0x6400": [
+                    "ASTB"
+                ]
+            }
+        },
+        "VK_NUMPAD5": {
+            "values": {
+                "0x65": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ],
+                "0x6500": [
+                    "ASTB"
+                ]
+            }
+        },
+        "VK_NUMPAD6": {
+            "values": {
+                "0x66": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ],
+                "0x6600": [
+                    "ASTB"
+                ]
+            }
+        },
+        "VK_NUMPAD7": {
+            "values": {
+                "0x67": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ],
+                "0x6700": [
+                    "ASTB"
+                ]
+            }
+        },
+        "VK_NUMPAD8": {
+            "values": {
+                "0x68": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ],
+                "0x6800": [
+                    "ASTB"
+                ]
+            }
+        },
+        "VK_NUMPAD9": {
+            "values": {
+                "0x69": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ],
+                "0x6900": [
+                    "ASTB"
+                ]
+            }
+        },
+        "VK_MULTIPLY": {
+            "values": {
+                "0x6A": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ],
+                "0x6A00": [
+                    "ASTB"
+                ]
+            }
+        },
+        "VK_ADD": {
+            "values": {
+                "0x6B": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ],
+                "0x6B00": [
+                    "ASTB"
+                ]
+            }
+        },
+        "VK_SEPARATOR": {
+            "values": {
+                "0x6C": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ],
+                "0x6C00": [
+                    "ASTB"
+                ]
+            }
+        },
+        "VK_SUBTRACT": {
+            "values": {
+                "0x6D": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ],
+                "0x6D00": [
+                    "ASTB"
+                ]
+            }
+        },
+        "VK_DECIMAL": {
+            "values": {
+                "0x6E": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ],
+                "0x6E00": [
+                    "ASTB"
+                ]
+            }
+        },
+        "VK_DIVIDE": {
+            "values": {
+                "0x6F": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ],
+                "0x6F00": [
+                    "ASTB"
+                ]
+            }
+        },
+        "VK_F1": {
+            "values": {
+                "0x70": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ],
+                "0x7000": [
+                    "ASTB"
+                ]
+            }
+        },
+        "VK_F2": {
+            "values": {
+                "0x71": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ],
+                "0x7100": [
+                    "ASTB"
+                ]
+            }
+        },
+        "VK_F3": {
+            "values": {
+                "0x72": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ],
+                "0x7200": [
+                    "ASTB"
+                ]
+            }
+        },
+        "VK_F4": {
+            "values": {
+                "0x73": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ],
+                "0x7300": [
+                    "ASTB"
+                ]
+            }
+        },
+        "VK_F5": {
+            "values": {
+                "0x74": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ],
+                "0x7400": [
+                    "ASTB"
+                ]
+            }
+        },
+        "VK_F6": {
+            "values": {
+                "0x75": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ],
+                "0x7500": [
+                    "ASTB"
+                ]
+            }
+        },
+        "VK_F7": {
+            "values": {
+                "0x76": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ],
+                "0x7600": [
+                    "ASTB"
+                ]
+            }
+        },
+        "VK_F8": {
+            "values": {
+                "0x77": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ],
+                "0x7700": [
+                    "ASTB"
+                ]
+            }
+        },
+        "VK_F9": {
+            "values": {
+                "0x78": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ],
+                "0x7800": [
+                    "ASTB"
+                ]
+            }
+        },
+        "VK_F10": {
+            "values": {
+                "0x79": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ],
+                "0x7900": [
+                    "ASTB"
+                ]
+            }
+        },
+        "VK_F11": {
+            "values": {
+                "0x7A": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ],
+                "0x7A00": [
+                    "ASTB"
+                ]
+            }
+        },
+        "VK_F12": {
+            "values": {
+                "0x7B": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ],
+                "0x7B00": [
+                    "ASTB"
+                ]
+            }
+        },
+        "VK_F13": {
+            "values": {
+                "0x7C": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ],
+                "0x7C00": [
+                    "ASTB"
+                ]
+            }
+        },
+        "VK_F14": {
+            "values": {
+                "0x7D": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ],
+                "0x7D00": [
+                    "ASTB"
+                ]
+            }
+        },
+        "VK_F15": {
+            "values": {
+                "0x7E": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ],
+                "0x7E00": [
+                    "ASTB"
+                ]
+            }
+        },
+        "VK_F16": {
+            "values": {
+                "0x7F": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ],
+                "0x7F00": [
+                    "ASTB"
+                ]
+            }
+        },
+        "VK_F17": {
+            "values": {
+                "0x80": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ],
+                "0x8000": [
+                    "ASTB"
+                ]
+            }
+        },
+        "VK_F18": {
+            "values": {
+                "0x81": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ],
+                "0x8100": [
+                    "ASTB"
+                ]
+            }
+        },
+        "VK_F19": {
+            "values": {
+                "0x82": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ],
+                "0x8200": [
+                    "ASTB"
+                ]
+            }
+        },
+        "VK_F20": {
+            "values": {
+                "0x83": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ],
+                "0x8300": [
+                    "ASTB"
+                ]
+            }
+        },
+        "VK_F21": {
+            "values": {
+                "0x84": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ],
+                "0x8400": [
+                    "ASTB"
+                ]
+            }
+        },
+        "VK_F22": {
+            "values": {
+                "0x85": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ],
+                "0x8500": [
+                    "ASTB"
+                ]
+            }
+        },
+        "VK_F23": {
+            "values": {
+                "0x86": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ],
+                "0x8600": [
+                    "ASTB"
+                ]
+            }
+        },
+        "VK_F24": {
+            "values": {
+                "0x87": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ],
+                "0x8700": [
+                    "ASTB"
+                ]
+            }
+        },
+        "VK_NUMLOCK": {
+            "values": {
+                "0x90": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VK_SCROLL": {
+            "values": {
+                "0x91": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        }
+    },
+    "SCROLL": {
+        "SCROLL_NONE": {
+            "values": {
+                "0": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "SCROLL_FROM_BORDER": {
+            "values": {
+                "1": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "SCROLL_WITH_MOUSE": {
+            "values": {
+                "2": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "SCROLL_TO_FLAGMAN": {
+            "values": {
+                "4": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "SCROLL_TO_FLAGMAN_WITH_DIRECTION": {
+            "values": {
+                "8": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "SCROLL_FLAGMAN_IN_CENTER": {
+            "values": {
+                "16": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "SCROLL_WITH_ARROWS": {
+            "values": {
+                "32": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        }
+    },
+    "VID": {
+        "VID_MAXHP": {
+            "values": {
+                "1": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_GAMMA": {
+            "values": {
+                "18": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_ALT_GAMMA_0": {
+            "values": {
+                "18": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_ALT_GAMMA_1": {
+            "values": {
+                "19": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_ALT_GAMMA_2": {
+            "values": {
+                "20": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_ALT_GAMMA_3": {
+            "values": {
+                "21": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_GAMMA_ALL": {
+            "values": {
+                "22": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_BATTLERANGE": {
+            "values": {
+                "23": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_MAXUNIT": {
+            "values": {
+                "25": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_MAX_AMMO": {
+            "values": {
+                "26": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_NAME": {
+            "values": {
+                "27": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_COUNT": {
+            "values": {
+                "28": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_COUNT0": {
+            "values": {
+                "34": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_COUNT1": {
+            "values": {
+                "35": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_COUNT2": {
+            "values": {
+                "36": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_COUNT3": {
+            "values": {
+                "37": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_MAXHP0": {
+            "values": {
+                "38": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_MAXHP1": {
+            "values": {
+                "39": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_MAXHP2": {
+            "values": {
+                "40": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_MAXHP3": {
+            "values": {
+                "41": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_HP_COEFF0": {
+            "values": {
+                "42": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_HP_COEFF1": {
+            "values": {
+                "43": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_HP_COEFF2": {
+            "values": {
+                "44": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_HP_COEFF3": {
+            "values": {
+                "45": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_SPRITETYPE": {
+            "values": {
+                "46": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_CLASS": {
+            "values": {
+                "47": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_SPEED": {
+            "values": {
+                "48": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_LIFETIME": {
+            "values": {
+                "49": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_DETECTRANGE": {
+            "values": {
+                "50": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_WEAPONAIM": {
+            "values": {
+                "51": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_AIM_RADIUS": {
+            "values": {
+                "51": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_EXCHANGEVID": {
+            "values": {
+                "52": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_NO_DIR": {
+            "values": {
+                "53": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_MOVE_MASK": {
+            "values": {
+                "54": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_BUILDTIME": {
+            "values": {
+                "55": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_HIDE": {
+            "values": {
+                "56": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_NOT_CREATE_AS_CHILD": {
+            "values": {
+                "57": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_FRAME_SPEED": {
+            "values": {
+                "58": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_LINK": {
+            "values": {
+                "59": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_CHILD": {
+            "values": {
+                "60": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_NO_CHILD": {
+            "values": {
+                "92": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_DAMAGE_MAX": {
+            "values": {
+                "123": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_DAMAGE_MIN": {
+            "values": {
+                "124": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_DAMAGE": {
+            "values": {
+                "124": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_RECOLORUNIT": {
+            "values": {
+                "125": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_RECOLORUNIT0": {
+            "values": {
+                "126": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_RECOLORUNIT1": {
+            "values": {
+                "127": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_RECOLORUNIT2": {
+            "values": {
+                "128": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_RECOLORUNIT3": {
+            "values": {
+                "129": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_RELOAD_TIME": {
+            "values": {
+                "130": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_RELOAD_TIME_IN_VOLLEY": {
+            "values": {
+                "131": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_SPEED_ONLY_DEFAULT": {
+            "values": {
+                "132": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_FIGHT_FRAME_SPEED": {
+            "values": {
+                "133": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_DEATHRANGE": {
+            "values": {
+                "134": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_IMPORTANT_FOR_SYNC": {
+            "values": {
+                "135": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_CLONE_FROM_VID": {
+            "values": {
+                "136": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_OPEN_FRAME_SPEED": {
+            "values": {
+                "137": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_GO_FRAME_SPEED": {
+            "values": {
+                "138": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_NET_TYPE": {
+            "values": {
+                "139": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_DAMAGE_TO_FRIEND": {
+            "values": {
+                "140": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_GAME_EX_MOD_COUNT0": {
+            "values": {
+                "141": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        },
+        "VID_GAME_EX_MOD_COUNT1": {
+            "values": {
+                "142": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        },
+        "VID_GAME_EX_MOD_COUNT2": {
+            "values": {
+                "143": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        },
+        "VID_GAME_EX_MOD_COUNT3": {
+            "values": {
+                "144": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        },
+        "VID_RADIAL_DAMAGE_MIN_50": {
+            "values": {
+                "145": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        },
+        "VID_HAVE_ABILITY": {
+            "values": {
+                "146": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        },
+        "VID_DEATH_FRAME_SPEED": {
+            "values": {
+                "147": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        },
+        "VID_RANDOM_SPEED": {
+            "values": {
+                "148": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        },
+        "VID_STAND_FRAME_SPEED": {
+            "values": {
+                "149": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        },
+        "VID_CHANGE_FRAME_SPEED": {
+            "values": {
+                "150": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        },
+        "VID_NWEAPON": {
+            "values": {
+                "151": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        },
+        "VID_CHANGED_FROM_SCRIPT": {
+            "values": {
+                "152": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        },
+        "VID_SIZE_X": {
+            "values": {
+                "239": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_SIZE_Y": {
+            "values": {
+                "240": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_SIZE_Z": {
+            "values": {
+                "241": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_SCALE_X": {
+            "values": {
+                "242": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_SCALE_Y": {
+            "values": {
+                "243": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_SCALE_Z": {
+            "values": {
+                "244": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_VALIDATE": {
+            "values": {
+                "245": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_CHILD_X": {
+            "values": {
+                "260": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_SFX": {
+            "values": {
+                "292": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_POWER": {
+            "values": {
+                "324": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_VOLLEY_CLIP": {
+            "values": {
+                "325": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_DEATH_PUSH": {
+            "values": {
+                "326": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_CHILD_Y": {
+            "values": {
+                "330": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_CHILD_Z": {
+            "values": {
+                "362": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_NO_FRAME": {
+            "values": {
+                "394": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        },
+        "VID_FOR_MOVE_UP_Z": {
+            "values": {
+                "426": [
+                    "ASLC_Android_1.1.4"
+                ],
+                "363": [
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_FOR_MOVE_DOWN_Z": {
+            "values": {
+                "427": [
+                    "ASLC_Android_1.1.4"
+                ],
+                "364": [
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_ACCELERATION": {
+            "values": {
+                "428": [
+                    "ASLC_Android_1.1.4"
+                ],
+                "365": [
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_SLOW": {
+            "values": {
+                "429": [
+                    "ASLC_Android_1.1.4"
+                ],
+                "366": [
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_MOVE_END_BY_DISTANCE": {
+            "values": {
+                "1001": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_MAXARMORHP": {
+            "values": {
+                "1002": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_MAXHP_INIT": {
+            "values": {
+                "1003": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_ARMOR_DAMAGE_MIN": {
+            "values": {
+                "1004": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_DETECT_PERIOD": {
+            "values": {
+                "1005": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_LINK_X": {
+            "values": {
+                "1006": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_LINK_Y": {
+            "values": {
+                "1007": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_LINK_Z": {
+            "values": {
+                "1008": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_LASTING_DAMAGE_EFFECT": {
+            "values": {
+                "1009": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_MAXHP_FOR_DEATH2": {
+            "values": {
+                "1010": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_TARGET_FLYING": {
+            "values": {
+                "1011": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_DISABLE_HIT_CHILDREN": {
+            "values": {
+                "1012": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_IMMUNE_TO_LASTING_EFFECTS": {
+            "values": {
+                "1013": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_ALT_GAMMA_4": {
+            "values": {
+                "1014": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_ALT_GAMMA_5": {
+            "values": {
+                "1015": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_ALT_GAMMA_6": {
+            "values": {
+                "1016": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_ALT_GAMMA_7": {
+            "values": {
+                "1017": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_DAMAGE_MAX_FLOAT": {
+            "values": {
+                "1018": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_DAMAGE_MIN_FLOAT": {
+            "values": {
+                "1019": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_CHARACTER_ADVANCED_AIM": {
+            "values": {
+                "1020": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "VID_CALL_ON_WEAPON_RELOADED": {
+            "values": {
+                "1021": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        },
+        "VID_DEATHRANGE_FLOAT": {
+            "values": {
+                "1022": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        },
+        "VID_RELOAD_TIME_FLOAT": {
+            "values": {
+                "1023": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        },
+        "VID_RELOAD_TIME_IN_VOLLEY_FLOAT": {
+            "values": {
+                "1024": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        },
+        "VID_AIM_RADIUS_FLOAT": {
+            "values": {
+                "1025": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        },
+        "VID_PERIOD": {
+            "values": {
+                "1026": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        },
+        "VID_ARMOR_DAMAGE_FLOAT": {
+            "values": {
+                "1027": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        },
+        "VID_FIGHT_IN_TURN": {
+            "values": {
+                "1028": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        },
+        "VID_MAXHP_INIT_MAX": {
+            "values": {
+                "1029": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        },
+        "VID_HAVE_PHASES": {
+            "values": {
+                "1030": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        },
+        "VID_INVULNERABLE": {
+            "values": {
+                "1031": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        },
+        "VID_AMMO": {
+            "values": {
+                "26": [
+                    "ASTB"
+                ]
+            }
+        }
+    },
+    "SETVID": {
+        "SETVID_DAMAGE_TYPE": {
+            "values": {
+                "2000": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "SETVID_DAMAGE_TYPE_FIRE": {
+            "values": {
+                "2001": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "SETVID_DAMAGE_TYPE_COLD": {
+            "values": {
+                "2002": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "SETVID_DAMAGE_TYPE_POISON": {
+            "values": {
+                "2003": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "SETVID_VULNERABILITY": {
+            "values": {
+                "2010": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "SETVID_VULNERABILITY_FIRE": {
+            "values": {
+                "2011": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "SETVID_VULNERABILITY_COLD": {
+            "values": {
+                "2012": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "SETVID_VULNERABILITY_POISON": {
+            "values": {
+                "2013": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "SETVID_TYPED_DAMAGE_POWER": {
+            "values": {
+                "2020": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "SETVID_WEAPON_TYPE": {
+            "values": {
+                "2021": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "SETVID_LASTING_POWER": {
+            "values": {
+                "2022": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        },
+        "SETVID_LASTING_DURATION": {
+            "values": {
+                "2023": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        },
+        "SETVID_LASTING_DAMAGE": {
+            "values": {
+                "2024": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        },
+        "SETVID_LASTING_DEATH_DAMAGE": {
+            "values": {
+                "2025": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        },
+        "SETVID_RICOCHET_TO_TARGETS": {
+            "values": {
+                "2026": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        }
+    },
+    "COM": {
+        "COM_NONE": {
+            "values": {
+                "0": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "COM_MOVE": {
+            "values": {
+                "1": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "COM_MOVE3D": {
+            "values": {
+                "2": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "COM_ATTACK": {
+            "values": {
+                "3": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "COM_ONEATTACK": {
+            "values": {
+                "4": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "COM_DISTATTACK": {
+            "values": {
+                "5": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "COM_NEARATTACK": {
+            "values": {
+                "6": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "COM_PATROL": {
+            "values": {
+                "7": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "COM_TARAN": {
+            "values": {
+                "8": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "COM_BUILD": {
+            "values": {
+                "16": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "COM_PASSIVE": {
+            "values": {
+                "17": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "COM_PAUSE": {
+            "values": {
+                "18": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "COM_ROTATE": {
+            "values": {
+                "19": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "COM_OTHER": {
+            "values": {
+                "31": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "COM_ENGINE_MOVE": {
+            "values": {
+                "23": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "COM_ENGINE_MINE": {
+            "values": {
+                "24": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "COM_ENGINE_PATROL": {
+            "values": {
+                "25": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "COM_ENGINE_LINK": {
+            "values": {
+                "26": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "COM_ENGINE_CLASH": {
+            "values": {
+                "27": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "COM_ENGINE_ATTACK": {
+            "values": {
+                "28": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "COM_ENGINE_ONEATTACK": {
+            "values": {
+                "29": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        }
+    },
+    "GETSPRITE": {
+        "GETSPRITE_VID_FLAG": {
+            "values": {
+                "0": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "GETSPRITE_CLASS": {
+            "values": {
+                "0x1000": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "GETSPRITE_INCLUDE_LINKED": {
+            "values": {
+                "0x40000000": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        },
+        "GETSPRITE_HASH": {
+            "values": {
+                "0x10000000": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "GETSPRITE_ARMY0": {
+            "values": {
+                "0x1000": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "GETSPRITE_ARMY1": {
+            "values": {
+                "0x2000": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "GETSPRITE_ARMY2": {
+            "values": {
+                "0x4000": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "GETSPRITE_ARMY3": {
+            "values": {
+                "0x8000": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "GETSPRITE_ARMY4": {
+            "values": {
+                "0x10000": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "GETSPRITE_ARMY5": {
+            "values": {
+                "0x20000": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "GETSPRITE_ARMY6": {
+            "values": {
+                "0x40000": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "GETSPRITE_ARMY7": {
+            "values": {
+                "0x80000": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "GETSPRITE_ANYARMY": {
+            "values": {
+                "0xff000": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "GETSPRITE_DUMMY": {
+            "values": {
+                "0x100000": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "GETSPRITE_TERRAIN": {
+            "values": {
+                "0x200000": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "GETSPRITE_OBJECT": {
+            "values": {
+                "0x400000": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "GETSPRITE_UNIT": {
+            "values": {
+                "0x800000": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "GETSPRITE_AVIA": {
+            "values": {
+                "0x1000000": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "GETSPRITE_MENU": {
+            "values": {
+                "0x2000000": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "GETSPRITE_RAILWAY": {
+            "values": {
+                "0x4000000": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "GETSPRITE_REGION": {
+            "values": {
+                "0x8000000": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "GETSPRITE_CANNON": {
+            "values": {
+                "0x20000000": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "GETSPRITE_SPRITE": {
+            "values": {
+                "0x40000000": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "GETSPRITE_FREE": {
+            "values": {
+                "0x80000000": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        }
+    },
+    "NET": {
+        "NET_NUMPLAYER": {
+            "values": {
+                "1": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "NET_NAMEPLAYER": {
+            "values": {
+                "2": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "NET_NOPLAYER": {
+            "values": {
+                "6": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "NET_CLEARKILL": {
+            "values": {
+                "9": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "NET_KILLPLAYER": {
+            "values": {
+                "10": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        }
+    },
+    "EFF": {
+        "EFF_NONE": {
+            "values": {
+                "0": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "EFF_NUKE": {
+            "values": {
+                "1": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "EFF_SCROLL": {
+            "values": {
+                "2": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "EFF_FADE": {
+            "values": {
+                "3": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "EFF_OPEN_WINDOW": {
+            "values": {
+                "4": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "EFF_ALPHAAPPEAR": {
+            "values": {
+                "5": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "EFF_PIXELAPPEAR": {
+            "values": {
+                "6": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "EFF_LINESHIFT": {
+            "values": {
+                "7": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "EFF_SCALE_WINDOW": {
+            "values": {
+                "8": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "EFF_FADE_IN": {
+            "values": {
+                "9": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "EFF_FADE_OUT": {
+            "values": {
+                "10": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "EFF_SHIFT_GAMMA": {
+            "values": {
+                "11": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "EFF_SHIFT_SCALE": {
+            "values": {
+                "12": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "EFF_GREY": {
+            "values": {
+                "13": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        }
+    },
+    "ENV": {
+        "ENV_SHADOW": {
+            "values": {
+                "1": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ENV_LONGSHADOW": {
+            "values": {
+                "2": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ENV_EARTHQUAKE": {
+            "values": {
+                "4": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ENV_FOG": {
+            "values": {
+                "32": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ENV_GROUND_SNOW": {
+            "values": {
+                "64": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ENV_SQUALL": {
+            "values": {
+                "128": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ENV_FOGINV": {
+            "values": {
+                "0x0100": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ENV_FOGAPPEAR": {
+            "values": {
+                "0x0200": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ENV_STOP_RAIN": {
+            "values": {
+                "0x0400": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ENV_BORN_RAIN": {
+            "values": {
+                "0x0800": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ENV_RAIN": {
+            "values": {
+                "0x0C00": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ENV_MASK_RAIN": {
+            "values": {
+                "0x0C00": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ENV_STOP_SNOW": {
+            "values": {
+                "0x4000": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ENV_BORN_SNOW": {
+            "values": {
+                "0x8000": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ENV_SNOW": {
+            "values": {
+                "0xC000": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ENV_MASK_SNOW": {
+            "values": {
+                "0xC000": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ENV_STOP": {
+            "values": {
+                "0x80000000": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ENV_STOPALL": {
+            "values": {
+                "0xFFFFFFFF": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        }
+    },
+    "BEH": {
+        "BEH_AGGRESSIVE": {
+            "values": {
+                "1": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "BEH_ACTIVE": {
+            "values": {
+                "2": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "BEH_CAREFUL": {
+            "values": {
+                "4": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "BEH_HAUNT": {
+            "values": {
+                "8": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "BEH_BIGFIRE": {
+            "values": {
+                "16": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "BEH_LEFT": {
+            "values": {
+                "0": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "BEH_CENTER_X": {
+            "values": {
+                "1": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "BEH_RIGHT": {
+            "values": {
+                "2": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "BEH_TOP": {
+            "values": {
+                "0": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "BEH_BOTTOM": {
+            "values": {
+                "4": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "BEH_CENTER_Y": {
+            "values": {
+                "8": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "BEH_CENTER": {
+            "values": {
+                "(BEH_CENTER_X+BEH_CENTER_Y)": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "BEH_LOAD_FROM": {
+            "values": {
+                "(16+32+64)": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "BEH_NOT_LOAD": {
+            "values": {
+                "(0*16)": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "BEH_STRINGS_INI": {
+            "values": {
+                "(1*16)": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "BEH_FILE": {
+            "values": {
+                "(2*16)": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "BEH_SCRIPT_VARIABLE": {
+            "values": {
+                "(3*16)": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "BEH_SCRIPT_FILE": {
+            "values": {
+                "(4*16)": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "BEH_SCRIPT_STRINGS": {
+            "values": {
+                "(5*16)": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "BEH_SCRIPT_UPDATED": {
+            "values": {
+                "(6*16)": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        }
+    },
+    "U": {
+        "U_DUMMY": {
+            "values": {
+                "1": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "U_TERRAIN": {
+            "values": {
+                "2": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "U_OBJECT": {
+            "values": {
+                "4": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "U_UNIT": {
+            "values": {
+                "8": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "U_AVIA": {
+            "values": {
+                "16": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "U_MENU": {
+            "values": {
+                "32": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "U_RAILWAY": {
+            "values": {
+                "64": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "U_REGION": {
+            "values": {
+                "128": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "U_CANNON": {
+            "values": {
+                "512": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "U_SPRITE": {
+            "values": {
+                "1024": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        }
+    },
+    "B": {
+        "B_TERRAIN": {
+            "values": {
+                "0": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "B_OBJECT": {
+            "values": {
+                "1": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "B_UNIT": {
+            "values": {
+                "2": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "B_BUILDING": {
+            "values": {
+                "3": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "B_AVIA": {
+            "values": {
+                "4": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "B_CANNON": {
+            "values": {
+                "5": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "B_PRIMITIVE": {
+            "values": {
+                "6": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "B_MAN": {
+            "values": {
+                "7": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "B_SPRITE": {
+            "values": {
+                "9": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "B_FRAME": {
+            "values": {
+                "10": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "B_LINKER": {
+            "values": {
+                "12": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "B_TEXT": {
+            "values": {
+                "19": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "B_CIV_ROBOT": {
+            "values": {
+                "20": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "B_ENGINE": {
+            "values": {
+                "21": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "B_RAIL": {
+            "values": {
+                "22": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "B_REGION": {
+            "values": {
+                "23": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "B_DEPO": {
+            "values": {
+                "24": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "B_CREATURE": {
+            "values": {
+                "25": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "B_BALLOON": {
+            "values": {
+                "26": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "B_MISSILE": {
+            "values": {
+                "27": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        }
+    },
+    "ANI": {
+        "ANI_STAND": {
+            "values": {
+                "0": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ANI_STOP_MOVE": {
+            "values": {
+                "1": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ANI_BUILD": {
+            "values": {
+                "1": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ANI_GO": {
+            "values": {
+                "2": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ANI_START_MOVE": {
+            "values": {
+                "3": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ANI_L_ROTATE": {
+            "values": {
+                "4": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ANI_R_ROTATE": {
+            "values": {
+                "5": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ANI_IDLE": {
+            "values": {
+                "6": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        },
+        "ANI_OPEN": {
+            "values": {
+                "6": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ANI_GO_BACK": {
+            "values": {
+                "6": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        },
+        "ANI_CLOSE": {
+            "values": {
+                "7": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ANI_HIT": {
+            "values": {
+                "7": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ANI_FIGHT": {
+            "values": {
+                "8": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ANI_SALUT": {
+            "values": {
+                "9": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ANI_RELOAD": {
+            "values": {
+                "9": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ANI_RELOADED": {
+            "values": {
+                "10": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ANI_STAND_OPEN": {
+            "values": {
+                "10": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ANI_LOAD": {
+            "values": {
+                "11": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ANI_CLASH_VERT": {
+            "values": {
+                "11": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ANI_LINK": {
+            "values": {
+                "11": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ANI_UNLOAD": {
+            "values": {
+                "12": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ANI_LAZY": {
+            "values": {
+                "12": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ANI_CLASH": {
+            "values": {
+                "12": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ANI_WOUND": {
+            "values": {
+                "13": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ANI_BIRTH": {
+            "values": {
+                "14": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ANI_DEATH": {
+            "values": {
+                "15": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ANI_DEATH2": {
+            "values": {
+                "16": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ANI_MENUSTAND": {
+            "values": {
+                "0": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ANI_MENUSTANDDOWN": {
+            "values": {
+                "0": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ANI_MENUSTANDUP": {
+            "values": {
+                "1": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ANI_MENUSELECTDOWN": {
+            "values": {
+                "2": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ANI_MENUSELECTUP": {
+            "values": {
+                "3": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ANI_MENUPRESSDOWN": {
+            "values": {
+                "4": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ANI_MENUPRESSUP": {
+            "values": {
+                "5": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ANI_MENUDISABLE": {
+            "values": {
+                "6": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ANI_MENUDISABLEDOWN": {
+            "values": {
+                "6": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ANI_MENUDISABLEUP": {
+            "values": {
+                "7": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ANI_MENUFOCUSON": {
+            "values": {
+                "8": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ANI_MENUFOCUSOFF": {
+            "values": {
+                "9": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ANI_FONT_NORMAL": {
+            "values": {
+                "0": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ANI_FONT_NEXT_CHAR": {
+            "values": {
+                "1": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ANI_FONT_NEXT_LINE": {
+            "values": {
+                "2": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        }
+    },
+    "AUTONOMOUS": {
+        "AUTONOMOUS_DIRECT_CONTROL": {
+            "values": {
+                "0": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        },
+        "AUTONOMOUS_SAME_AS_UNIT": {
+            "values": {
+                "1": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        }
+    },
+    "ACT": {
+        "ACT_ATTACK": {
+            "values": {
+                "32": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_MOVE": {
+            "values": {
+                "33": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_MOVE_TO": {
+            "values": {
+                "34": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_BUILD_UNIT": {
+            "values": {
+                "35": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_STOP_PATH_FIND": {
+            "values": {
+                "36": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_COOR_ATTACK": {
+            "values": {
+                "37": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_RANDOM": {
+            "values": {
+                "38": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_STOP": {
+            "values": {
+                "39": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_PAUSE": {
+            "values": {
+                "40": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_ROTATE": {
+            "values": {
+                "41": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_CLEAR_COMMAND": {
+            "values": {
+                "42": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_FLAGMAN_TRIGGER": {
+            "values": {
+                "43": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_MOVE_ACCURATELY": {
+            "values": {
+                "44": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_FOLLOW": {
+            "values": {
+                "45": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_STAND_FIRM": {
+            "values": {
+                "46": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_GET_LUCK": {
+            "values": {
+                "47": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_LUCK": {
+            "values": {
+                "48": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_GET_CRITICAL_HIT": {
+            "values": {
+                "49": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_CRITICAL_HIT": {
+            "values": {
+                "50": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_GET_DAMAGE_MULTI": {
+            "values": {
+                "51": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_DAMAGE_MULTI": {
+            "values": {
+                "157": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_ADD_EQUIPMENT": {
+            "values": {
+                "52": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_NO_ITEMS": {
+            "values": {
+                "53": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_ADD_ITEM": {
+            "values": {
+                "54": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_DELETE_ITEM": {
+            "values": {
+                "55": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_HAVE_ITEM": {
+            "values": {
+                "56": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_DELETE_ALL_ITEM": {
+            "values": {
+                "57": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_GET_ITEM": {
+            "values": {
+                "58": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_GET_ITEM_TYPE": {
+            "values": {
+                "59": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_CHANGE_DIRECTION": {
+            "values": {
+                "60": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_CHANGE_ANIMATION": {
+            "values": {
+                "61": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_CHANGE_VID": {
+            "values": {
+                "62": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_CHANGE_COOR": {
+            "values": {
+                "63": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_STACK_CHANGE_LAST": {
+            "values": {
+                "68": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_STACK_TOTAL_SIZE": {
+            "values": {
+                "69": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_BACKUP_COMMAND": {
+            "values": {
+                "70": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_GOTO_STACK": {
+            "values": {
+                "71": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_CLEAR_STACK": {
+            "values": {
+                "72": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_STOP_STACK": {
+            "values": {
+                "73": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_RESTORE_COMMAND": {
+            "values": {
+                "74": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_COPY_STACK_TO": {
+            "values": {
+                "75": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_NO_STACK": {
+            "values": {
+                "76": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_WHILE_NOT_QUEST": {
+            "values": {
+                "77": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_QUEST": {
+            "values": {
+                "78": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_WHILE_NOT_SCRIPT_VAR": {
+            "values": {
+                "79": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SAVE": {
+            "values": {
+                "80": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_RESTORE": {
+            "values": {
+                "81": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_DEFENCE_FLOAT": {
+            "values": {
+                "82": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_DEFENCE": {
+            "values": {
+                "83": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_GET_BIRTH_TIME": {
+            "values": {
+                "84": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_DAMAGE": {
+            "values": {
+                "85": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_REPAIR": {
+            "values": {
+                "86": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_GET_HP": {
+            "values": {
+                "87": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_HP": {
+            "values": {
+                "88": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_GET_PERCENT_HP": {
+            "values": {
+                "89": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_GET_GOAL": {
+            "values": {
+                "90": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_GOAL_COOR": {
+            "values": {
+                "91": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_GOAL_FOR_TELEPORT": {
+            "values": {
+                "ACT_SET_GOAL_COOR": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_GET_AMMO": {
+            "values": {
+                "92": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_ADD_AMMO": {
+            "values": {
+                "93": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_GET_BEHAVE": {
+            "values": {
+                "94": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_BEHAVE": {
+            "values": {
+                "95": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_GET_ARMY": {
+            "values": {
+                "96": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_ARMY": {
+            "values": {
+                "97": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_INVISIBLE": {
+            "values": {
+                "98": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_GET_VISIBILITY": {
+            "values": {
+                "99": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_GET_BATTLE_RANGE": {
+            "values": {
+                "100": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_GET_LINK": {
+            "values": {
+                "101": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_LINK": {
+            "values": {
+                "102": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_GET_UPLINK": {
+            "values": {
+                "103": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_UPLINK": {
+            "values": {
+                "104": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_GET_TIMER": {
+            "values": {
+                "105": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_TIMER": {
+            "values": {
+                "106": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_GET_ZSPEED": {
+            "values": {
+                "107": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_ZSPEED": {
+            "values": {
+                "108": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_GET_SPEED": {
+            "values": {
+                "109": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_SPEED": {
+            "values": {
+                "110": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_GET_COMMAND": {
+            "values": {
+                "111": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_COMMAND": {
+            "values": {
+                "112": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_DEATH_TIMER": {
+            "values": {
+                "113": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_GET_DIALOG": {
+            "values": {
+                "114": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_DIALOG": {
+            "values": {
+                "115": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_FLAGMAN_DIALOG": {
+            "values": {
+                "116": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_ADD_AMMO_1_64": {
+            "values": {
+                "117": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_GAMMA": {
+            "values": {
+                "118": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_ENABLE_PATH_FINDING": {
+            "values": {
+                "119": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_TEXT": {
+            "values": {
+                "120": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_GET_TEXT_DESC": {
+            "values": {
+                "121": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_TEXT_COUNT": {
+            "values": {
+                "122": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_FILE": {
+            "values": {
+                "123": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_GET_TEXT": {
+            "values": {
+                "124": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_TEXT_ROW": {
+            "values": {
+                "125": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_GET_GAMMA": {
+            "values": {
+                "126": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_GET_MAX_SPEED": {
+            "values": {
+                "127": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_GET_SCALE": {
+            "values": {
+                "128": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_SCALE": {
+            "values": {
+                "129": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_NEXT_COMMAND": {
+            "values": {
+                "130": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SCRIPT_VAR": {
+            "values": {
+                "131": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_UNDO_REMOVE": {
+            "values": {
+                "132": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_UNDO_INSERT": {
+            "values": {
+                "133": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_DESTROY_UNIT": {
+            "values": {
+                "134": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_PLAY_SFX": {
+            "values": {
+                "135": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SCRIPT_EVENT": {
+            "values": {
+                "136": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_IMPULSE_SPEED": {
+            "values": {
+                "137": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_MAX_SPEED": {
+            "values": {
+                "138": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_GET_ACCELERATION": {
+            "values": {
+                "139": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_GET_NAME": {
+            "values": {
+                "140": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_NAME": {
+            "values": {
+                "141": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_MOVE_MASK": {
+            "values": {
+                "142": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_GET_DEATH_TIMER": {
+            "values": {
+                "143": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_GET_HP_FLOAT": {
+            "values": {
+                "144": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_HP_FLOAT": {
+            "values": {
+                "145": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_GAME_EX_MODE": {
+            "values": {
+                "146": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        },
+        "ACT_GET_GAME_EX_MODE": {
+            "values": {
+                "147": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        },
+        "ACT_SET_MINI_BOSS": {
+            "values": {
+                "148": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        },
+        "ACT_GET_MINI_BOSS": {
+            "values": {
+                "149": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        },
+        "ACT_SET_LINK_SHIFT": {
+            "values": {
+                "150": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        },
+        "ACT_SET_SHADOW_DIRECTION_OVERRIDE": {
+            "values": {
+                "151": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_GET_OPPONENT_SLOT": {
+            "values": {
+                "152": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_GET_ACTIVE_SLOT": {
+            "values": {
+                "153": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_GET_VECTOR_SPEED": {
+            "values": {
+                "154": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_VECTOR_SPEED": {
+            "values": {
+                "155": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_GET_NUMBER_IN_NAME": {
+            "values": {
+                "156": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SLOT_ACTION": {
+            "values": {
+                "158": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_CHANGE_SLOT": {
+            "values": {
+                "159": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_GET_NUMBER": {
+            "values": {
+                "160": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_NUMBER": {
+            "values": {
+                "161": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_USE_PRIORITIES": {
+            "values": {
+                "162": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_ADD_PRIORITY": {
+            "values": {
+                "163": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_PERSISTENT_SCREEN_COORDINATES": {
+            "values": {
+                "164": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_CHECK_TAG": {
+            "values": {
+                "165": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_SPECIAL_FIGHT": {
+            "values": {
+                "166": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_SPECIAL_FIGHT_CHANCE": {
+            "values": {
+                "167": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_SPECIAL_FIGHT_VID": {
+            "values": {
+                "168": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_GET_ARMOR_HP": {
+            "values": {
+                "169": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_ARMOR_HP": {
+            "values": {
+                "170": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_PERSISTENT_SCALED_SCREEN_COORDINATES": {
+            "values": {
+                "171": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_GET_PATH_FIND_TIME": {
+            "values": {
+                "172": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_SPEED_MODIFICATOR": {
+            "values": {
+                "175": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        },
+        "ACT_SET_SPEED_MODIFICATOR_IN_PERCENTS": {
+            "values": {
+                "176": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        },
+        "ACT_GET_SPEED_MODIFICATOR": {
+            "values": {
+                "177": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        },
+        "ACT_REMOVE_SPEED_MODIFICATOR": {
+            "values": {
+                "178": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        },
+        "ACT_SET_SLOW_LEGS_BORDER": {
+            "values": {
+                "179": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        },
+        "ACT_SET_AUTONOMOUS_MODE": {
+            "values": {
+                "180": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        },
+        "ACT_SET_ANIMATION_SWITCH": {
+            "values": {
+                "181": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        },
+        "ACT_SET_FLAGS": {
+            "values": {
+                "182": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        },
+        "act_restore": {
+            "values": {
+                "200": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "act_changeaction": {
+            "values": {
+                "201": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "act_getaction": {
+            "values": {
+                "202": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "act_changecoor": {
+            "values": {
+                "203": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "act_changecoor_z": {
+            "values": {
+                "204": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_DAMAGE_TYPE": {
+            "values": {
+                "205": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_GET_DAMAGE_TYPE": {
+            "values": {
+                "206": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_GET_VULNERABILITY": {
+            "values": {
+                "207": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_LASTING_POWER": {
+            "values": {
+                "208": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_GET_LASTING_POWER": {
+            "values": {
+                "209": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_VULNERABILITY_FIRE": {
+            "values": {
+                "210": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_VULNERABILITY_COLD": {
+            "values": {
+                "211": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_VULNERABILITY_POISON": {
+            "values": {
+                "212": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_TYPED_DAMAGE_POWER": {
+            "values": {
+                "213": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_LIFESTEAL_FLOAT": {
+            "values": {
+                "214": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_LASTING_DURATION": {
+            "values": {
+                "215": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_GET_LASTING_DURATION": {
+            "values": {
+                "216": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_LASTING_DAMAGE": {
+            "values": {
+                "217": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_GET_LASTING_DAMAGE": {
+            "values": {
+                "218": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_LASTING_DEATH_DAMAGE": {
+            "values": {
+                "219": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_GET_LASTING_DEATH_DAMAGE": {
+            "values": {
+                "220": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_GET_CRITICAL_HIT_MULTI": {
+            "values": {
+                "221": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_CRITICAL_HIT_MULTI": {
+            "values": {
+                "222": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_RICOCHET": {
+            "values": {
+                "223": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_SELFDAMAGE_FLOAT": {
+            "values": {
+                "224": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_DUAL_WEAPON_MODE": {
+            "values": {
+                "225": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_GET_SECOND_HAND": {
+            "values": {
+                "226": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_DUAL_WEAPON_ANIMATION_TORS": {
+            "values": {
+                "227": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_WEAPON_EQUIPMENT_PARAMETERS": {
+            "values": {
+                "228": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_INTERPOLATE_TABLE_COEFF": {
+            "values": {
+                "229": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_GET_FIRE_IN_VOLLEY": {
+            "values": {
+                "230": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_GET_DELAY_FOR_ROTATE_AFTER_FIRE": {
+            "values": {
+                "231": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_RELOAD_CLIP": {
+            "values": {
+                "232": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_FIRE_IN_VOLLEY": {
+            "values": {
+                "233": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_GET_KILLED_BY_WEAPON_TYPE": {
+            "values": {
+                "234": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_GOTO_VEHICLE": {
+            "values": {
+                "235": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_ROTATE_ON_KILL_BULLET": {
+            "values": {
+                "236": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_WEAPON_TYPED_SCRIPT_DAMAGE": {
+            "values": {
+                "237": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_GOTO_STATIONARY_GUN": {
+            "values": {
+                "238": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_CHANGE_CLOTHES_SHIFT_COOR": {
+            "values": {
+                "239": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_NET_SPRITE": {
+            "values": {
+                "240": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_GET_IS_NET_CONTROLED": {
+            "values": {
+                "241": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_SET_DAMAGE_NEGATION_DISTANCE": {
+            "values": {
+                "242": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_GET_FIRING_DISTANCE_BEHIND_BACK": {
+            "values": {
+                "243": [
+                    "ASLC_Android_1.1.4",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_GET_DIRECT_ROUTE_INTERSECTION": {
+            "values": {
+                "244": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        },
+        "ACT_SET_RICOCHET_TO_TARGETS": {
+            "values": {
+                "245": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        },
+        "ACT_SET_DAMAGE_NEGATION_START_DISTANCE": {
+            "values": {
+                "246": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        },
+        "ACT_GET_DIRECT_ROUTE_INTERSECTION_HD": {
+            "values": {
+                "247": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        },
+        "ACT_SET_RICOCHET_TO_TARGETS_MULTI": {
+            "values": {
+                "248": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        },
+        "ACT_SET_WEAPON_TYPE": {
+            "values": {
+                "249": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        },
+        "ACT_GET_LAST_DAMAGE_TAKEN_TIME": {
+            "values": {
+                "250": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        },
+        "ACT_SET_CUSTOM_VALUE": {
+            "values": {
+                "251": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        },
+        "ACT_GET_CUSTOM_VALUE": {
+            "values": {
+                "252": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        },
+        "ACT_ADD_EQUIPMENT_AS_SKIN": {
+            "values": {
+                "253": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        },
+        "ACT_NONE": {
+            "values": {
+                "255": [
+                    "ASLC_Android_1.1.4",
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "ACT_ADD_PRIORITY_TARGET": {
+            "values": {
+                "173": [
+                    "ASTB"
+                ]
+            }
+        },
+        "ACT_REMOVE_PRIORITY_TARGET": {
+            "values": {
+                "174": [
+                    "ASTB"
+                ]
+            }
+        },
+        "ACT_LINK_ENGINE": {
+            "values": {
+                "150": [
+                    "ASTB"
+                ]
+            }
+        },
+        "ACT_CLASH_ENGINE": {
+            "values": {
+                "151": [
+                    "ASTB"
+                ]
+            }
+        },
+        "ACT_FORCELINK_ENGINE": {
+            "values": {
+                "152": [
+                    "ASTB"
+                ]
+            }
+        },
+        "ACT_FIRST_ENGINE": {
+            "values": {
+                "154": [
+                    "ASTB"
+                ]
+            }
+        },
+        "ACT_LAST_ENGINE": {
+            "values": {
+                "155": [
+                    "ASTB"
+                ]
+            }
+        },
+        "ACT_NEXT_ENGINE": {
+            "values": {
+                "156": [
+                    "ASTB"
+                ]
+            }
+        }
+    },
+    "ENABLE": {
+        "ENABLE_CHILDREN_CREATION": {
+            "values": {
+                "10": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        }
+    },
+    "DISABLE": {
+        "DISABLE_CHILDREN_CREATION": {
+            "values": {
+                "11": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        }
+    },
+    "PATH": {
+        "PATH_FINDER_DISABLED": {
+            "values": {
+                "0": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        },
+        "PATH_FINDER_TRACE": {
+            "values": {
+                "1": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        },
+        "PATH_FINDER_ASTAR": {
+            "values": {
+                "2": [
+                    "ASLC_Android_1.1.4"
+                ]
+            }
+        }
+    },
+    "MAIN": {
+        "MAIN_MENU_MAP": {
+            "values": {
+                "\"maps\\\\mainmenu.map\"": [
+                    "ASTB"
+                ]
+            }
+        }
+    },
+    "SHOP": {
+        "SHOP_MAP": {
+            "values": {
+                "\"maps\\\\shop.map\"": [
+                    "ASTB"
+                ]
+            }
+        }
+    },
+    "CURSOR": {
+        "CURSOR_OFF": {
+            "values": {
+                "-1": [
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "CURSOR_NORMAL": {
+            "values": {
+                "0": [
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "CURSOR_MOVE": {
+            "values": {
+                "2": [
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "CURSOR_CLASH": {
+            "values": {
+                "3": [
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "CURSOR_ATTACK": {
+            "values": {
+                "5": [
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "CURSOR_FIGHT": {
+            "values": {
+                "5": [
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "CURSOR_FIGHT2": {
+            "values": {
+                "6": [
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "CURSOR_SELECT": {
+            "values": {
+                "7": [
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "CURSOR_NOTMOVE": {
+            "values": {
+                "8": [
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "CURSOR_CYCLE": {
+            "values": {
+                "9": [
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "CURSOR_LINK": {
+            "values": {
+                "10": [
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "CURSOR_UNLINK": {
+            "values": {
+                "11": [
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "CURSOR_DELETE": {
+            "values": {
+                "15": [
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "CURSOR_HARDWARE": {
+            "values": {
+                "256": [
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        },
+        "CURSOR_SOFTWARE": {
+            "values": {
+                "257": [
+                    "ASTB",
+                    "AS2TL_Beta"
+                ]
+            }
+        }
+    }
+}

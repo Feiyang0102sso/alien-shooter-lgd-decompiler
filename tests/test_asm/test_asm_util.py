@@ -30,7 +30,7 @@ def run_pipeline_to_asm(lgd_path: str) -> tuple:
 
     # P1: Literal Table
     p1 = P1LiteralParser(data)
-    ctx.literal_table, next_off = p1.parse(0)
+    ctx.literal_table, next_off, ctx.is_old_version = p1.parse(0)
     ctx.p1_offset_end = next_off
 
     # P2: Symbol Table

@@ -15,10 +15,16 @@ def scan_lgd_files(target_dir: str) -> list:
     Uses pathlib for recursive globbing
     """
     target = Path(target_dir)
-    return [str(p) for p in target.rglob("*") if p.is_file() and p.suffix.lower() == '.lgd']
+    result = []
+
+    for p in target.rglob("*"):
+        if p.is_file() and p.suffix.lower() == '.lgd':
+            result.append(str(p))
+
+    return result
 
 
-def process_single_file(file_path: str, keep_files: bool) -> bool:
+def process_single_file(file_path: str, keep_files: bool, refine: bool = False) -> bool:
     """
     process single file
     :return True - successful
@@ -26,7 +32,7 @@ def process_single_file(file_path: str, keep_files: bool) -> bool:
     """
     try:
         pipeline = LgdPipeline(file_path)
-        pipeline.run(keep_intermediate=keep_files)
+        pipeline.run(keep_intermediate=keep_files, refine=refine)
         return True
     except Exception as e:
         logger.error_and_stop(f"[!] Critical Error processing '{file_path}': {e}")
@@ -62,12 +68,19 @@ def main():
         help="Print the full exception traceback when an error occurs."
     )
 
+    parser.add_argument(
+        "--refine",
+        action="store_true",
+        help="Apply LGC refinement (extern and constant symbol replacement) after decompilation."
+    )
+
     args = parser.parse_args()
     config.init_app_env()
 
     target_path = args.target_path
     keep_files = not args.clean
     stop_on_error = args.stop_on_error
+    refine = args.refine
 
     try:
         logger.set_stop_on_error(stop_on_error)
@@ -81,7 +94,7 @@ def main():
                 return
 
             logger.info(f"[PROCESSING] Starting Single File Mode: {target_path}")
-            is_success = process_single_file(target_path, keep_files)
+            is_success = process_single_file(target_path, keep_files, refine)
             if is_success:
                 logger.info(f"[PROCESSING] Task Finished Successfully: {target_path}")
             else:
@@ -113,7 +126,7 @@ def main():
                 logger.info(f"\n[BATCH PROGRESS] Processing file {idx}/{total_files}: {file_path}")
                 print("-" * 50)
 
-                if process_single_file(file_path, keep_files):
+                if process_single_file(file_path, keep_files, refine):
                     success_list.append(file_path)
                 else:
                     failed_list.append(file_path)

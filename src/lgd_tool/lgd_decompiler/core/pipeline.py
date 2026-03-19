@@ -20,7 +20,7 @@ class LgdPipeline:
     def __init__(self, file_path):
         self.file_path = file_path
 
-    def run(self, is_debug: bool = False, keep_intermediate: bool = True):
+    def run(self, is_debug: bool = False, keep_intermediate: bool = True, refine: bool = False):
         file_p = Path(self.file_path)
         if not file_p.exists():
             logger.error_and_stop(f"File not found: {self.file_path}")
@@ -165,25 +165,20 @@ class LgdPipeline:
             raise thread_exc[0]
 
         # --- 6.5. Refine Final LGC ---
-        # logger.info("=== Phase 6.5: Refining Final LGC ===")
-        # try:
-        #     if os.path.exists(clean_output_lgc):
-        #         # read generated LGC
-        #         with open(clean_output_lgc, 'r', encoding='utf-8') as f:
-        #             raw_lgc_code = f.read()
-        #
-        #         # goto Refiner
-        #         refiner = LgcRefiner()
-        #         refined_lgc_code = refiner.refine_code(raw_lgc_code)
-        #
-        #         # overwrite
-        #         with open(clean_output_lgc, 'w', encoding='utf-8') as f:
-        #             f.write(refined_lgc_code)
-        #         logger.info("[Refiner] Successfully refined LGC code (removed redundant ampersand brackets).")
-        #     else:
-        #         logger.error(f"[Refiner] Could not find generated LGC file: {clean_output_lgc}")
-        # except Exception as e:
-        #     logger.error_and_stop(f"[Refiner] Failed to refine LGC code: {e}")
+        if refine:
+            print("\n")
+            logger.info("=== Phase 6.5: Refining Final LGC ===")
+            lgc_p = Path(clean_output_lgc)
+            if lgc_p.exists():
+                from lgd_tool.lgd_decompiler.LGC_refiner.refiner import LgcRefiner
+                from lgd_tool.config import REFINER_DATA_DIR
+
+                refiner = LgcRefiner(REFINER_DATA_DIR)
+                raw_lgc_code = lgc_p.read_text(encoding='utf-8')
+                refined_lgc_code = refiner.refine(raw_lgc_code)
+                lgc_p.write_text(refined_lgc_code, encoding='utf-8')
+            else:
+                logger.warning(f"[Refiner] Generated LGC file not found: {clean_output_lgc}")
 
         # ==========================================
         # --- 7. Cleanup ---

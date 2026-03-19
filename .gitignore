@@ -30,8 +30,8 @@ dist/
 *.csv
 *.c
 *.h
-*.json
-constants_usage_results.ini
+scripts/**/data
+scripts/**/output
 
 # --- allow test data ---
 !tests/**/data/
@@ -41,7 +41,6 @@ constants_usage_results.ini
 !tests/**/data/*.lgc
 !tests/**/data/LGC/*.lgc
 
-!refine_data_prepare/output/*.json
 
 
 
