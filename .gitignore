@@ -30,6 +30,7 @@ dist/
 *.csv
 *.c
 *.h
+*.json
 scripts/**/data
 scripts/**/output
 
@@ -40,6 +41,8 @@ scripts/**/output
 !tests/**/data/*.asm
 !tests/**/data/*.lgc
 !tests/**/data/LGC/*.lgc
+
+!data/
 
 
 

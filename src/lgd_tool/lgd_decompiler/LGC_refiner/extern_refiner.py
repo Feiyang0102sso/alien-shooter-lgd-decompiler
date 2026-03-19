@@ -75,7 +75,7 @@ def _try_match_extern(decl_str: str, extern_db: dict) -> str | None:
         db_sig = _build_db_param_signature(entry)
         if decl_sig == db_sig:
             official_decl = entry["official_decl"]
-            logger.debug(f"[Refiner] Matched extern: {func_name} (id={ext_id})")
+            # logger.debug(f"[Refiner] Matched extern: {func_name} (id={ext_id})")
             return official_decl
 
     return None
