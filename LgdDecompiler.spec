@@ -2,15 +2,15 @@
 
 
 a = Analysis(
-    ['main.py'],
-    pathex=[],
+    ['launcher.py'],
+    pathex=['src'],
     binaries=[],
     datas=[],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
-    excludes=['test', '.lgd_sample', 'pytest', 'unittest'],
+    excludes=['test', '.lgd_sample', 'pytest', 'unittest', 'scripts'],
     noarchive=False,
     optimize=0,
 )
@@ -36,8 +36,9 @@ exe = EXE(
     codesign_identity=None,
     entitlements_file=None,
 
-    icon='logo.ico',
+    icon='assets/logo.ico',
     version='version_info.txt'
 
-    #pyinstaller LgdDecompiler.spec --clean
+    # pyinstaller LgdDecompiler.spec --clean
+    # .\.venv\Scripts\Activate.ps1
 )

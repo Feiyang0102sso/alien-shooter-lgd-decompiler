@@ -3,7 +3,7 @@ tests/test_optimizer/test_optimizer_util.py
 优化器测试专用的 helper 函数。
 """
 from pathlib import Path
-from generate_LGC.lgc_generator import LgcGenerator
+from lgd_tool.lgd_decompiler.generate_LGC.lgc_generator import LgcGenerator
 
 
 def generate_and_read_lgc(asm_path: Path, csv_path: Path, output_lgc_path: Path) -> str:

@@ -1,6 +1,6 @@
 # test/test_ast/test_ast_ifdef_recovery.py
 import pytest
-from generate_LGC.ast_structs import CommentNode
+from lgd_tool.lgd_decompiler.generate_LGC.ast_builder import CommentNode
 
 # 动态期望表：配置每个方法需要检查的 Warning 和 AST 生成的代码特征
 EXPECTED_RESULTS = {

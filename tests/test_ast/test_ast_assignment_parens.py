@@ -2,7 +2,7 @@
 import pytest
 from pathlib import Path
 from tests.test_ast.test_ast_util import parse_asm_methods, build_ast_for_method
-from generate_LGC.flow_structurer import FlowStructurer
+from lgd_tool.lgd_decompiler.generate_LGC.flow_structurer import FlowStructurer
 
 # ==========================================
 # 1. 解析目标 ASM 测试用例
@@ -22,8 +22,8 @@ def generate_struct_code_for_test() -> str:
     blocks = getattr(test_method, "blocks", []) # if build_ast_for_method already structured, wait, we must call CFGBuilder to get blocks
     
     # 重新自己构建一次完整带 FlowStructurer 的文本提取逻辑
-    from generate_LGC.cfg_builder import CFGBuilder
-    from generate_LGC.ast_builder import ASTBuilder
+    from lgd_tool.lgd_decompiler.generate_LGC.lgc_generator import CFGBuilder
+    from lgd_tool.lgd_decompiler.generate_LGC.ast_builder import ASTBuilder
     
     cfg_builder = CFGBuilder()
     ast_builder = ASTBuilder()

@@ -1,7 +1,7 @@
 # test/test_ast/test_ast_util.py
-from generate_LGC.asm_parser import AsmParser
-from generate_LGC.cfg_builder import CFGBuilder
-from generate_LGC.ast_builder import ASTBuilder
+from lgd_tool.lgd_decompiler.generate_LGC.asm_parser import AsmParser
+from lgd_tool.lgd_decompiler.generate_LGC.cfg_builder import CFGBuilder
+from lgd_tool.lgd_decompiler.generate_LGC.ast_builder import ASTBuilder
 
 
 def parse_asm_methods(asm_path: str):

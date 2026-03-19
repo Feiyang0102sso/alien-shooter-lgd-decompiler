@@ -5,10 +5,10 @@ ASM 测试专用的 helper 函数。
 
 import re
 
-from core.context import LgdAnalysisContext
-from core.parsers import P1LiteralParser, P2SymbolParser, FixedTableParser, BytecodeParser
-from core.analyzer import LgdAnalyzer
-from generate_intermediate.renderer_asm import LgdAsmRenderer
+from lgd_tool.lgd_decompiler.core.context import LgdAnalysisContext
+from lgd_tool.lgd_decompiler.core.parsers import P1LiteralParser, P2SymbolParser, FixedTableParser, BytecodeParser
+from lgd_tool.lgd_decompiler.core.analyzer import LgdAnalyzer
+from lgd_tool.lgd_decompiler.generate_intermediate.renderer_asm import LgdAsmRenderer
 
 
 def run_pipeline_to_asm(lgd_path: str) -> tuple:

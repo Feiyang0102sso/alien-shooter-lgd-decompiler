@@ -5,19 +5,33 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "LgdDecompiler"
+# 建议将项目名改为代表整个工具箱的名字，这样发布或安装时更统一
+name = "lgd_tool"
 version = "0.3.0"
+dynamic = ["version"]
+# 如果你的项目需要第三方库（比如 requests），以后加在这里：
+# dependencies = ["requests>=2.0"]
+
+# 配置命令行入口
+# 只要你在此处配置，安装后用户在终端直接敲 `lgd-decompiler` 就能运行你的主程序
+[project.scripts]
+lgd-decompiler = "lgd_tool.main:main"
+
 
 [tool.setuptools]
-packages = [
-    "core",
-    "common",
-    "LGC_refiner",
-    "generate_LGC",
-    "generate_intermediate"
-]
+# 告诉打包工具：所有的基础代码都在 src 目录下
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+# 让打包工具自动去 src 目录下去找 Python 包（即带有 __init__.py 的文件夹）
+where = ["src"]
+
+[tool.setuptools.dynamic]
+# 告诉 setuptools 去 lgd_tool 包的 version.py 文件里读取 __version__ 变量
+version = {attr = "lgd_tool.version.__version__"}
+
 
 [tool.pytest.ini_options]
 addopts = "-v --tb=short --show-capture=no"
 testpaths = ["tests"]
-pythonpath = ["."]
+pythonpath = ["src"]
