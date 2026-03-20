@@ -6,7 +6,11 @@ LGC_refiner/const_refiner.py
 
 import re
 from lgd_tool.logger import logger
-from lgd_tool.lgd_decompiler.LGC_refiner.const_rules import EXPORT_CONST_REFINER_RULES
+from lgd_tool.lgd_decompiler.LGC_refiner.const_rules import (
+    CONST_DECOMPOSE_SINGLE_MATCH_ONLY_FUNCTIONS,
+    CONST_SPECIAL_OFFSET_RULES,
+    EXPORT_CONST_REFINER_RULES
+)
 
 
 def refine_constants(lgc_text: str, const_db: dict) -> str:
@@ -28,6 +32,7 @@ def refine_constants(lgc_text: str, const_db: dict) -> str:
 
     def _refine_pass(text: str) -> str:
         """对 text 做单次全函数扫描替换，遇到 args_str 先递归处理"""
+        # 单轮扫描：先处理嵌套调用，再处理当前调用参数
         for func_name, param_rules in EXPORT_CONST_REFINER_RULES.items():
             call_pattern = re.compile(rf'\b{re.escape(func_name)}\s*\(')
             new_parts = []
@@ -57,7 +62,7 @@ def refine_constants(lgc_text: str, const_db: dict) -> str:
                     if param_idx >= len(args):
                         continue
                     original_arg = args[param_idx]
-                    new_arg = _try_replace_const_in_arg(original_arg, prefix_groups, const_db)
+                    new_arg = _try_replace_const_in_arg(original_arg, prefix_groups, const_db, func_name)
                     if new_arg != original_arg:
                         args[param_idx] = new_arg
                         total_replacements[0] += 1
@@ -85,7 +90,7 @@ def refine_constants(lgc_text: str, const_db: dict) -> str:
     return lgc_text
 
 
-def _try_replace_const_in_arg(arg_str: str, prefix_groups: list, const_db: dict) -> str:
+def _try_replace_const_in_arg(arg_str: str, prefix_groups: list, const_db: dict, func_name: str) -> str:
     """
     尝试在单个参数字符串中替换数字常量。
 
@@ -111,12 +116,9 @@ def _try_replace_const_in_arg(arg_str: str, prefix_groups: list, const_db: dict)
     # 尝试纯常量匹配（整个参数就是一个数字）
     int_val = _try_parse_int(arg_stripped)
     if int_val is not None:
-        if int_val in lookup:
-            return arg_str.replace(arg_stripped, lookup[int_val])
-        # 如果没直接匹配上，尝试用常量叠加进行分解
-        decomp = _decompose_constant(int_val, lookup)
-        if decomp:
-            return arg_str.replace(arg_stripped, decomp)
+        replacement = _resolve_numeric_literal(int_val, lookup, func_name, wrap_combo=False)
+        if replacement is not None:
+            return arg_str.replace(arg_stripped, replacement)
 
     # 尝试在表达式中替换数字字面量
     # 匹配十六进制数 0xABC 或十进制数（不匹配变量名中的数字）
@@ -126,18 +128,65 @@ def _try_replace_const_in_arg(arg_str: str, prefix_groups: list, const_db: dict)
         num_str = m.group(1)
         val = _try_parse_int(num_str)
         if val is not None:
-            if val in lookup:
-                return lookup[val]
-            # 对于表达式中独立的常量也可以尝试分解
-            decomp = _decompose_constant(val, lookup)
-            if decomp:
-                if " + " in decomp:
-                    return f"({decomp})"
-                return decomp
+            replacement = _resolve_numeric_literal(val, lookup, func_name, wrap_combo=True)
+            if replacement is not None:
+                return replacement
         return num_str
 
     result = num_pattern.sub(replace_num, arg_str)
     return result
+
+
+def _resolve_numeric_literal(val: int, lookup: dict, func_name: str, wrap_combo: bool) -> str | None:
+    # 数字决策入口：精确命中 > 特殊偏移 > 通用分解
+    if val in lookup:
+        return lookup[val]
+
+    special_decomp = _decompose_special_offset(val, lookup, func_name)
+    if special_decomp is not None:
+        if wrap_combo and " + " in special_decomp:
+            return f"({special_decomp})"
+        return special_decomp
+
+    if func_name in CONST_DECOMPOSE_SINGLE_MATCH_ONLY_FUNCTIONS:
+        return None
+
+    decomp = _decompose_constant(val, lookup)
+    if decomp is None:
+        return None
+    if wrap_combo and " + " in decomp:
+        return f"({decomp})"
+    return decomp
+
+
+def _decompose_special_offset(target_val: int, lookup: dict, func_name: str) -> str | None:
+    # 特殊规则：将目标值解析为“基础常量 + 小偏移”
+    if func_name not in CONST_SPECIAL_OFFSET_RULES:
+        return None
+    offset_min, offset_max = CONST_SPECIAL_OFFSET_RULES[func_name]
+    if offset_min > offset_max:
+        return None
+    if target_val < 0:
+        return None
+
+    best_offset = None
+    best_name = None
+    for base_val, base_name in lookup.items():
+        offset = target_val - base_val
+        if offset < offset_min or offset > offset_max:
+            continue
+        if best_offset is None or offset < best_offset:
+            best_offset = offset
+            best_name = base_name
+            continue
+        if offset == best_offset and best_name is not None and base_name < best_name:
+            best_name = base_name
+
+    if best_name is None:
+        return None
+    if best_offset == 0:
+        return best_name
+    return f"{best_name} + {best_offset}"
 
 
 def _decompose_constant(target_val: int, lookup: dict, max_depth: int = 4) -> str | None:
@@ -145,6 +194,7 @@ def _decompose_constant(target_val: int, lookup: dict, max_depth: int = 4) -> st
     使用迭代加深 DFS 尝试将目标值分解为不超过 max_depth 个常量的和。
     常用于像 ENV_EARTHQUAKE + ENV_STOP 这样被编译成一个大数字的场景。
     """
+    # 通用规则：在限定深度内搜索可加和的常量组合
     if target_val <= 0:
         return None
         
@@ -183,6 +233,7 @@ def _find_matching_paren(text: str, start: int) -> int | None:
     从 start 位置的 '(' 开始，找到匹配的 ')' 位置。
     处理嵌套括号和字符串内的括号。
     """
+    # 词法级括号匹配，避免字符串中的括号干扰
     depth = 0
     in_string = False
     string_char = None
@@ -217,6 +268,7 @@ def _split_args(args_str: str) -> list:
     """
     按顶层逗号拆分参数列表，正确处理嵌套括号和字符串。
     """
+    # 仅在顶层逗号处分割，保持子表达式完整
     args = []
     depth = 0
     in_string = False
@@ -265,6 +317,7 @@ def _try_parse_int(s: str) -> int | None:
     尝试将字符串解析为整数。
     支持十进制和十六进制。
     """
+    # 统一数字解析入口，兼容括号包裹
     s = s.strip()
     if not s:
         return None
@@ -289,6 +342,7 @@ def _report_unoptimized_constants(lgc_text: str):
     """
     检查并打印 LGC 文本中仍未被优化的数字常量（INFO 级别）。
     """
+    # 后验检查：记录未符号化的数字参数，便于补规则
     issues = []
     lines = lgc_text.split('\n')
     
@@ -329,6 +383,7 @@ def _is_pure_numeric_expression(val: str) -> bool:
     """
     判断一个参数字符串是否依然是纯数字表达式（未被符号化）。
     """
+    # 通过字符集合与清洗残留判断是否仍是纯数字表达式
     # 移除非数字符号和纯算术连接符
     # 允许空格、括号、加减乘除、十六进制 x
     if not re.match(r'^[\s()+\-*/0-9a-fA-FxX]+$', val):

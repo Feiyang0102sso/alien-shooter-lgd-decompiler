@@ -79,3 +79,18 @@ EXPORT_CONST_REFINER_RULES = {
         0: ["ISTATE"]  # 例: if( hasInputState(ISTATE_BACK) )
     }
 }
+
+# 这些函数只允许单常量精确匹配，不允许通用“多常量求和分解”
+# 用于规避 Set/GetVidData 这类参数在研究期内的误判风险
+CONST_DECOMPOSE_SINGLE_MATCH_ONLY_FUNCTIONS = {
+    "GetVidData",
+    "SetVidData"
+}
+
+# 这些函数启用“基础常量 + 小偏移”特殊规则
+# 例如 106 可优先还原为 VID_NO_CHILD + 14，而不是 VID_CHILD + VID_SPRITETYPE
+# 元组含义: (最小偏移, 最大偏移)
+CONST_SPECIAL_OFFSET_RULES = {
+    "GetVidData": (0, 16),
+    "SetVidData": (0, 16)
+}

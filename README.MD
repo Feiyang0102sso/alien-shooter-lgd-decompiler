@@ -18,6 +18,7 @@
   - No longer stuck when processing large LGD files.
   
   - Optimized `if else-if` code generation algorithm  to eliminate duplicate code blocks.
+  - Add capability in processing local `unstatic` arrays.
   - Added --refine option for optimizing `extern` functions and macro-defined constants, making code more readable.
 - **v0.3.0 (2026-03-13):**
   
@@ -115,6 +116,7 @@ LgdDecompiler/
   - 解决了处理大型 LGD 文件时的程序卡死的问题。
   
   - 优化了 `if else-if` 代码生成逻辑，彻底消除了反编译过程中产生的大量重复代码。
+  - 添加处理局部非静态数组变量的能力。
   - 新增`--refine`选项，支持对 `extern` 函数和宏定义常数进行优化,增加代码可读性。
 - **v0.3.0 (2026-03-13):**
   - 修复了控制流中造成`do-while`死循环的问题。
