@@ -45,6 +45,8 @@ def load_constants_database(json_path: Path) -> dict:
     例如: {"ACT": {5: "ACT_DESTROY_UNIT", 10: "ACT_ADD_AMMO"}, ...}
 
     值统一转为 int 以便匹配时不依赖字符串格式。
+    这个索引用于 refine_constants 阶段做数值 -> 常量名替换。
+    当同名常量有多个值时，这里只保留值映射关系，不保留版本注释信息。
     """
     logger.debug(f"[Refiner] Loading constants database: {json_path}")
 
@@ -69,6 +71,26 @@ def load_constants_database(json_path: Path) -> dict:
 
     logger.debug(f"[Refiner] Constants database loaded: {len(db)} prefix groups")
     return db
+
+
+def load_constants_raw_database(json_path: Path) -> dict:
+    """
+    原样加载 constants_database.json，不做 int 归一化和结构扁平化。
+
+    这个结构用于生成 LGC 顶部的全量 #define 常量头部，
+    需要保留分组信息、同名多值分支和版本列表。
+    """
+    logger.debug(f"[Refiner] Loading raw constants database: {json_path}")
+
+    if not json_path.exists():
+        logger.warning(f"[Refiner] Constants database not found: {json_path}")
+        return {}
+
+    with open(json_path, 'r', encoding='utf-8') as f:
+        raw_data = json.load(f)
+
+    logger.debug(f"[Refiner] Raw constants database loaded: {len(raw_data)} groups")
+    return raw_data
 
 
 def _parse_value_to_int(val_str: str):

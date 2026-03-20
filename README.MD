@@ -1,4 +1,4 @@
-# LgdDecompiler V 0.3.0
+# LgdDecompiler V 0.4.0
 
 🌍 **Language / 语言**
 
@@ -11,7 +11,16 @@
 
 ### Changelog
 
+- **v0.4.0 (2026-03-20):**
+  
+  - AST Path Exploration algorithm optimized: Complexity reduced from $O(2^N)$ to $O(N)$, significantly improving performance.
+  - Code String Generation algorithm optimized: Complexity reduced from $O(2^N)$ to $O(N)$, significantly improving performance.
+  - No longer stuck when processing large LGD files.
+  
+  - Optimized `if else-if` code generation algorithm  to eliminate duplicate code blocks.
+  - Added --refine option for optimizing `extern` functions and macro-defined constants, making code more readable.
 - **v0.3.0 (2026-03-13):**
+  
   - Fixed the `do-while` infinite loop issue in the control flow.
   - Fixed the logical error caused by nested assignment anomalies.
   - Fixed the Stack_In error in  `&&` `||`caused by unused `#ifdef`
@@ -46,7 +55,6 @@ You have the option to keep the intermediate files generated during the analysis
 
 During execution, please ignore any yellow `[Warning]` logs. As long as there are no red `[Error]` logs, the decompiled scripts should be syntactically sound.
 
-> **Note:** It is not recommended to use this tool on versions containing `default.lgd`. It will cause severe lag and will likely freeze the program.
 
 ### Project Structure
 
@@ -100,6 +108,14 @@ LgdDecompiler/
 
 ### 更新日志
 
+- **v0.4.0 (2026-03-20):**
+  
+  - AST 路径探索算法优化：复杂度由 $O(2^N)$ 降低至 $O(N)$ ，大幅提升了反编译速度.
+  - 代码字符串生成算法优化：复杂度由 $O(2^N)$ 降低至 $O(N)$，大幅提升了反编译速度。
+  - 解决了处理大型 LGD 文件时的程序卡死的问题。
+  
+  - 优化了 `if else-if` 代码生成逻辑，彻底消除了反编译过程中产生的大量重复代码。
+  - 新增`--refine`选项，支持对 `extern` 函数和宏定义常数进行优化,增加代码可读性。
 - **v0.3.0 (2026-03-13):**
   - 修复了控制流中造成`do-while`死循环的问题。
   - 修复了嵌套赋值异常造成的逻辑谬误。
@@ -136,7 +152,6 @@ LgdDecompiler/
 
 在运行过程中出现的黄色 `[警告]` 日志可以忽略，只要不出现红色的 `[报错]`，生成的脚本在语法上至少是完整的。
 
-> **注意：** 极不建议用于处理包含 `default.lgd` 的版本，这会导致极其严重的卡顿甚至程序卡死。
 
 ### 项目结构
 

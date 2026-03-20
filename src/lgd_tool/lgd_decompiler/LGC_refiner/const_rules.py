@@ -72,5 +72,10 @@ EXPORT_CONST_REFINER_RULES = {
     },
     "checkGender": {
         0: ["GENDER"]
+    },
+
+    # --- 信号输入 ---
+    "hasInputState": {
+        0: ["ISTATE"]  # 例: if( hasInputState(ISTATE_BACK) )
     }
 }

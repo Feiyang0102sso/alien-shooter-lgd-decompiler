@@ -331,14 +331,14 @@ def _is_pure_numeric_expression(val: str) -> bool:
     """
     # 移除非数字符号和纯算术连接符
     # 允许空格、括号、加减乘除、十六进制 x
-    if not re.match(r'^[\s\(\)\+\-\*/0-9a-fA-FxX]+$', val):
+    if not re.match(r'^[\s()+\-*/0-9a-fA-FxX]+$', val):
         return False
         
     # 进一步检查确保它不是一个已经替换过的常量（虽然正则已经排除了大部分字母）
     # 但要排除掉变量名等。
     # 如果经过正则清理后还含有字母（除了 x/X 和 A-F），则它可能含有变量名。
     cleaned = re.sub(r'0[xX][0-9a-fA-F]+', '', val) # 移除十六进制数
-    cleaned = re.sub(r'[0-9\s\(\)\+\-\*/]', '', cleaned) # 移除数字和符号
+    cleaned = re.sub(r'[0-9\s()+\-*/]', '', cleaned) # 移除数字和符号
     
     # 如果还剩下字母，说明有变量名或已替换的常量名
     if re.search(r'[a-zA-Z_]', cleaned):

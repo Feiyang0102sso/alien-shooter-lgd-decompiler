@@ -50,11 +50,15 @@ dyn_version_file = spec_dir / 'version_info_dynamic.txt'
 dyn_version_file.write_text(version_info_content, encoding='utf-8')
 # ==================================
 
+refiner_data_dir = spec_dir / 'data' / 'decompiler_refiner'
+
 a = Analysis(
     ['launcher.py'],
     pathex=['src'],
     binaries=[],
-    datas=[],
+    datas=[
+        (str(refiner_data_dir), 'data/decompiler_refiner'),
+    ],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},

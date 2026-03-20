@@ -29,12 +29,64 @@ def get_app_root() -> Path:
     # Default fallback to current working directory when running globally via shim
     return Path.cwd().resolve()
 
+
+def get_resource_root() -> Path:
+    """
+        获取资源文件的根目录 (Resource Root)。
+
+        兼容 PyInstaller 打包后的运行环境：
+        - 单 exe 运行时，内置的静态资源
+          自动解压到一个临时目录 ( sys._MEIPASS), 此时获取这个路径
+        - Python 源码环境下直接运行时，sys._MEIPASS 不存在，
+          回退并返回当前项目的实际根目录。
+
+        Returns:
+            Path: 静态资源所在的根目录绝对路径。
+        """
+    meipass = getattr(sys, "_MEIPASS", None)
+    if meipass:
+        return Path(meipass).resolve()
+    return get_app_root()
+
+
+def resolve_refiner_data_dir() -> Path:
+    """
+        解析并定位反编译器优化模块 (Decompiler Refiner) 的数据文件目录。
+
+        为了实现“既支持内置默认数据，又允许外部数据覆盖（热更新）”的需求，
+        该方法实现了一个按优先级的路径查找机制 (Fallback)：
+
+        优先级顺序：
+        1. 外部目录 (external_dir)：位于生成的 .exe 文件同级的 `data/decompiler_refiner`。
+           （优先级最高，允许用户通过放置外部文件来覆盖程序自带的内置数据）
+        2. 内置目录 (bundled_dir)：位于源码工程中，或被打包进 .exe 临时解压目录下的路径。
+           （作为程序的保底基础数据，确保开箱即用）
+        3. 内部目录 (internal_dir)：兼容 PyInstaller 单目录 (--onedir) 打包模式的路径。
+
+        如果所有路径都不存在，默认返回外部目录路径
+
+        Returns:
+            Path: 最终确定的 refiner 数据库目录的绝对路径。
+        """
+    external_dir = ROOT_DIR / 'data' / 'decompiler_refiner'
+    bundled_dir = RESOURCE_ROOT / 'data' / 'decompiler_refiner'
+    internal_dir = ROOT_DIR / '_internal' / 'data' / 'decompiler_refiner'
+
+    if external_dir.exists():
+        return external_dir
+    if bundled_dir.exists():
+        return bundled_dir
+    if internal_dir.exists():
+        return internal_dir
+    return external_dir
+
 # --- Absolute Path Configuration ---
 ROOT_DIR = get_app_root()
+RESOURCE_ROOT = get_resource_root()
 LOG_FILE_NAME = "LgdDecompiler.log"
 
 # Refiner 数据目录（存放 extern_database.json 和 constants_database.json）
-REFINER_DATA_DIR = ROOT_DIR / 'data' / 'decompiler_refiner'
+REFINER_DATA_DIR = resolve_refiner_data_dir()
 
 input_dir = ROOT_DIR / 'DATAS' # not used in this project
 output_dir = ROOT_DIR / 'OUTPUT' # not used in this project
