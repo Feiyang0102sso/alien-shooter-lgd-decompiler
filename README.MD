@@ -12,16 +12,15 @@
 ### Changelog
 
 - **v0.4.0 (2026-03-20):**
-  
   - AST Path Exploration algorithm optimized: Complexity reduced from $O(2^N)$ to $O(N)$, significantly improving performance.
   - Code String Generation algorithm optimized: Complexity reduced from $O(2^N)$ to $O(N)$, significantly improving performance.
   - No longer stuck when processing large LGD files.
-  
   - Optimized `if else-if` code generation algorithm  to eliminate duplicate code blocks.
   - Add capability in processing local `unstatic` arrays.
   - Added --refine option for optimizing `extern` functions and macro-defined constants, making code more readable.
+  - Add auto detect support for old version `flag`.
+  - Fixed the Stack_out error caused by unused `#ifdef` or grammar miskate
 - **v0.3.0 (2026-03-13):**
-  
   - Fixed the `do-while` infinite loop issue in the control flow.
   - Fixed the logical error caused by nested assignment anomalies.
   - Fixed the Stack_In error in  `&&` `||`caused by unused `#ifdef`
@@ -110,14 +109,14 @@ LgdDecompiler/
 ### 更新日志
 
 - **v0.4.0 (2026-03-20):**
-  
   - AST 路径探索算法优化：复杂度由 $O(2^N)$ 降低至 $O(N)$ ，大幅提升了反编译速度.
   - 代码字符串生成算法优化：复杂度由 $O(2^N)$ 降低至 $O(N)$，大幅提升了反编译速度。
-  - 解决了处理大型 LGD 文件时的程序卡死的问题。
-  
+  - 解决了处理大型 LGD 文件时的程序卡死的问题。 
   - 优化了 `if else-if` 代码生成逻辑，彻底消除了反编译过程中产生的大量重复代码。
   - 添加处理局部非静态数组变量的能力。
   - 新增`--refine`选项，支持对 `extern` 函数和宏定义常数进行优化,增加代码可读性。
+  - 添加自动识别旧版`flag`的功能.
+  - 修复了由未使用的 `#ifdef` 或语法错误引起的Stack_out 错误
 - **v0.3.0 (2026-03-13):**
   - 修复了控制流中造成`do-while`死循环的问题。
   - 修复了嵌套赋值异常造成的逻辑谬误。

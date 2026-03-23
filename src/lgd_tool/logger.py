@@ -1,5 +1,5 @@
 """
-/logger.py
+src/lgd_tool/logger.py
 universal log config for the project
 """
 import logging
@@ -20,19 +20,23 @@ class FatalError(BaseException):
 
 class ErrorLogger(logging.Logger):
     """
+    inherit normal logger class
     an extended version of current Logger
     generally add stop on error in class
     """
 
     def __init__(self, name, level=logging.NOTSET):
+        """
+        initialize logger, NOTSET will handle it to its parent class
+        """
         super().__init__(name, level)
         self.stop_on_error = False
 
-    def set_stop_on_error(self, val: bool):
+    def set_stop_on_error(self, should_stop: bool):
         """
         whether to active stop on error
         """
-        self.stop_on_error = val
+        self.stop_on_error = should_stop
 
     def error_and_stop(self, msg: str, *args, **kwargs):
         """
@@ -40,6 +44,7 @@ class ErrorLogger(logging.Logger):
         """
         if sys.version_info >= (3, 8):
             # return the error message with its exact file, instead of logger.py
+            # not 3 because it will over piercing
             kwargs.setdefault("stacklevel", 2)
         self.error(msg, *args, **kwargs)
         if self.stop_on_error:
@@ -86,26 +91,26 @@ def setup_logger() -> ErrorLogger:
     """
     # Cast to ErrorLogger so the IDE knows the actual return type
     import typing
-    logger = typing.cast(ErrorLogger, logging.getLogger(LOGGER_NAME))
-    logger.setLevel(logging.DEBUG)
-    logger.propagate = False
+    _logger = typing.cast(ErrorLogger, logging.getLogger(LOGGER_NAME))
+    _logger.setLevel(logging.DEBUG)
+    _logger.propagate = False
 
-    if not logger.handlers:
-        # Handler for regular logs (DEBUG, INFO, WARNING)
+    if not _logger.handlers:
+        # Standard Output, Handler for regular logs (DEBUG, INFO, WARNING)
         stdout_h = logging.StreamHandler(sys.stdout)
         stdout_h.setLevel(logging.DEBUG)
         stdout_h.addFilter(lambda r: r.levelno < logging.ERROR)
         stdout_h.setFormatter(ColoredFormatter())
 
-        # Handler for error logs (ERROR, CRITICAL)
+        # Standard Error, Handler for error logs (ERROR, CRITICAL)
         stderr_h = logging.StreamHandler(sys.stderr)
         stderr_h.setLevel(logging.ERROR)
         stderr_h.setFormatter(ColoredFormatter())
 
-        logger.addHandler(stdout_h)
-        logger.addHandler(stderr_h)
+        _logger.addHandler(stdout_h)
+        _logger.addHandler(stderr_h)
 
-    return logger
+    return _logger
 
 
 # Global logger instance for other modules
@@ -120,20 +125,21 @@ def add_file_handler(log_path: Path):
     log_path.parent.mkdir(parents=True, exist_ok=True)
 
     # Get the global logger
-    logger = logging.getLogger(LOGGER_NAME)
+    _logger = logging.getLogger(LOGGER_NAME)
 
     # 1. Remove existing FileHandlers to avoid duplication or path conflicts
-    for h in logger.handlers[:]:
+    for h in _logger.handlers[:]:
         if isinstance(h, logging.FileHandler):
             h.close()
-            logger.removeHandler(h)
+            _logger.removeHandler(h)
 
     # 2. Add the new handler
     file_h = logging.FileHandler(log_path, mode='w', encoding='utf-8')
     file_h.setLevel(logging.DEBUG)
+    # no need color format gor .log
     file_fmt = logging.Formatter(
         '[%(asctime)s.%(msecs)03d] [%(levelname)s] [%(filename)s:%(lineno)d] %(message)s',
         datefmt='%Y-%m-%d %H:%M:%S'
     )
     file_h.setFormatter(file_fmt)
-    logger.addHandler(file_h)
+    _logger.addHandler(file_h)

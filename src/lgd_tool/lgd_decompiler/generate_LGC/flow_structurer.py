@@ -510,7 +510,7 @@ class FlowStructurer:
         while curr is not None:
             if not is_first_block and curr.id in stop_blocks:
                 break
-                
+
             is_first_block = False
 
             if curr.id in visited:
@@ -532,7 +532,7 @@ class FlowStructurer:
             if curr.id in loop_headers and curr.id not in processed_loops:
                 processed_loops.add(curr.id)
                 loop_info = loop_headers[curr.id]
-                
+
                 # ============== 强制捕捉 AWAIT 宏 ==============
                 last_instr = next((i for i in reversed(curr.instructions) if i.mnemonic != 'LINE_NUM'), None)
                 if last_instr and last_instr.mnemonic == 'AWAIT':
@@ -554,14 +554,14 @@ class FlowStructurer:
                             for s in b.successors:
                                 if s.id not in loop_info.body_blocks:
                                     loop_exits.add(s.id)
-                    
+
                     exit_block = None
                     if loop_exits:
                         exit_block_id = list(loop_exits)[0]
                         exit_block = next((x for x in self.blocks if x.id == exit_block_id), None)
-                    
+
                     loop_stops = stop_blocks.copy()
-                    if exit_block: 
+                    if exit_block:
                         loop_stops.add(exit_block.id)
 
                     next_loop_exits = active_loop_exits.copy()
@@ -579,7 +579,7 @@ class FlowStructurer:
                         next_path_stack = path_stack.copy()
                         body_region = self._build_region(curr, loop_stops, processed_loops.copy(), next_path_stack, next_loop_exits)
                         seq.regions.append(LoopRegion(curr, body_region, "1"))
-                        
+
                     curr = exit_block
                 else:
                     cond_str = self._extract_condition(curr)

@@ -1,4 +1,4 @@
-# pip install -e .
+# python -m pip install -e .
 
 [build-system]
 requires = ["setuptools>=61.0"]
