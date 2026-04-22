@@ -23,6 +23,8 @@ build/
 dist/
 
 # --- Sample Lgd ---
+.bak/
+*.zip
 .lgd_sample/
 *.asm
 *.lgd
@@ -35,14 +37,7 @@ scripts/**/data
 scripts/**/output
 
 # --- allow test data ---
-!tests/**/data/
-!tests/**/data/*.lgd
-!tests/**/data/*.csv
-!tests/**/data/*.asm
-!tests/**/data/*.lgc
-!tests/**/data/LGC/*.lgc
-
-!data/
+!tests/fixtures/**
 
 
 

@@ -1,19 +1,19 @@
 """
-test/conftest.py
-Add the project root
-to sys.path so that all test files can
-directly import project modules.
+tests/conftest.py
+Global Pytest Configuration and Common Path Constants.
 
-!!! no longer used, now use pyproject.toml
+Unified directory path for fixtures,
+accessible by all test sub-packages.
 """
 
-# import sys
-# import os
-#
-# PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-# print("PROJECT_ROOT: ", PROJECT_ROOT)
-# # sys.path.append(PROJECT_ROOT)
-#
-# if PROJECT_ROOT not in sys.path:
-#     print("Not found, inserting to sys.path... ")
-#     sys.path.insert(0, PROJECT_ROOT)
+from pathlib import Path
+
+# ===== Global Config =====
+TESTS_DIR = Path(__file__).resolve().parent
+FIXTURES_DIR = TESTS_DIR / "fixtures"
+
+LGD_FILES_DIR = FIXTURES_DIR / "lgd_files"
+EXPECTED_CSV_DIR = FIXTURES_DIR / "expected_csv"
+ASM_FILES_DIR = FIXTURES_DIR / "asm_files"
+GOLDEN_LGC_DIR = FIXTURES_DIR / "original_lgc"
+REFINER_DB_DIR = FIXTURES_DIR / "refiner_db"
