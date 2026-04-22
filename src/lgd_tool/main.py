@@ -76,6 +76,7 @@ def main():
 
     args = parser.parse_args()
     config.init_app_env()
+
     target_path = args.target_path
     keep_files = not args.clean
     stop_on_error = args.stop_on_error
@@ -83,7 +84,6 @@ def main():
 
     try:
         logger.set_stop_on_error(stop_on_error)
-        # config.init_app_env() # used for testing stop on error
         
         target_p = Path(target_path)
 
