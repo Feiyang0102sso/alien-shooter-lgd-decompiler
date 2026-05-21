@@ -39,6 +39,9 @@ scripts/**/output
 # --- allow test data ---
 !tests/fixtures/**
 
+# --- regression test runtime (keep fixtures only) ---
+tests/output/
+
 
 
 

@@ -33,3 +33,8 @@ version = {attr = "lgd_tool.version.__version__"}
 addopts = "-v --tb=short --show-capture=no"
 testpaths = ["tests"]
 pythonpath = ["src"]
+markers = [
+    "pytest: run all tests (pytest)",
+    "unit: unit tests under tests/unit (pytest --unit)",
+    "regression: LGC regression tests (pytest --regression)",
+]
