@@ -37,9 +37,43 @@ def regression_basename(lgd_path: Path) -> str:
     return lgd_path.stem
 
 
+def lgd_path_for_regression_stem(stem: str) -> Path:
+    """
+    Resolve ``lgd_files/<stem>.lgd`` for a regression case stem.
+
+    ``stem`` includes the ``regression_`` prefix, e.g. ``regression_tutorial_00``.
+    """
+    return LGD_FILES_DIR / f"{stem}.lgd"
+
+
+def list_regression_lgd_for_stems(stems: list[str]) -> list[Path]:
+    """LGD paths for the given regression case stems (order preserved)."""
+    paths = []
+    for stem in stems:
+        paths.append(lgd_path_for_regression_stem(stem))
+    return paths
+
+
+def list_regression_pairs_for_stems(stems: list[str]) -> list[tuple[Path, Path]]:
+    """
+    (lgd_path, expected_lgc_path) for each stem in ``stems``.
+
+    Used by LGC regression tests that enumerate an explicit case list
+    (not every ``regression_*.lgd`` under fixtures).
+    """
+    pairs = []
+    for stem in stems:
+        lgd_path = lgd_path_for_regression_stem(stem)
+        expected = expected_lgc_for_lgd(lgd_path)
+        pairs.append((lgd_path, expected))
+    return pairs
+
+
 def list_regression_pairs() -> list[tuple[Path, Path]]:
     """
     (lgd_path, expected_lgc_path) for each ``regression_*.lgd`` that has a baseline.
+
+    Prefer ``list_regression_pairs_for_stems`` when the test suite uses an explicit case list.
     """
     pairs = []
     for lgd_path in list_regression_lgd_files():

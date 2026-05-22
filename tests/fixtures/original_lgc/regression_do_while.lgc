@@ -1,0 +1,265 @@
+// ==========================================
+// Regression Test: Multi-exit Loops, Empty While, and AST Structuring
+// ==========================================
+
+// --- 全局变量与常量定义 (随便编的常数) ---
+int startSurviveShift = 0;
+int StartGameTime = 0;
+int MonstersVid[100];
+int MonsterSpeedPercent[100];
+int MonsterBirthP[1000];
+
+int VID_SPEED = 1;
+int ACT_ATTACK = 2;
+
+int UNDEFINED_INDEX = -1;
+int UNDEFINED_VALUE = -1;
+int categoryMission = 1;
+int EQUIPMENT_DIFFICULTY = 2;
+int MAIN_CONTENT_FRAME_NVID = 3;
+int ACT_GET_SCALE = 4;
+int VID_SIZE_X = 5;
+int VID_SIZE_Y = 6;
+int EQUIPMENT_NAME = 7;
+int EQUIPMENT_MENU_VID = 8;
+int EQUIPMENT_ON_GLOBAL_MAP = 9;
+int MISSION_ICON_Z = 10;
+int EQUIPMENT_MAP_X = 11;
+int EQUIPMENT_MAP_Y = 12;
+int VID_SCALE_X = 13;
+int CENTER_CORRECTION_Y = 14;
+int LIMIT_CORRECTION_X = 15;
+int LIMIT_CORRECTION_Y = 16;
+int EQUIPMENT_CURRENT_RAINING = 17;
+int EQUIPMENT_CURRENT_GAMMA = 18;
+int MISSION_DIFFICULTY_DELTA_Z = 19;
+int ACT_SET_NAME = 20;
+int MISSION_DIFFICULTY_DELTA_Y = 21;
+int MISSION_ICON_BORDER_NVID = 22;
+int MISSION_ICON_BORDER_DELTA_Z = 23;
+int MISSION_ICON_TEXT_FONT_NVID = 24;
+int MISSION_ICON_DELTA_Z = 25;
+int ACT_SET_BEHAVE = 26;
+int BEH_CENTER_X = 27;
+int BEH_CENTER_Y = 28;
+
+int ENEMY_BIRTH_MAX_DISTANCE = 50;
+int ENEMY_BIRTH_ATTEMPTS = 10;
+int ACT_CHANGE_COOR = 29;
+int ACT_SET_GAMMA = 30;
+
+string ITEM_INDICATOR_MARKET_BASE_TAG = "base_tag_test";
+
+// --- 外部函数声明 (Externs) ID: 100 - 134 ---
+extern GetTime() 100;
+extern GetVidData(int entity, int vid_type) 101;
+extern SetVidData(int entity, int vid_type, int value) 102;
+extern Random(int max_val) 103;
+extern MapSizeX() 104;
+extern MapSizeY() 105;
+extern CanPlace(int nVid, int x, int y, int z) 106;
+extern CreateSprite(int nVid, int x, int y, int z) 107;
+extern Action(int entity, int action_id, int p1, int p2, int p3) 108; // 使用最大参数列表
+extern Flagman(int index) 109;
+extern IsBossVid(int nVid) 110;
+
+extern getEquipmentByCategory(int field, int category, int index, int extra) 111;
+extern getDifficultyId(int difficulty) 112;
+extern MenuFind(int nVid) 113;
+extern getDifficultyNVid(int difficultyId) 114;
+extern getSpriteByTag(string tag, int difficultyNVid) 115;
+extern MenuGetProportionalInterfaceScale() 116;
+extern ToScreenX(int x) 117;
+extern ToScreenY(int y, int z) 118;
+extern GetX(int entity) 119;
+extern GetY(int entity) 120;
+extern GetZ(int entity) 121;
+extern checkMissionPosition(int x, int y, int scale, int nVid, int globalMap) 122;
+extern generateRaining() 123;
+extern generateTimeOfDayGamma(int index) 124;
+extern setEquipmentField(int field, int val1, int val2, int val3) 125;
+extern MenuCreate(int nVid, int nDir, int x, int y, int z, int frame) 126;
+extern setProportionalScale(int sprite) 127;
+extern getDifficultyBorderDir(int difficultyId) 128;
+
+extern GetUnitVid(int unit) 129;
+
+extern itoa(int val) 130;
+extern changeLoadingElementTag(string postfix, string baseTag, string marketBaseTag) 131;
+extern iconForIndicator(int indType) 132;
+extern setIndicatorIcon(string tag, int icon) 133;
+extern setMarketParameterForField(string tag, int indType, int index) 134;
+
+
+//整个文件中一共三个 while (1)及其对应break 一个不多一个不少
+//且前三个都不应出现空while 比如 while (xxxx) {空}
+//最后一个特殊用法可以正常识别
+
+// ==========================================
+// 目标测试函数 1：多重 if 嵌套与 do-while
+// ==========================================
+SurviveGameTact()
+{
+  static int prev_time=0, prev_shift=-1;
+  static int arrowed_unit=0;
+  int        shift,i,x,y,delta_speed,dir,unit;
+  if( (GetTime()-prev_time)>100 )
+  {
+    prev_time = GetTime();
+    shift = (startSurviveShift + (GetTime()-StartGameTime)/30000)*24;
+    if( shift > 39*24 )
+      shift = 39*24;
+    if( shift!=prev_shift )
+    {
+      prev_shift = shift;
+      for( i = 0; i < sizeof(MonstersVid)/4; i++ )
+      {
+        delta_speed = (GetVidData(MonstersVid[i],VID_SPEED)*MonsterSpeedPercent[shift/24])/100;
+        SetVidData(MonstersVid[i],VID_SPEED,GetVidData(MonstersVid[i],VID_SPEED) + delta_speed);
+      }
+    }
+    for( i = 0; i < 24; i++ )
+      if( MonsterBirthP[shift+i] )
+      {
+        if( !Random( 600/MonsterBirthP[shift+i] - 1 ) ||
+            (MonsterBirthP[shift+i]==1 && ((GetTime()-StartGameTime)%30000) > 15000) )
+        {
+          do
+          {
+            x=Random(3);
+            if     ( x==0 ) { x=-50;                y=Random(MapSizeY()); }
+            else if( x==1 ) { x=MapSizeX()+50;      y=Random(MapSizeY()); }
+            else if( x==2 ) { x=Random(MapSizeX()); y=-50;                }
+            else            { x=Random(MapSizeX()); y=MapSizeY()+50;      }
+          } while( CanPlace(MonstersVid[i],x,y,0) );
+
+          unit = CreateSprite(MonstersVid[i],x,y,0);
+          Action( unit, ACT_ATTACK,Flagman(0),0,0);
+          if( IsBossVid( MonstersVid[i] ) )
+            arrowed_unit = unit;
+          if( MonsterBirthP[shift+i] == 1 )
+            MonsterBirthP[shift+i] = 0;
+        }
+      }
+  }
+}
+
+// ==========================================
+// 目标测试函数 2：长逻辑与带有取反条件的 do-while
+// ==========================================
+createMissionIcon(int index, int globalMap)
+{
+  if(index == UNDEFINED_INDEX)
+    return ;
+
+  int category = categoryMission;
+  int missionDifficulty = getEquipmentByCategory(EQUIPMENT_DIFFICULTY, category, index, 0);
+  int difficultyId = getDifficultyId(missionDifficulty);
+
+  int frame = MenuFind(MAIN_CONTENT_FRAME_NVID);
+  if(!frame)
+    return;
+
+  int frameScaleX = Action(frame, ACT_GET_SCALE, 0, 0, 0);
+  int frameScaleY = Action(frame, ACT_GET_SCALE, 1, 0, 0);
+  int frameSizeX = GetVidData(MAIN_CONTENT_FRAME_NVID, VID_SIZE_X);
+  int frameSizeY = GetVidData(MAIN_CONTENT_FRAME_NVID, VID_SIZE_Y);
+  frameSizeX = (frameSizeX * frameScaleX) / 1000;
+  frameSizeY = (frameSizeY * frameScaleY) / 1000;
+  
+  string missionName = getEquipmentByCategory(EQUIPMENT_NAME, category, index, 0);
+  int iconNVid = getEquipmentByCategory(EQUIPMENT_MENU_VID, category, index, 0);
+  int iconNDir = getEquipmentByCategory(EQUIPMENT_MENU_VID, category, index, 1);
+  int difficultyNVid = getDifficultyNVid(difficultyId);
+
+  // Проверка что миссии уже нет на карте чтобы не создавать дважды
+  if(getSpriteByTag(missionName, difficultyNVid))
+    return;
+
+  int onMap = getEquipmentByCategory(EQUIPMENT_ON_GLOBAL_MAP, category, index, globalMap);
+  // Высчитать масштабирование объектов
+  int targetScale = MenuGetProportionalInterfaceScale();
+  int x;
+  int y;
+  int z = MISSION_ICON_Z;
+  if(onMap)
+  {
+    x = getEquipmentByCategory(EQUIPMENT_MAP_X, category, index, globalMap);
+    y = getEquipmentByCategory(EQUIPMENT_MAP_Y, category, index, globalMap);
+  }
+  else
+  {
+    int searchScale = (targetScale * GetVidData(difficultyNVid, VID_SCALE_X)) / 1000;
+    int frameCenterX = ToScreenX(GetX(frame));
+    int frameCenterY = ToScreenY(GetY(frame), GetZ(frame)) + (CENTER_CORRECTION_Y * searchScale) / 2000;
+    int limitX = frameSizeX - GetVidData(difficultyNVid, VID_SIZE_X) * searchScale / 1000 + LIMIT_CORRECTION_X * searchScale / 2000;
+    int limitY = frameSizeY - GetVidData(iconNVid,       VID_SIZE_Y) * searchScale / 1000 + LIMIT_CORRECTION_Y * searchScale / 2000; 
+
+    // Найти не занятую область
+    int maxAttempt = 200;
+    int attempt = 0;
+    int goodPosition = 0; // bool replaced by int
+    
+    // CFG 杀手：条件由变量和计数器组合的 do-while
+    do
+    {
+      attempt++;
+      x = frameCenterX - limitX/2 + Random(limitX);
+      y = frameCenterY - limitY/2 + Random(limitY);
+      goodPosition = checkMissionPosition(x, y, searchScale, difficultyNVid, globalMap);
+    }
+    while(!goodPosition && (attempt < maxAttempt));
+
+    // Выбрать текущую миссию для проставления полей
+    getEquipmentByCategory(EQUIPMENT_ON_GLOBAL_MAP, category, index, globalMap);
+    setEquipmentField(EQUIPMENT_CURRENT_RAINING,  generateRaining(), 0, 0);
+    setEquipmentField(EQUIPMENT_CURRENT_GAMMA,    generateTimeOfDayGamma(index), 0, 0);
+    setEquipmentField(EQUIPMENT_MAP_X, globalMap, x, 0);
+    setEquipmentField(EQUIPMENT_MAP_Y, globalMap, y, 0);
+    setEquipmentField(EQUIPMENT_ON_GLOBAL_MAP, globalMap, 1, 0); // true -> 1
+  }
+}
+
+// ==========================================
+// 目标测试函数 3：短小精悍的经典多出口 do-while
+// ==========================================
+moveEnemyToPosition(int unit, int aX, int aY, int aZ)
+{
+  int maxRandom = ENEMY_BIRTH_MAX_DISTANCE * 2;
+  int x;
+  int y;
+  int nVid = GetUnitVid(unit);
+  int i = 0;
+  do
+  {
+    ++i;
+    x = aX + ENEMY_BIRTH_MAX_DISTANCE - Random(maxRandom);
+    y = aY + ENEMY_BIRTH_MAX_DISTANCE - Random(maxRandom);
+  } 
+  while( CanPlace(nVid, x, y, aZ) && (i < ENEMY_BIRTH_ATTEMPTS) );
+  
+  if (i == ENEMY_BIRTH_ATTEMPTS)
+    return 0;
+
+  Action(unit, ACT_CHANGE_COOR, x, y, aZ);
+  return unit;
+}
+
+// ==========================================
+// 目标测试函数 4：死循环代码 / 空操作 while
+// ==========================================
+setMarketIndexedParameter(int indicatorIndex, int indType, int index, int sliderIndex)
+{
+  string tagPostfix =  itoa(indicatorIndex);
+  string resultBaseTag = "tag_slider_" + itoa(sliderIndex) + "_indicator_" ;
+  
+  // 测试点：反编译器必须能认出这是一个合法的、故意写为空的 while 循环
+  // 绝对不能把它和结构化失败导致的空循环混淆
+  while(changeLoadingElementTag(tagPostfix, resultBaseTag, ITEM_INDICATOR_MARKET_BASE_TAG))
+    ;
+
+  string tag = resultBaseTag + tagPostfix;
+  int icon = iconForIndicator(indType);
+  setIndicatorIcon(tag, icon);
+  setMarketParameterForField(tag, indType, index);
+}

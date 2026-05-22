@@ -1,8 +1,11 @@
 """
-tests/regression/lgc/test_lgc_regression.py
+tests/regression/test_lgc_regression.py
 
-LGC regression: decompile ``regression_*.lgd`` and compare function bodies line-by-line
-against ``regression_lgc/regression_*.lgc`` baselines.
+LGC regression: decompile listed ``regression_*.lgd`` cases and compare function bodies
+line-by-line against ``regression_lgc/<same-stem>.lgc`` baselines.
+
+Cases are enumerated explicitly in ``LGC_REGRESSION_CASE_STEMS`` (not all
+``regression_*.lgd`` under fixtures). e.g. ``regression_do_while`` is covered elsewhere.
 
 See TEST_PLAN_LGC_REGRESSION.md.
 """
@@ -16,8 +19,8 @@ from tests.utils.regression.lgc_compare import (
 )
 from tests.utils.regression.paths import (
     expected_lgc_for_lgd,
-    list_regression_lgd_files,
-    list_regression_pairs,
+    lgd_path_for_regression_stem,
+    list_regression_pairs_for_stems,
     regression_basename,
 )
 from tests.utils.regression.workdir import (
@@ -29,16 +32,24 @@ from tests.utils.regression.workdir import (
     write_failure_report,
 )
 
+# Explicit LGC regression cases (stem = filename without .lgd).
+# Other regression_*.lgd files (e.g. regression_do_while) belong to other test suites.
+LGC_REGRESSION_CASE_STEMS = [
+    "regression_tutorial_00",
+    "regression_level_01",
+    "regression_survive_01",
+]
+
 
 def _collect_regression_case_ids():
     """Pytest ids: basename strings for parametrized cases."""
     ids = []
-    for lgd_path, _expected in list_regression_pairs():
+    for lgd_path, _expected in list_regression_pairs_for_stems(LGC_REGRESSION_CASE_STEMS):
         ids.append(regression_basename(lgd_path))
     return ids
 
 
-_REGRESSION_PAIRS = list_regression_pairs()
+_REGRESSION_PAIRS = list_regression_pairs_for_stems(LGC_REGRESSION_CASE_STEMS)
 _REGRESSION_IDS = _collect_regression_case_ids()
 
 
@@ -97,12 +108,13 @@ def test_lgc_regression_matches_baseline(lgd_path, expected_lgc_path):
         raise
 
 
-def test_all_regression_lgd_have_baseline():
+def test_all_lgc_regression_cases_have_baseline():
     """
-    Every ``regression_*.lgd`` under fixtures must have a matching ``.lgc`` baseline.
+    Every case in ``LGC_REGRESSION_CASE_STEMS`` must have a matching ``.lgc`` baseline.
     """
     missing = []
-    for lgd_path in list_regression_lgd_files():
+    for stem in LGC_REGRESSION_CASE_STEMS:
+        lgd_path = lgd_path_for_regression_stem(stem)
         expected = expected_lgc_for_lgd(lgd_path)
         if not expected.exists():
             missing.append(f"{lgd_path.name} -> {expected.name}")
