@@ -33,14 +33,21 @@ dist/
 *.c
 *.h
 *.json
-scripts/**/data
-scripts/**/output
+
 
 # --- allow test data ---
 !tests/fixtures/**
 
 # --- regression test runtime (keep fixtures only) ---
 tests/output/
+
+
+# --- unneeded intermedia via scripting ---
+scripts/**/data
+scripts/**/output
+scripts/endless_loop_detect/*.txt
+
+!_project_proceeds/endless_loop/**
 
 
 

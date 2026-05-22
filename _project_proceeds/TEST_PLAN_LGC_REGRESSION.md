@@ -133,7 +133,20 @@ work_dir: tests/output/regression_lgc/regression_tutorial_00/
 
 ---
 
-## 9. 总结
+## 9. 循环结构化回归（`regression_loop_*`）
+
+> 详见 [`死循环分析.md`](死循环分析.md)。
+
+| 项 | 约定 |
+|----|------|
+| 输入 | `lgd_files/regression_loop_*.lgd`（待从含 `quickSortInventory` 等方法的 LGD 导出） |
+| 基线 | `regression_lgc/regression_loop_*.lgc` |
+| 策略 | 目标函数内优先 `do { } while (` 或显式 `while (cond)`（可读性与结构忠实度；`while (1)+break` 理论上可等价，非死循环必然原因） |
+| 单测 | `tests/unit/lgd_decompiler/generate_LGC/test_flow_structurer_do_while.py`（latch / 取反；无 fixture 时不硬失败） |
+
+---
+
+## 10. 总结
 
 | 项目 | 约定 |
 |------|------|
