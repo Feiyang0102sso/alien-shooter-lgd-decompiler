@@ -530,6 +530,57 @@ class FlowStructurer:
             return True
         return False
 
+    def _collect_loop_outside_successors(self, body_blocks: Set[int]) -> Set[int]:
+        """
+        收集循环体块的所有「后继在循环外」目标块（原始候选出口集）。
+
+        其中既含真正循环出口，也含 break 路径上的中间跳板块。
+        """
+        outside_successors = set()
+        for bid in body_blocks:
+            block = next((item for item in self.blocks if item.id == bid), None)
+            if not block:
+                continue
+            for succ in block.successors:
+                if succ.id not in body_blocks:
+                    outside_successors.add(succ.id)
+        return outside_successors
+
+    def _resolve_terminal_loop_exits(self, body_blocks: Set[int], outside_successors: Set[int]) -> Set[int]:
+        """
+        从候选出口中筛出「终端出口」，排除 break 路径中间跳板。
+
+        跳板特征：自身后继仍全部落在 outside_successors 内（例如 assign; goto exit）。
+        若把跳板也当作 active_loop_exits，if-break 会短路为纯 break，
+        丢失跳板上的副作用语句（压力测试 giVarArr1[2] += ... 案例）。
+        """
+        block_map = {item.id: item for item in self.blocks}
+        terminal_exits = set()
+        for exit_id in outside_successors:
+            block = block_map.get(exit_id)
+            if block is None:
+                continue
+            succ_ids_outside = []
+            for succ in block.successors:
+                if succ.id not in body_blocks:
+                    succ_ids_outside.append(succ.id)
+            # 仅跳向其它候选出口 → 中间跳板，不是终端 break 目标
+            if succ_ids_outside and all(sid in outside_successors for sid in succ_ids_outside):
+                continue
+            terminal_exits.add(exit_id)
+        return terminal_exits
+
+    def _pick_loop_exit_block(self, outside_successors: Set[int], terminal_exits: Set[int]) -> Optional['BasicBlock']:
+        """
+        选取 while(1) 结束后应继续结构化的大块（优先终端出口，按物理地址最靠前）。
+        """
+        block_map = {item.id: item for item in self.blocks}
+        pick_from = terminal_exits if terminal_exits else outside_successors
+        if not pick_from:
+            return None
+        exit_id = min(pick_from, key=lambda bid: block_map[bid].start_offset)
+        return block_map.get(exit_id)
+
     def _get_true_false_blocks(self, block: BasicBlock) -> Tuple[Optional[BasicBlock], Optional[BasicBlock]]:
         if not block.successors: return None, None
         if len(block.successors) == 1: return block.successors[0], None
@@ -598,26 +649,17 @@ class FlowStructurer:
 
                 if not is_while_loop:
                     # Treat as do-while or robust while(1) loop
-                    loop_exits = set()
-                    for bid in loop_info.body_blocks:
-                        b = next((x for x in self.blocks if x.id == bid), None)
-                        if b:
-                            for s in b.successors:
-                                if s.id not in loop_info.body_blocks:
-                                    loop_exits.add(s.id)
-
-                    exit_block = None
-                    if loop_exits:
-                        exit_block_id = list(loop_exits)[0]
-                        exit_block = next((x for x in self.blocks if x.id == exit_block_id), None)
+                    outside_successors = self._collect_loop_outside_successors(loop_info.body_blocks)
+                    terminal_exits = self._resolve_terminal_loop_exits(loop_info.body_blocks, outside_successors)
+                    exit_block = self._pick_loop_exit_block(outside_successors, terminal_exits)
 
                     loop_stops = stop_blocks.copy()
-                    if exit_block:
-                        loop_stops.add(exit_block.id)
+                    for exit_id in terminal_exits:
+                        loop_stops.add(exit_id)
 
                     next_loop_exits = active_loop_exits.copy()
-                    for e in loop_exits:
-                        next_loop_exits.add(e)
+                    for exit_id in terminal_exits:
+                        next_loop_exits.add(exit_id)
 
                     # Extract the condition of the single-block do-while if possible to maintain old style
                     if len(loop_info.body_blocks) == 1:
@@ -640,27 +682,18 @@ class FlowStructurer:
                     # 避免 body 副作用被搬到循环外仅执行一次造成的 empty_while 死循环。
                     # 影响案例: createEnemyInPosition / moveEnemyToPosition / createMissionIcon
                     if self._has_side_effect_statements(curr):
-                        loop_exits = set()
-                        for bid in loop_info.body_blocks:
-                            b = next((x for x in self.blocks if x.id == bid), None)
-                            if b:
-                                for s in b.successors:
-                                    if s.id not in loop_info.body_blocks:
-                                        loop_exits.add(s.id)
-
-                        exit_block = None
-                        if loop_exits:
-                            exit_block_id = list(loop_exits)[0]
-                            exit_block = next((x for x in self.blocks if x.id == exit_block_id), None)
+                        outside_successors = self._collect_loop_outside_successors(loop_info.body_blocks)
+                        terminal_exits = self._resolve_terminal_loop_exits(loop_info.body_blocks, outside_successors)
+                        exit_block = self._pick_loop_exit_block(outside_successors, terminal_exits)
 
                         loop_stops = stop_blocks.copy()
-                        for e in loop_exits:
-                            loop_stops.add(e)
+                        for exit_id in terminal_exits:
+                            loop_stops.add(exit_id)
                         loop_stops.add(curr.id)
 
                         next_loop_exits = active_loop_exits.copy()
-                        for e in loop_exits:
-                            next_loop_exits.add(e)
+                        for exit_id in terminal_exits:
+                            next_loop_exits.add(exit_id)
 
                         # path_stack 重置: 该层循环内部允许重新探查 header
                         next_path_stack_for_loop = path_stack.copy()

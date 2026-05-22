@@ -1,0 +1,91 @@
+
+static int giVarArr1[] = {1, 2, 3, 4, 5, 6};
+static int giVarArr2[10] = {1, 2, 3, 4, 5, 6};
+static int giVar1;
+static int giVar2 = 15;
+static string gsVar1;
+static string gsVar2 = "111111";
+static string gsVarArr1[10];
+int giVarArr3[] = {1, 2, 3, 4, 5, 6};
+int giVarArr4[10] = {1, 2, 3, 4, 5, 6};
+int giVar3;
+int giVar4 = 15;
+string gsVar3;
+string gsVar4 = "111111";
+string gsVarArr2[10];
+main()
+{
+    static int loc_iVarArr1[] = {1, 2, 3, 4, 5, 6};
+    static int loc_iVarArr2[10] = {1, 2, 3, 4, 5, 6};
+    static int loc_iVar1;
+    static int loc_iVar2 = 15;
+    static string loc_sVar1;
+    static string loc_sVar2 = "111111";
+    static string loc_sVarArr1[10];
+    int loc_iVarArr3[] = {1, 2, 3, 4, 5, 6};
+    int loc_iVarArr4[10] = {1, 2, 3, 4, 5, 6};
+    int loc_iVar3;
+    int loc_iVar4 = 15;
+    string loc_sVar3;
+    string loc_sVar4 = "111111";
+    string loc_sVarArr2[10];
+    do
+    {
+        loc_iVar2 ^= loc_iVarArr2[1] % loc_iVarArr1[2] + giVarArr2[3];
+        if (giVarArr1[2] + loc_iVarArr1[1] >= loc_iVarArr2[5] && (loc_iVar1 & loc_iVar2))
+        {
+            giVarArr1[2] += loc_iVar1 & loc_iVar2;
+            break;
+        }
+        loc_iVar1 *= loc_iVarArr3[1];
+        for (loc_iVar2 = 0; loc_iVar2 < loc_iVar1 * giVarArr2[0] + loc_iVarArr3[5] + 7; loc_iVar2++)
+        {
+            loc_iVar1--;
+
+            ++loc_iVarArr1[0];
+            while (loc_iVarArr1[0])
+            {
+                if (giVarArr1[2] + loc_iVarArr1[1] >= loc_iVarArr2[5] && (loc_iVar1 & loc_iVar2 | loc_iVarArr2[0])
+                    || loc_iVarArr2[loc_iVarArr3[0]])
+                {
+                    giVarArr1[2] += loc_iVar1 & loc_iVar2;
+                    break;
+                }
+                loc_iVarArr1[0]--;
+            }
+            loc_iVarArr2[5]--;
+        }
+        if (giVarArr1[2] + loc_iVarArr1[1] >= loc_iVarArr2[5] && (loc_iVar1 & loc_iVar2))
+        {
+            giVarArr1[2] += loc_iVar1 & loc_iVar2;
+        }
+        else
+        {
+            giVarArr1[2] += loc_iVar1 & loc_iVar2;
+            if (giVarArr1[2] + loc_iVarArr1[1] >= loc_iVarArr2[5])
+            {
+                giVarArr1[0] += loc_iVar1 & loc_iVar2;
+
+            }
+            else if (-giVarArr1[2] != loc_iVarArr1[1])
+            {
+                giVarArr1[1] += loc_iVar1 & loc_iVar2;
+            }
+            else if (-giVarArr1[-giVarArr1[2]] != loc_iVarArr1[1])
+            {
+                giVarArr1[2] += loc_iVar1 & loc_iVar2;
+            }
+            else if (-giVarArr1[loc_iVarArr1[loc_iVarArr2[1]]] != loc_iVarArr1[1])
+            {
+                giVarArr1[3] += loc_iVar1 & loc_iVar2;
+            }
+            else
+            {
+                giVarArr1[4] += loc_iVar1 & loc_iVar2;
+
+            }
+        }
+    } while (loc_iVarArr4[2] = loc_iVar1 + loc_iVarArr2[3]);
+
+
+}
