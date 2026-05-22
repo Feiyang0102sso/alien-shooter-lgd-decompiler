@@ -18,7 +18,7 @@ from typing import Optional, Union
 from lgd_tool.logger import logger
 
 # ========== 硬编码路径（：单个 .lgc 或目录，str / Path 均可） ==========
-TARGET_LGC_PATH: Union[str, Path] = r"E:\aa internet download\ASFree_4.5.3_win\maps\main.lgc"
+TARGET_LGC_PATH: Union[str, Path] = r"D:\python coding\lgd_tool\_project_proceeds\endless_loop\main.lgc"
 
 # 报告输出；None 则只打印到控制台
 OUTPUT_REPORT: Union[str, Path, None] = (

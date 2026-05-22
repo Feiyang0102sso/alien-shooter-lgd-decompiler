@@ -14,7 +14,7 @@
 |------|------------|------------|
 | `while (cond) { }` 空循环体，关键语句在循环外只执行一次 | `[ERROR] empty_while` | **高**：`++i` 不递增 → 真死循环 |
 | `while (1) { ... }` 无 `break` / 条件永不假 | `[WARNING] while(1)` | 视 body 而定 |
-| `while (cond);` 或 `while (cond) { }` 且副作用仅在条件中 | 常被误报 `[ERROR]` | **低**：语义可能仍正确 |
+| `while (cond);` 或 `while (cond) { }` 且副作用仅在条件中 | [WARNING] 可能是正确的 | **低**：语义可能仍正确 |
 
 已知游戏级影响（v0.3.0 部分修复）：
 
@@ -117,6 +117,8 @@ while (1) {
 
 ## 4. 整改建议
 
+做尽可能小的修改 仅针对 do while 让test中的regression不要出现大量不相同的内容
+
 ### 4.1 推荐方案（优先）：识别 do-while latch，强制 `DoWhileRegion`
 
 **目标**：无论 `is_while_loop` 真假，只要 CFG 形态是「先 body、后条件、回边到 body 入口」，都输出：
@@ -153,6 +155,8 @@ while (1) {
 **缺点**：生成代码与源码风格差；条件复杂时 `_extract_condition` 取反需验证。
 
 ### 4.3 扫描器调整（`scan_while_issues.py`）
+
+已完成
 
 | 规则 | 建议 |
 |------|------|

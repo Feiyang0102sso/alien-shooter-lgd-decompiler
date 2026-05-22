@@ -479,6 +479,32 @@ class FlowStructurer:
                     return cond
         return "1"
 
+    def _has_side_effect_statements(self, block: BasicBlock) -> bool:
+        """
+        判断 block 是否含有副作用语句 (非控制流跳转, 非纯元数据注释)。
+
+        用途: 在 _build_region 中识别 do-while latch ——
+        若 is_while_loop=True 但 header 块自身含有赋值/函数调用/i++ 等语句,
+        说明 header 兼任 "body 入口 + 条件 latch", 这其实是 do-while 模式。
+        此时若按普通 while 处理会把 body 副作用搬到循环外只执行一次,
+        造成 empty_while 死循环 bug (见 createEnemyInPosition 等案例)。
+        """
+        if not hasattr(block, 'statements') or not block.statements:
+            return False
+        for stmt in block.statements:
+            code = stmt.to_code()
+            if not code:
+                continue
+            # Skip control flow (goto / if-goto)
+            if code.startswith("goto ") or code.startswith("if ("):
+                continue
+            # Skip pure metadata (line markers / comments)
+            if code.startswith("// "):
+                continue
+            # Any other statement (assignment, call, i++, return) counts as side-effect
+            return True
+        return False
+
     def _get_true_false_blocks(self, block: BasicBlock) -> Tuple[Optional[BasicBlock], Optional[BasicBlock]]:
         if not block.successors: return None, None
         if len(block.successors) == 1: return block.successors[0], None
@@ -582,6 +608,49 @@ class FlowStructurer:
 
                     curr = exit_block
                 else:
+                    # ============== [修复] do-while latch 探测 ==============
+                    # 若 header 块自身含有副作用语句 (赋值 / 调用 / ++i / x = ... 等),
+                    # 说明这是 do-while 模式 (header 兼任 body 入口 + 条件 latch),
+                    # 而非普通 while。改用 while(1)+break 处理 (与多块 do-while 路径一致),
+                    # 避免 body 副作用被搬到循环外仅执行一次造成的 empty_while 死循环。
+                    # 影响案例: createEnemyInPosition / moveEnemyToPosition / createMissionIcon
+                    if self._has_side_effect_statements(curr):
+                        loop_exits = set()
+                        for bid in loop_info.body_blocks:
+                            b = next((x for x in self.blocks if x.id == bid), None)
+                            if b:
+                                for s in b.successors:
+                                    if s.id not in loop_info.body_blocks:
+                                        loop_exits.add(s.id)
+
+                        exit_block = None
+                        if loop_exits:
+                            exit_block_id = list(loop_exits)[0]
+                            exit_block = next((x for x in self.blocks if x.id == exit_block_id), None)
+
+                        loop_stops = stop_blocks.copy()
+                        for e in loop_exits:
+                            loop_stops.add(e)
+                        loop_stops.add(curr.id)
+
+                        next_loop_exits = active_loop_exits.copy()
+                        for e in loop_exits:
+                            next_loop_exits.add(e)
+
+                        # path_stack 重置: 该层循环内部允许重新探查 header
+                        next_path_stack_for_loop = path_stack.copy()
+                        body_region = self._build_region(
+                            curr,
+                            loop_stops,
+                            processed_loops.copy(),
+                            next_path_stack_for_loop,
+                            next_loop_exits,
+                        )
+                        seq.regions.append(LoopRegion(curr, body_region, "1"))
+                        curr = exit_block
+                        continue
+
+                    # ============== 原 is_while_loop 分支 (header 仅含条件评估的真 while) ==============
                     cond_str = self._extract_condition(curr)
                     true_block, false_block = self._get_true_false_blocks(curr)
                     exit_block = false_block if false_block and false_block.id not in loop_info.body_blocks else true_block

@@ -280,6 +280,53 @@ createEnemyInPosition(int createEnemyInPosition_arg0, int createEnemyInPosition_
 }
 
 ```
+#### 新版
+
+``` c++
+createEnemyInPosition(int createEnemyInPosition_arg0, int createEnemyInPosition_arg1, int createEnemyInPosition_arg2, int createEnemyInPosition_arg3)
+{
+    int createEnemyInPosition_local0;
+    int createEnemyInPosition_local1;
+    int createEnemyInPosition_local2;
+    int createEnemyInPosition_local3;
+    int createEnemyInPosition_local4;
+
+    createEnemyInPosition_local0 = 100;
+    // --- Line 598 ---
+    // --- Line 599 ---
+    // --- Line 601 ---
+    // --- Line 602 ---
+    createEnemyInPosition_local3 = 0;
+    // --- Line 602 ---
+    // --- Line 603 ---
+    while (1) {
+        (++createEnemyInPosition_local3);
+        // --- Line 606 ---
+        createEnemyInPosition_local1 = ((createEnemyInPosition_arg1 + 50) - Random(createEnemyInPosition_local0));
+        // --- Line 607 ---
+        createEnemyInPosition_local2 = ((createEnemyInPosition_arg2 + 50) - Random(createEnemyInPosition_local0));
+        // --- Line 608 ---
+        // --- Line 611 ---
+        if (CanPlace(createEnemyInPosition_arg0, createEnemyInPosition_local1, createEnemyInPosition_local2, createEnemyInPosition_arg3) && (createEnemyInPosition_local3 < 10)) {
+            break;
+        }
+    }
+    if ((createEnemyInPosition_local3 == 10)) {
+        return 0;
+        // --- Line 615 ---
+    }
+    createEnemyInPosition_local4 = CreateSprite(createEnemyInPosition_arg0, createEnemyInPosition_local1, createEnemyInPosition_local2, createEnemyInPosition_arg3);
+    // --- Line 617 ---
+    // --- Line 618 ---
+    Action(createEnemyInPosition_local4, 118, currentEnemyLevelGamma);
+    // --- Line 620 ---
+    return createEnemyInPosition_local4;
+    // --- Line 621 ---
+}
+
+```
+
+
 
 ### 2
 
@@ -353,6 +400,55 @@ moveEnemyToPosition(int moveEnemyToPosition_arg0, int moveEnemyToPosition_arg1, 
 }
 
 ```
+
+#### 新版
+
+``` cpp
+moveEnemyToPosition(int moveEnemyToPosition_arg0, int moveEnemyToPosition_arg1, int moveEnemyToPosition_arg2, int moveEnemyToPosition_arg3)
+{
+    int moveEnemyToPosition_local0;
+    int moveEnemyToPosition_local1;
+    int moveEnemyToPosition_local2;
+    int moveEnemyToPosition_local3;
+    int moveEnemyToPosition_local4;
+
+    moveEnemyToPosition_local0 = 100;
+    // --- Line 627 ---
+    // --- Line 628 ---
+    // --- Line 630 ---
+    // --- Line 631 ---
+    moveEnemyToPosition_local3 = GetUnitVid(moveEnemyToPosition_arg0);
+    // --- Line 631 ---
+    // --- Line 632 ---
+    moveEnemyToPosition_local4 = 0;
+    // --- Line 632 ---
+    // --- Line 633 ---
+    while (1) {
+        (++moveEnemyToPosition_local4);
+        // --- Line 636 ---
+        moveEnemyToPosition_local1 = ((moveEnemyToPosition_arg1 + 50) - Random(moveEnemyToPosition_local0));
+        // --- Line 637 ---
+        moveEnemyToPosition_local2 = ((moveEnemyToPosition_arg2 + 50) - Random(moveEnemyToPosition_local0));
+        // --- Line 638 ---
+        // --- Line 640 ---
+        if (CanPlace(moveEnemyToPosition_local3, moveEnemyToPosition_local1, moveEnemyToPosition_local2, moveEnemyToPosition_arg3) && (moveEnemyToPosition_local4 < 10)) {
+            break;
+        }
+    }
+    if ((moveEnemyToPosition_local4 == 10)) {
+        return 0;
+        // --- Line 643 ---
+    }
+    Action(moveEnemyToPosition_arg0, 63, moveEnemyToPosition_local1, moveEnemyToPosition_local2, moveEnemyToPosition_arg3);
+    // --- Line 645 ---
+    return moveEnemyToPosition_arg0;
+    // --- Line 646 ---
+}
+
+
+```
+
+
 
 ### 3
 
@@ -650,6 +746,200 @@ createMissionIcon(int createMissionIcon_arg0, int createMissionIcon_arg1)
     Action(createMissionIcon_local25, ACT_SET_BEHAVE, 9);
     // --- Line 721 ---
     Action(createMissionIcon_local25, ACT_SET_NAME, (&createMissionIcon_local8));
+    // --- Line 722 ---
+    // return; mark end of function
+}
+
+```
+
+#### 新版
+
+``` c++
+createMissionIcon(int createMissionIcon_arg0, int createMissionIcon_arg1)
+{
+    int createMissionIcon_local0;
+    int createMissionIcon_local1;
+    int createMissionIcon_local2;
+    int createMissionIcon_local3;
+    int createMissionIcon_local4;
+    int createMissionIcon_local5;
+    int createMissionIcon_local6;
+    int createMissionIcon_local7;
+    string createMissionIcon_local8;
+    int createMissionIcon_local9;
+    int createMissionIcon_local10;
+    int createMissionIcon_local11;
+    int createMissionIcon_local12;
+    int createMissionIcon_local13;
+    int createMissionIcon_local14;
+    int createMissionIcon_local15;
+    int createMissionIcon_local16;
+    int createMissionIcon_local17;
+    int createMissionIcon_local18;
+    int createMissionIcon_local19;
+    int createMissionIcon_local20;
+    int createMissionIcon_local21;
+    int createMissionIcon_local22;
+    int createMissionIcon_local23;
+    int createMissionIcon_local24;
+    int createMissionIcon_local25;
+    int createMissionIcon_local26;
+
+    if ((createMissionIcon_arg0 == -1)) {
+        return;
+        // --- Line 627 ---
+    }
+    createMissionIcon_local0 = 15;
+    // --- Line 628 ---
+    // --- Line 629 ---
+    createMissionIcon_local1 = getEquipmentByCategory(70, createMissionIcon_local0, createMissionIcon_arg0, -999999);
+    // --- Line 629 ---
+    // --- Line 630 ---
+    createMissionIcon_local2 = getDifficultyId(createMissionIcon_local1);
+    // --- Line 630 ---
+    // --- Line 631 ---
+    createMissionIcon_local3 = MenuFind(566);
+    // --- Line 632 ---
+    // --- Line 633 ---
+    if ((!createMissionIcon_local3)) {
+        return;
+        // --- Line 635 ---
+    }
+    createMissionIcon_local4 = Action(createMissionIcon_local3, 128, 0);
+    // --- Line 636 ---
+    // --- Line 637 ---
+    createMissionIcon_local5 = Action(createMissionIcon_local3, 128, 1);
+    // --- Line 637 ---
+    // --- Line 638 ---
+    createMissionIcon_local6 = GetVidData(566, 239);
+    // --- Line 638 ---
+    // --- Line 639 ---
+    createMissionIcon_local7 = GetVidData(566, 240);
+    // --- Line 639 ---
+    // --- Line 640 ---
+    createMissionIcon_local6 = ((createMissionIcon_local6 * createMissionIcon_local4) / 1000);
+    // --- Line 641 ---
+    createMissionIcon_local7 = ((createMissionIcon_local7 * createMissionIcon_local5) / 1000);
+    // --- Line 642 ---
+    createMissionIcon_local8 = getEquipmentByCategory(44, createMissionIcon_local0, createMissionIcon_arg0, -999999);
+    // --- Line 643 ---
+    // --- Line 644 ---
+    createMissionIcon_local9 = getEquipmentByCategory(26, createMissionIcon_local0, createMissionIcon_arg0, 0);
+    // --- Line 644 ---
+    // --- Line 645 ---
+    createMissionIcon_local10 = getEquipmentByCategory(26, createMissionIcon_local0, createMissionIcon_arg0, 1);
+    // --- Line 645 ---
+    // --- Line 646 ---
+    createMissionIcon_local11 = getDifficultyNVid(createMissionIcon_local2);
+    // --- Line 646 ---
+    // --- Line 647 ---
+    if (getSpriteByTag(createMissionIcon_local8, createMissionIcon_local11)) {
+        return;
+        // --- Line 651 ---
+    }
+    createMissionIcon_local12 = getEquipmentByCategory(82, createMissionIcon_local0, createMissionIcon_arg0, createMissionIcon_arg1);
+    // --- Line 652 ---
+    // --- Line 653 ---
+    createMissionIcon_local13 = MenuGetProportionalInterfaceScale();
+    // --- Line 654 ---
+    // --- Line 655 ---
+    // --- Line 656 ---
+    // --- Line 657 ---
+    createMissionIcon_local16 = 101;
+    // --- Line 657 ---
+    // --- Line 658 ---
+    if (createMissionIcon_local12) {
+        createMissionIcon_local14 = getEquipmentByCategory(83, createMissionIcon_local0, createMissionIcon_arg0, createMissionIcon_arg1);
+        // --- Line 661 ---
+        createMissionIcon_local15 = getEquipmentByCategory(84, createMissionIcon_local0, createMissionIcon_arg0, createMissionIcon_arg1);
+        // --- Line 662 ---
+    } else {
+        createMissionIcon_local17 = ((createMissionIcon_local13 * GetVidData(createMissionIcon_local11, 242)) / 1000);
+        // --- Line 665 ---
+        // --- Line 666 ---
+        createMissionIcon_local18 = ToScreenX(GetX(createMissionIcon_local3));
+        // --- Line 666 ---
+        // --- Line 667 ---
+        createMissionIcon_local19 = (ToScreenY(GetY(createMissionIcon_local3), GetZ(createMissionIcon_local3)) + ((117 * createMissionIcon_local17) / 2000));
+        // --- Line 667 ---
+        // --- Line 668 ---
+        createMissionIcon_local20 = ((createMissionIcon_local6 - ((GetVidData(createMissionIcon_local11, 239) * createMissionIcon_local17) / 1000)) + ((-30 * createMissionIcon_local17) / 2000));
+        // --- Line 668 ---
+        // --- Line 669 ---
+        createMissionIcon_local21 = ((createMissionIcon_local7 - ((GetVidData(createMissionIcon_local9, 240) * createMissionIcon_local17) / 1000)) + ((-300 * createMissionIcon_local17) / 2000));
+        // --- Line 669 ---
+        // --- Line 670 ---
+        createMissionIcon_local22 = 200;
+        // --- Line 672 ---
+        // --- Line 673 ---
+        createMissionIcon_local23 = 0;
+        // --- Line 673 ---
+        // --- Line 674 ---
+        createMissionIcon_local24 = 0;
+        // --- Line 674 ---
+        // --- Line 675 ---
+        while (1) {
+            (createMissionIcon_local23++);
+            // --- Line 678 ---
+            createMissionIcon_local14 = ((createMissionIcon_local18 - (createMissionIcon_local20 / 2)) + Random(createMissionIcon_local20));
+            // --- Line 679 ---
+            createMissionIcon_local15 = ((createMissionIcon_local19 - (createMissionIcon_local21 / 2)) + Random(createMissionIcon_local21));
+            // --- Line 680 ---
+            createMissionIcon_local24 = checkMissionPosition(createMissionIcon_local14, createMissionIcon_local15, createMissionIcon_local17, createMissionIcon_local11, createMissionIcon_arg1);
+            // --- Line 681 ---
+            // --- Line 683 ---
+            if ((!createMissionIcon_local24) && (createMissionIcon_local23 < createMissionIcon_local22)) {
+                break;
+            }
+        }
+        getEquipmentByCategory(82, createMissionIcon_local0, createMissionIcon_arg0, createMissionIcon_arg1);
+        // --- Line 686 ---
+        setEquipmentField(92, generateRaining(), -999999, "");
+        // --- Line 688 ---
+        setEquipmentField(93, generateTimeOfDayGamma(createMissionIcon_arg0), -999999, "");
+        // --- Line 690 ---
+        setEquipmentField(83, createMissionIcon_arg1, createMissionIcon_local14, "");
+        // --- Line 692 ---
+        setEquipmentField(84, createMissionIcon_arg1, createMissionIcon_local15, "");
+        // --- Line 693 ---
+        setEquipmentField(82, createMissionIcon_arg1, 1, "");
+        // --- Line 695 ---
+    }
+    createMissionIcon_local16 += -2;
+    // --- Line 700 ---
+    createMissionIcon_local25 = MenuCreate(createMissionIcon_local11, 0, createMissionIcon_local14, createMissionIcon_local15, createMissionIcon_local16, createMissionIcon_local3);
+    // --- Line 700 ---
+    // --- Line 701 ---
+    setProportionalScale(createMissionIcon_local25);
+    // --- Line 702 ---
+    Action(createMissionIcon_local25, 141, (&createMissionIcon_local8));
+    // --- Line 703 ---
+    createMissionIcon_local16 -= -2;
+    // --- Line 706 ---
+    createMissionIcon_local15 -= ((42 * createMissionIcon_local13) / 1000);
+    // --- Line 707 ---
+    createMissionIcon_local25 = MenuCreate(createMissionIcon_local9, createMissionIcon_local10, createMissionIcon_local14, createMissionIcon_local15, createMissionIcon_local16, createMissionIcon_local3);
+    // --- Line 708 ---
+    setProportionalScale(createMissionIcon_local25);
+    // --- Line 709 ---
+    Action(createMissionIcon_local25, 141, (&createMissionIcon_local8));
+    // --- Line 710 ---
+    createMissionIcon_local26 = getDifficultyBorderDir(createMissionIcon_local2);
+    // --- Line 712 ---
+    // --- Line 713 ---
+    createMissionIcon_local25 = MenuCreate(2498, createMissionIcon_local26, createMissionIcon_local14, createMissionIcon_local15, (createMissionIcon_local16 + -1), createMissionIcon_local3);
+    // --- Line 714 ---
+    setProportionalScale(createMissionIcon_local25);
+    // --- Line 715 ---
+    Action(createMissionIcon_local25, 141, (&createMissionIcon_local8));
+    // --- Line 716 ---
+    createMissionIcon_local25 = MenuCreate(5, 0, createMissionIcon_local14, createMissionIcon_local15, (createMissionIcon_local16 + 1), createMissionIcon_local3);
+    // --- Line 719 ---
+    setProportionalScale(createMissionIcon_local25);
+    // --- Line 720 ---
+    Action(createMissionIcon_local25, 95, 9);
+    // --- Line 721 ---
+    Action(createMissionIcon_local25, 141, (&createMissionIcon_local8));
     // --- Line 722 ---
     // return; mark end of function
 }
