@@ -321,7 +321,8 @@ class LgdAsmRenderer:
             val_str = str(op)
             if isinstance(op, str):
                 safe_str = op.replace('\n', '\\n').replace('\r', '\\r')
-                if len(safe_str) > 40: safe_str = safe_str[:37] + "..."
+                # Truncating long strings broke menu paths in decompiled LGC (e.g. open_box_reward).
+                # if len(safe_str) > 40: safe_str = safe_str[:37] + "..."
                 val_str = f'"{safe_str}"'
             elif isinstance(op, int):
                 if entry.opcode in VAR_OPS:
