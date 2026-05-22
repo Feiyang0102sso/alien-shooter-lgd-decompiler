@@ -122,3 +122,48 @@ class TestDoWhileRegression:
             "while (CanPlace(moveEnemyToPosition_local3, moveEnemyToPosition_local1, moveEnemyToPosition_local2, moveEnemyToPosition_arg3) "
             "&& (moveEnemyToPosition_local4 < 10))"
         ) not in text
+
+    def test_break_condition_properly_negated(self, decompiled_lgc_path):
+        """
+        do-while 改写为 while(1)+break 时, break 的条件必须相对 while-cond 取反。
+
+        旧 bug: 直接把 do-while 的循环条件用作 break 条件, 语义反了。
+        修复后: break 条件应该是 "栈顶为真退出循环", 即源码 while-cond 的反义。
+        """
+        text = decompiled_lgc_path.read_text(encoding="utf-8")
+
+        # createMissionIcon 源码: do {...} while (!goodPos && attempt<max);
+        # 正确等价: while(1) {...; if (!((!goodPos) && (attempt<max))) break;}
+        # 旧 bug 形态 (不带外层 ! 包壳): 必须不存在
+        assert (
+            "if ((!createMissionIcon_local24) "
+            "&& (createMissionIcon_local23 < createMissionIcon_local22)) {"
+        ) not in text, "createMissionIcon: break condition is NOT negated (legacy bug)"
+        # 修复后形态: 必须存在
+        assert (
+            "if ((!((!createMissionIcon_local24) "
+            "&& (createMissionIcon_local23 < createMissionIcon_local22)))) {"
+        ) in text, "createMissionIcon: missing negated break condition"
+
+        # moveEnemyToPosition 源码: do {...} while (CanPlace(...) && i<ENEMY_BIRTH_ATTEMPTS);
+        # 正确等价: while(1) {...; if (!(CanPlace(...) && i<10)) break;}
+        assert (
+            "if (CanPlace(moveEnemyToPosition_local3, "
+            "moveEnemyToPosition_local1, moveEnemyToPosition_local2, "
+            "moveEnemyToPosition_arg3) "
+            "&& (moveEnemyToPosition_local4 < ENEMY_BIRTH_ATTEMPTS)) {"
+        ) not in text, "moveEnemyToPosition: break condition is NOT negated (legacy bug)"
+        assert (
+            "if ((!(CanPlace(moveEnemyToPosition_local3, "
+            "moveEnemyToPosition_local1, moveEnemyToPosition_local2, "
+            "moveEnemyToPosition_arg3) "
+            "&& (moveEnemyToPosition_local4 < ENEMY_BIRTH_ATTEMPTS)))) {"
+        ) in text, "moveEnemyToPosition: missing negated break condition"
+
+        # SurviveGameTact 源码: do {...} while (CanPlace(MonstersVid[i],x,y,0));
+        # 字节码栈顶 = !CanPlace (单层 LOG_NOT), 提取出来就是 (!CanPlace(...))
+        # 修复前后这条都应正确: if ((!CanPlace(...))) break;
+        assert (
+            "if ((!CanPlace(MonstersVid[SurviveGameTact_local4], "
+            "SurviveGameTact_local5, SurviveGameTact_local6, 0))) {"
+        ) in text, "SurviveGameTact: missing negated break condition"

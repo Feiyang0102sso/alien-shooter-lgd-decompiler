@@ -465,7 +465,24 @@ class FlowStructurer:
             closest_pdom = max(strict_pdoms, key=lambda c: len(self.post_dominators[c]))
             self.ipdom[b.id] = closest_pdom
 
-    def _extract_condition(self, block: BasicBlock) -> str:
+    def _extract_condition(self, block: BasicBlock, strip_outer_not: bool = True) -> str:
+        """
+        从 block 末尾的 if-goto 语句中提取栈顶条件表达式。
+
+        参数:
+            strip_outer_not:
+                - True  (默认): 若条件形如 ``(!(X))`` 则去掉外层 ``!``, 返回 X。
+                  用于 while / do-while 循环条件场景: 字节码末尾通常是
+                  ``LOG_NOT; JMP_FALSE header``, 栈顶值 = !(源码cond),
+                  此时脱壳恰好还原出源码 while/do-while 的循环条件。
+                - False: 保留栈顶原义 (含可能存在的外层 ``!``), 仅消除冗余
+                  的双重否定 ``(!(!X)) -> X``。用于 if-then-else / if-break
+                  场景: IfRegion 的语义是 ``if (栈顶) then; else else;``,
+                  必须使用栈顶真值, 否则 then/else 分支与 cond 真假对应关系
+                  会反转, 导致 if-break 的条件取反 (例如 do-while 出口的
+                  break 条件没取反, 见 createMissionIcon/moveEnemyToPosition
+                  案例; createAutoTurret 的双重否定也属此类)。
+        """
         if not hasattr(block, 'statements') or not block.statements:
             return "1"
         for stmt in reversed(block.statements):
@@ -474,8 +491,16 @@ class FlowStructurer:
                 m = re.search(r'if \([A-Z_]+:\s*(.+)\)\s*goto', code)
                 if m:
                     cond = m.group(1)
-                    if cond.startswith('(!(') and cond.endswith('))'):
-                        cond = cond[3:-2]
+                    if strip_outer_not:
+                        # Loop 条件场景: 字节码 JMP_FALSE 隐含一次取反,
+                        # 脱掉外层 ! 恢复源码 while/do-while 的循环条件。
+                        if cond.startswith('(!(') and cond.endswith('))'):
+                            cond = cond[3:-2]
+                    else:
+                        # If 条件场景: 保留栈顶真值, 仅消除冗余双重否定 !!
+                        # (字节码可能因编译器规律插入两次 LOG_NOT)。
+                        if cond.startswith('(!(!') and cond.endswith('))'):
+                            cond = cond[4:-2]
                     return cond
         return "1"
 
@@ -691,7 +716,11 @@ class FlowStructurer:
                 branch_stops = stop_blocks.copy()
                 if merge_id is not None:
                     branch_stops.add(merge_id)
-                cond_str = self._extract_condition(curr)
+                # IfRegion 走的是 "if (栈顶) then; else else;" 的语义,
+                # 必须使用栈顶原义 (含可能的外层 !), 不能脱壳。
+                # 否则 then/else 与栈顶真假对应关系会反转,
+                # 导致 do-while latch 处生成的 if-break 条件取反 (bug 案例)。
+                cond_str = self._extract_condition(curr, strip_outer_not=False)
                 last_instr = next((i for i in reversed(curr.instructions) if i.mnemonic != 'LINE_NUM'), None)
                 is_iff = last_instr and last_instr.mnemonic == 'IFF'
                 then_reg = SeqRegion()

@@ -4,7 +4,105 @@
 
 我记得上次修复是修复了do while的bug 但很显然修的不是很全面
 
-## 修复内容
+## 第二轮修复 (本次)：break 条件未取反 bug
+
+### 根因
+
+`flow_structurer.py::_extract_condition()` 原本无条件地把 `(!(X))` 形式的栈顶
+脱壳成 `X`。这对 `while(cond)` / `do{}while(cond)` 是正确的（脱壳后恰好得到
+源码的循环条件），但在 do-while 改写为 `while(1) { ...; if (?) break; }`
+时，`if (?)` 的判断条件是**栈顶真值**（脱壳前的值），不是源码的 while-cond。
+
+`_extract_condition` 复用了同一脱壳逻辑给两种场景，导致：
+
+- 字节码末尾 `LOG_NOT; JMP_FALSE header` (栈顶 = !cond)
+- 旧版反编译生成 `if (cond) break;`  ❌ 语义反了
+- 正确应是 `if (!cond) break;`  ✓ (栈顶为真才退出循环)
+
+> 对 `SurviveGameTact` 的 latch 块没影响，因为它栈顶字符串是 `(!CanPlace(...))`
+> 而非 `(!(CanPlace(...)))`（单层 LOG_NOT 没有内层括号），脱壳条件
+> `cond.startswith('(!(')` 不触发，cond 保留原貌。
+>
+> 对 `createMissionIcon` / `moveEnemyToPosition` 受影响，因为它们的栈顶是
+> `(!((expr1 && expr2)))` 这种含外层括号的形式，脱壳错误剥掉了外层 `!`。
+>
+> 对 `createAutoTurret` 受影响，字节码连续两个 LOG_NOT，栈顶 `(!(!X))`
+> 脱壳成 `(!X)`，导致 break 条件保留了一个本该消除的 `!`。
+
+### 修复方案
+
+`_extract_condition(block, strip_outer_not=True)` 增加 `strip_outer_not` 参数:
+
+- 用于 while / do-while 循环条件场景: 默认 `True`, 维持原脱壳行为。
+- 用于 if-then-else / if-break 场景: 显式传 `False`,
+  保留栈顶原义, 仅消除冗余双重否定 `(!(!X)) -> X`。
+
+调用方仅在 `_build_region` 中处理 `len(curr.successors) > 1` 分支时
+传入 `strip_outer_not=False`。
+
+### 修复后输出
+
+#### createMissionIcon
+源码: `do { ... } while (!goodPosition && (attempt < maxAttempt));`
+
+修复前 (错):
+```c++
+if ((!createMissionIcon_local24) && (createMissionIcon_local23 < createMissionIcon_local22)) {
+    break;
+}
+```
+
+修复后 (对):
+```c++
+if ((!((!createMissionIcon_local24) && (createMissionIcon_local23 < createMissionIcon_local22)))) {
+    break;
+}
+```
+
+#### moveEnemyToPosition / createEnemyInPosition
+源码: `do { ... } while (CanPlace(nVid, x, y, aZ) && (i < ENEMY_BIRTH_ATTEMPTS));`
+
+修复前 (错):
+```c++
+if (CanPlace(...) && (i < 10)) {
+    break;
+}
+```
+
+修复后 (对):
+```c++
+if ((!(CanPlace(...) && (i < 10)))) {
+    break;
+}
+```
+
+#### createAutoTurret
+源码: `do { ... isSafe = isSafePlace(...); } while (!isSafe);`
+
+字节码模式: `PUSH isSafe; LOG_NOT; LOG_NOT; JMP_FALSE header`,
+连续两个 LOG_NOT 是编译器生成 `while(!isSafe)` 的规律产物。
+
+修复前 (错): `if (!isSafe) break;`  - 等同 isSafe=false 时退出, 立刻 return 0
+修复后 (对): `if (isSafe) break;`  - 等同 isSafe=true 时退出, 进入 Action 分支
+
+### 受影响 baseline
+
+以下 baseline 文件中的 break 条件原本反映了 bug, 已更新为正确语义:
+
+- `tests/fixtures/regression_lgc/regression_level_01.lgc` (createAutoTurret)
+- `tests/fixtures/regression_lgc/regression_survive_01.lgc` (createAutoTurret)
+- `tests/fixtures/regression_lgc/regression_main.lgc`
+  (createEnemyInPosition / moveEnemyToPosition / createMissionIcon)
+
+### 新增回归断言
+
+`tests/regression/test_do_while_regression.py::test_break_condition_properly_negated`
+显式断言 `createMissionIcon` / `moveEnemyToPosition` / `SurviveGameTact` 的
+break 条件取反形式存在, 且旧 bug 的"未取反"形态不存在。
+
+---
+
+## 上一轮修复内容 (循环体空 bug)
 
 主要是(循环体有 2 个及以上基本块的情况 方面的
 

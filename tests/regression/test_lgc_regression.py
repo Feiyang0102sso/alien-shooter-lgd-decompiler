@@ -38,6 +38,7 @@ LGC_REGRESSION_CASE_STEMS = [
     "regression_tutorial_00",
     "regression_level_01",
     "regression_survive_01",
+    "regression_main",
 ]
 
 
