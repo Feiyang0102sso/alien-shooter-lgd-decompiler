@@ -7,9 +7,6 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "lgd_tool"
 dynamic = ["version"]
-# maybe add dependency later
- dependencies = ["networkx==3.4.2"]
-
 # configure command line entry point
 # just type lgd-decompiler in consle
 [project.scripts]

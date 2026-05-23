@@ -1,4 +1,4 @@
-# LgdDecompiler V 0.4.0
+# LgdDecompiler V 0.5.0
 
 🌍 **Language / 语言**
 
@@ -11,6 +11,17 @@
 
 ### Changelog
 
+- **v0.5.0 (2026-05-22):**
+  - Fixed do-while latches mis-structured as empty `while (cond) {}` or `while(1)` without `break`, extending the v0.3.0 multi-block fix.
+  - Fixed do-while inverted loop-exit semantics when generating `if (cond) break;` (outer `!` stripped incorrectly).
+  - Fixed side-effect statements dropped on the `if (...) break;` path during do-while structuring.
+  - Fixed dual-exit do-while losing post-loop code .
+  - Fixed ASM output truncating string literals longer than 40 characters.
+  - **Known Fixes:**
+    - *Alien Shooter Last Hope*: turret creation success rate restored to match the original.
+    - *Alien Shooter Free 4.5.3*: basic regression tests pass.
+    - *Alien Shooter Free 4.5.3*: shop / UI issues caused by truncated resource paths.
+    - *Alien Shooter Free 4.5.3*: survival mode not spawning monsters.
 - **v0.4.0 (2026-03-20):**
   - AST Path Exploration algorithm optimized: Complexity reduced from $O(2^N)$ to $O(N)$, significantly improving performance.
   - Code String Generation algorithm optimized: Complexity reduced from $O(2^N)$ to $O(N)$, significantly improving performance.
@@ -108,31 +119,42 @@ LgdDecompiler/
 
 ### 更新日志
 
+- **v0.5.0 (2026-05-22):**
+  - 修复 do-while latch 被错误结构化为空 `while (cond) {}` 或缺少 `break` 的 `while(1)`；在 v0.3.0 多基本块修复基础上继续完善。
+  - 修复 do-while 生成 `if (cond) break;` 时外层 `!` 被误剥，导致循环退出语义反转。
+  - 修复 do-while 结构化时 `if (...) break;` 路径上的副作用语句被丢弃。
+  - 修复双出口 do-while 丢失 post-loop 代码。
+  - 修复 ASM 输出截断长度超过 40 的字符串字面量。
+  - **已知修复：**
+    - *Alien Shooter Last Hope*：炮塔创建成功率恢复至与原版一致。
+    - *Alien Shooter Free 4.5.3*：基本回归测试通过。
+    - *Alien Shooter Free 4.5.3*：截断资源路径引发的商店 / UI 异常。
+    - *Alien Shooter Free 4.5.3*：生存模式不刷怪。
 - **v0.4.0 (2026-03-20):**
-  - AST 路径探索算法优化：复杂度由 $O(2^N)$ 降低至 $O(N)$ ，大幅提升了反编译速度.
-  - 代码字符串生成算法优化：复杂度由 $O(2^N)$ 降低至 $O(N)$，大幅提升了反编译速度。
-  - 解决了处理大型 LGD 文件时的程序卡死的问题。 
-  - 优化了 `if else-if` 代码生成逻辑，彻底消除了反编译过程中产生的大量重复代码。
-  - 添加处理局部非静态数组变量的能力。
-  - 新增`--refine`选项，支持对 `extern` 函数和宏定义常数进行优化,增加代码可读性。
-  - 添加自动识别旧版`flag`的功能.
-  - 修复了由未使用的 `#ifdef` 或语法错误引起的Stack_out 错误
+  - AST 路径探索算法优化：复杂度由 $O(2^N)$ 降低至 $O(N)$，大幅提升反编译速度。
+  - 代码字符串生成算法优化：复杂度由 $O(2^N)$ 降低至 $O(N)$，大幅提升反编译速度。
+  - 处理大型 LGD 文件时不再卡死。
+  - 优化 `if else-if` 代码生成逻辑，消除重复代码块。
+  - 新增处理局部 `unstatic` 数组的能力。
+  - 新增 `--refine` 选项，优化 `extern` 函数与宏定义常量，提升可读性。
+  - 新增自动识别旧版 `flag` 的支持。
+  - 修复未使用的 `#ifdef` 或语法错误引起的 Stack_out 错误。
 - **v0.3.0 (2026-03-13):**
-  - 修复了控制流中造成`do-while`死循环的问题 (循环体有 2 个及以上基本块的情况)。
-  - 修复了嵌套赋值异常造成的逻辑谬误。
-  - 修复了由未使用的 `#ifdef` 引起的 `&&` `||` 中的 Stack_In 错误
+  - 修复控制流中 `do-while` 死循环问题。
+  - 修复嵌套赋值异常造成的逻辑错误。
+  - 修复未使用的 `#ifdef` 在 `&&` / `||` 中引起的 Stack_In 错误。
   - **已知修复（*注：均以 Alien Shooter Last Hope 为准*）：**
-    - 修复生存模式会卡死的问题。
-    - 修复怪物不掉落装备的问题。
+    - 修复生存模式卡死。
+    - 修复怪物不掉落装备。
 - **v0.2.0 (2026-03-09):**
-  - 添加 `stop_on_error` 选项，并且优化 error 处理逻辑。
-  - 优化 csv 导出和 lgc 反编译时处理 extern 函数的逻辑，现在可以记录它们的参数数量等状态。
-  - 优化 asm 和 lgc 反编译时对 `PUSH_INT` 的处理，现在特别大和特别小的 int 会自动被当作常量或 mask 值处理，而不是全算作 signed int。
+  - 新增 `stop_on_error` 选项，优化错误处理逻辑。
+  - 优化 CSV 导出与 LGC 反编译中 `extern` 函数的参数记录。
+  - 优化 ASM / LGC 反编译中的 `PUSH_INT` 处理：过大或过小的整数自动视为常量或 mask，而非 signed int。
   - **已知修复（*注：均以 Alien Shooter Last Hope 为准*）：**
-    - 修复战役模式点击通关按钮闪退的问题。
-    - 修复战役模式地图中随机出现 loading 图标的问题。
-    - 修复指向怪物的箭头只能出现一次的问题。
-- **v0.1.0 (2026-02-24):** 初始发布 (Initial release)。
+    - 修复战役模式点击通关按钮闪退。
+    - 修复战役模式地图随机出现 Loading 图标。
+    - 修复指向怪物的箭头仅显示一次。
+- **v0.1.0 (2026-02-24):** 初始发布。
 
 ### lgd文档
 

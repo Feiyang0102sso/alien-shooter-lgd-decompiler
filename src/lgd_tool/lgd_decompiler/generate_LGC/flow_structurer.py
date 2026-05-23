@@ -530,6 +530,52 @@ class FlowStructurer:
             return True
         return False
 
+    def _meaningful_instructions(self, block: BasicBlock) -> List:
+        """Return non-metadata instructions for a basic block."""
+        result = []
+        for instr in block.instructions:
+            if instr.mnemonic != 'LINE_NUM':
+                result.append(instr)
+        return result
+
+    def _is_pure_return_block(self, block: BasicBlock) -> bool:
+        """
+        块内仅有 RET（无其它有效指令）时为 True。
+
+        用于区分循环内 early return（attemps==max）与 latch 自然出口后的 post-loop。
+        """
+        meaningful = self._meaningful_instructions(block)
+        if not meaningful:
+            return False
+        for instr in meaningful:
+            if instr.mnemonic != 'RET':
+                return False
+        return True
+
+    def _has_side_effect_instructions(self, block: BasicBlock) -> bool:
+        """
+        从字节码指令判断块是否含副作用（CFG 阶段 statements 可能尚未填充）。
+        """
+        side_effect_mnemonics = {
+            'ASSIGN', 'OP_ASSIGN', 'POST_INC', 'PRE_INC', 'POST_DEC', 'PRE_DEC',
+            'CALL_FUNC', 'CALL_EXT_65', 'CALL_EXT_79', 'CALL_EXT_66',
+        }
+        for instr in self._meaningful_instructions(block):
+            mne = instr.mnemonic
+            if mne == 'RET':
+                continue
+            if mne.startswith('CALL'):
+                return True
+            if mne in side_effect_mnemonics:
+                return True
+        return False
+
+    def _block_has_side_effects(self, block: BasicBlock) -> bool:
+        """语句或指令任一含副作用即视为侧效块。"""
+        if self._has_side_effect_statements(block):
+            return True
+        return self._has_side_effect_instructions(block)
+
     def _collect_loop_outside_successors(self, body_blocks: Set[int]) -> Set[int]:
         """
         收集循环体块的所有「后继在循环外」目标块（原始候选出口集）。
@@ -570,16 +616,122 @@ class FlowStructurer:
             terminal_exits.add(exit_id)
         return terminal_exits
 
-    def _pick_loop_exit_block(self, outside_successors: Set[int], terminal_exits: Set[int]) -> Optional['BasicBlock']:
+    def _is_loop_latch_block(self, block: BasicBlock, body_blocks: Set[int]) -> bool:
+        """块同时有循环内/外后继，视为循环条件 latch（do-while 尾部或等价结构）。"""
+        has_inside = False
+        has_outside = False
+        for succ in block.successors:
+            if succ.id in body_blocks:
+                has_inside = True
+            else:
+                has_outside = True
+        return has_inside and has_outside
+
+    def _find_side_effect_post_loop_blocks(
+        self,
+        body_blocks: Set[int],
+        outside_successors: Set[int],
+        terminal_exits: Set[int],
+        loop_header_id: int,
+    ) -> Set[int]:
         """
-        选取 while(1) 结束后应继续结构化的大块（优先终端出口，按物理地址最靠前）。
+        找出 do-while 自然退出后的 post-loop 块。
+
+        判定：loop latch 的循环内后继含 loop header（回跳），循环外后继为：
+        1. 带副作用的 trampoline（后继仍落在 outside_successors 内）；
+        2. terminal 出口且非纯 RET（monstersCreationTact：CanPlace 失败 → CreateSprite）。
+
+        排除 ``if (cond) { sidefx; break; }`` 式内层 if（loop 内后继不是 header）。
         """
         block_map = {item.id: item for item in self.blocks}
+        trampolines = outside_successors - terminal_exits
+        post_loop_blocks = set()
+
+        for body_id in body_blocks:
+            body = block_map.get(body_id)
+            if body is None:
+                continue
+            if not self._is_loop_latch_block(body, body_blocks):
+                continue
+
+            inside_succ_ids = []
+            outside_succs = []
+            for succ in body.successors:
+                if succ.id in body_blocks:
+                    inside_succ_ids.append(succ.id)
+                else:
+                    outside_succs.append(succ)
+
+            if loop_header_id not in inside_succ_ids:
+                continue
+
+            for out_succ in outside_succs:
+                # 跳板：assign/call; goto epilogue
+                if out_succ.id in trampolines:
+                    if self._block_has_side_effects(out_succ):
+                        post_loop_blocks.add(out_succ.id)
+                    continue
+
+                # latch 自然出口：已是 terminal，但后面还有刷怪等逻辑（非纯 RET）
+                if out_succ.id in terminal_exits:
+                    if not self._is_pure_return_block(out_succ):
+                        post_loop_blocks.add(out_succ.id)
+
+        return post_loop_blocks
+
+    def _pick_loop_exit_block(
+        self,
+        outside_successors: Set[int],
+        terminal_exits: Set[int],
+        post_loop_blocks: Optional[Set[int]] = None,
+    ) -> Optional['BasicBlock']:
+        """
+        选取 while(1) 结束后应继续结构化的大块。
+
+        优先 post-loop 侧效块（按物理地址最靠前）。
+        多个 terminal 并存时，跳过纯 RET 的 early-exit，避免误选 attemps==max 块。
+        """
+        block_map = {item.id: item for item in self.blocks}
+
+        if post_loop_blocks:
+            exit_id = min(post_loop_blocks, key=lambda bid: block_map[bid].start_offset)
+            return block_map.get(exit_id)
+
         pick_from = terminal_exits if terminal_exits else outside_successors
         if not pick_from:
             return None
+
+        non_pure_ret = set()
+        for exit_id in pick_from:
+            block = block_map.get(exit_id)
+            if block is not None and not self._is_pure_return_block(block):
+                non_pure_ret.add(exit_id)
+        if non_pure_ret:
+            pick_from = non_pure_ret
+
         exit_id = min(pick_from, key=lambda bid: block_map[bid].start_offset)
         return block_map.get(exit_id)
+
+    def _should_emit_return_not_break(
+        self,
+        target_id: int,
+        active_loop_exits: Set[int],
+        post_loop_blocks: Set[int],
+    ) -> bool:
+        """
+        循环内分支目标是 terminal exit（如 epilogue）且存在 post-loop 代码时，
+        应生成 return 路径而非 break，避免 break 后落到 post-loop 误执行副作用。
+
+        典型场景: do-while 体内 ``if (attemps == max) return;`` 被改写时，
+        目标 epilogue 仍在 active_loop_exits 中，旧逻辑会错误生成 break。
+        """
+        if target_id not in active_loop_exits:
+            return False
+        if not post_loop_blocks:
+            return False
+        if target_id in post_loop_blocks:
+            return False
+        return True
 
     def _get_true_false_blocks(self, block: BasicBlock) -> Tuple[Optional[BasicBlock], Optional[BasicBlock]]:
         if not block.successors: return None, None
@@ -598,10 +750,12 @@ class FlowStructurer:
         return self._build_region(self.entry_block, stop_blocks=set())
 
     def _build_region(self, current_block: 'BasicBlock', stop_blocks: Set[int], processed_loops: Set[int] = None,
-                      path_stack: Set[int] = None, active_loop_exits: Set[int] = None) -> Region:
+                      path_stack: Set[int] = None, active_loop_exits: Set[int] = None,
+                      loop_post_loop_exits: Set[int] = None) -> Region:
         if processed_loops is None: processed_loops = set()
         if path_stack is None: path_stack = set()  # [NEW] 递归追踪防爆盾
         if active_loop_exits is None: active_loop_exits = set()  # [NEW] 记录当前层级所有合法的循环出口
+        if loop_post_loop_exits is None: loop_post_loop_exits = set()
 
         seq = SeqRegion()
         curr = current_block
@@ -651,7 +805,12 @@ class FlowStructurer:
                     # Treat as do-while or robust while(1) loop
                     outside_successors = self._collect_loop_outside_successors(loop_info.body_blocks)
                     terminal_exits = self._resolve_terminal_loop_exits(loop_info.body_blocks, outside_successors)
-                    exit_block = self._pick_loop_exit_block(outside_successors, terminal_exits)
+                    post_loop_blocks = self._find_side_effect_post_loop_blocks(
+                        loop_info.body_blocks, outside_successors, terminal_exits, curr.id
+                    )
+                    exit_block = self._pick_loop_exit_block(
+                        outside_successors, terminal_exits, post_loop_blocks
+                    )
 
                     loop_stops = stop_blocks.copy()
                     for exit_id in terminal_exits:
@@ -660,6 +819,11 @@ class FlowStructurer:
                     next_loop_exits = active_loop_exits.copy()
                     for exit_id in terminal_exits:
                         next_loop_exits.add(exit_id)
+                    for exit_id in post_loop_blocks:
+                        next_loop_exits.add(exit_id)
+
+                    next_post_loop_exits = loop_post_loop_exits.copy()
+                    next_post_loop_exits.update(post_loop_blocks)
 
                     # Extract the condition of the single-block do-while if possible to maintain old style
                     if len(loop_info.body_blocks) == 1:
@@ -670,7 +834,10 @@ class FlowStructurer:
                         # Multi-block robust while(1) processing
                         loop_stops.add(curr.id)
                         next_path_stack = path_stack.copy()
-                        body_region = self._build_region(curr, loop_stops, processed_loops.copy(), next_path_stack, next_loop_exits)
+                        body_region = self._build_region(
+                            curr, loop_stops, processed_loops.copy(), next_path_stack,
+                            next_loop_exits, next_post_loop_exits,
+                        )
                         seq.regions.append(LoopRegion(curr, body_region, "1"))
 
                     curr = exit_block
@@ -684,7 +851,12 @@ class FlowStructurer:
                     if self._has_side_effect_statements(curr):
                         outside_successors = self._collect_loop_outside_successors(loop_info.body_blocks)
                         terminal_exits = self._resolve_terminal_loop_exits(loop_info.body_blocks, outside_successors)
-                        exit_block = self._pick_loop_exit_block(outside_successors, terminal_exits)
+                        post_loop_blocks = self._find_side_effect_post_loop_blocks(
+                            loop_info.body_blocks, outside_successors, terminal_exits, curr.id
+                        )
+                        exit_block = self._pick_loop_exit_block(
+                            outside_successors, terminal_exits, post_loop_blocks
+                        )
 
                         loop_stops = stop_blocks.copy()
                         for exit_id in terminal_exits:
@@ -694,6 +866,11 @@ class FlowStructurer:
                         next_loop_exits = active_loop_exits.copy()
                         for exit_id in terminal_exits:
                             next_loop_exits.add(exit_id)
+                        for exit_id in post_loop_blocks:
+                            next_loop_exits.add(exit_id)
+
+                        next_post_loop_exits = loop_post_loop_exits.copy()
+                        next_post_loop_exits.update(post_loop_blocks)
 
                         # path_stack 重置: 该层循环内部允许重新探查 header
                         next_path_stack_for_loop = path_stack.copy()
@@ -703,6 +880,7 @@ class FlowStructurer:
                             processed_loops.copy(),
                             next_path_stack_for_loop,
                             next_loop_exits,
+                            next_post_loop_exits,
                         )
                         seq.regions.append(LoopRegion(curr, body_region, "1"))
                         curr = exit_block
@@ -727,7 +905,7 @@ class FlowStructurer:
                         # body_region = self._build_region(body_start, loop_stops, processed_loops, next_path_stack, next_loop_exits)
                         # seq.regions.append(LoopRegion(curr, body_region, cond_str))
                         body_region = self._build_region(body_start, loop_stops, processed_loops.copy(),
-                                                         next_path_stack, next_loop_exits)
+                                                         next_path_stack, next_loop_exits, loop_post_loop_exits)
                         seq.regions.append(LoopRegion(curr, body_region, cond_str))
                     curr = exit_block
                 continue
@@ -760,17 +938,41 @@ class FlowStructurer:
                 else_reg = None
                 if true_block:
                     if true_block.id in active_loop_exits:
-                        then_reg.regions.append(BreakRegion())
+                        if true_block.id in loop_post_loop_exits:
+                            then_reg.regions.append(BreakRegion())
+                        elif self._should_emit_return_not_break(
+                            true_block.id, active_loop_exits, loop_post_loop_exits
+                        ):
+                            then_reg = self._build_region(
+                                true_block, branch_stops, processed_loops.copy(),
+                                next_path_stack, active_loop_exits, loop_post_loop_exits,
+                            )
+                        else:
+                            then_reg.regions.append(BreakRegion())
                     elif true_block.id not in branch_stops:
-                        then_reg = self._build_region(true_block, branch_stops, processed_loops.copy(), next_path_stack,
-                                                      active_loop_exits)
+                        then_reg = self._build_region(
+                            true_block, branch_stops, processed_loops.copy(), next_path_stack,
+                            active_loop_exits, loop_post_loop_exits,
+                        )
 
                 if false_block:
                     if false_block.id in active_loop_exits:
-                        else_reg = SeqRegion([BreakRegion()])
+                        if false_block.id in loop_post_loop_exits:
+                            else_reg = SeqRegion([BreakRegion()])
+                        elif self._should_emit_return_not_break(
+                            false_block.id, active_loop_exits, loop_post_loop_exits
+                        ):
+                            else_reg = self._build_region(
+                                false_block, branch_stops, processed_loops.copy(),
+                                next_path_stack, active_loop_exits, loop_post_loop_exits,
+                            )
+                        else:
+                            else_reg = SeqRegion([BreakRegion()])
                     elif false_block.id not in branch_stops:
-                        else_reg = self._build_region(false_block, branch_stops, processed_loops.copy(),
-                                                      next_path_stack, active_loop_exits)
+                        else_reg = self._build_region(
+                            false_block, branch_stops, processed_loops.copy(),
+                            next_path_stack, active_loop_exits, loop_post_loop_exits,
+                        )
 
                 seq.regions.append(BlockRegion(curr))
                 seq.regions.append(IfRegion(curr, then_reg, else_reg, cond_str, is_iff=is_iff))

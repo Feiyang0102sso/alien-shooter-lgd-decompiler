@@ -1,0 +1,191 @@
+// ==========================================
+// Regression: do-while dual terminal exit → post-loop spawn lost
+// Bug doc: _bug_docs/bug in survive mod not create enemy ASF453/not create enemy.md
+//
+// Root cause (decompiler): while(1)+break 结束后存在两个 terminal 出口——
+//   (A) 循环内 early return（纯 RET，地址靠前）
+//   (B) CanPlace latch 自然出口 → post-loop（CreateSprite / Action）
+// flow_structurer 误选 (A)，导致 (B) 及后续刷怪逻辑整段丢失。
+//
+// Compile to: regression_do_while_dual_exit_post_loop.lgd
+// Decompiler must preserve CreateSprite / Action after the placement do-while.
+// ==========================================
+
+// --- Globals (minimal stubs for compile) ---
+int categoryMission = 15;
+int missionIndex = 0;
+int missionMonsterTypeCount = 3;
+int missionMonsterTypeIndex[20] = { 0, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+int missionMonsterTypeFull[100];
+int bossCreated = 0;
+int MonsterQuantity[200];
+
+int MONSTERS_VID_COUNT = 34;
+int UNDEFINED_INDEX = -1;
+int typeBossMission = 33;
+int VID_COUNT1 = 35;
+int ACT_ATTACK = 32;
+int DIFFICULTY_INGAME_SHIFT_PERIOD = 60;
+
+int EQUIPMENT_KILL_MONSTER_QUANTITY_COUNT = 114;
+int EQUIPMENT_KILL_MONSTER = 78;
+int EQUIPMENT_KILL_MONSTER_QUANTITY = 115;
+int EQUIPMENT_TYPE = 42;
+int EQUIPMENT_TIME_BEFORE_BOSS = 81;
+int EQUIPMENT_KILL_COUNT = 69;
+
+string GAME_SESSION_TIME_INSECONDS = "scrambled.game.session.seconds";
+
+// --- Extern API (IDs arbitrary, for compile only) ---
+extern GetX(int unit) 200;
+extern GetY(int unit) 201;
+extern GetRegInt(string key, int index) 202;
+extern GetVidData(int nVid, int field) 203;
+extern Random(int max_val) 204;
+extern CanPlace(int nVid, int x, int y, int z) 205;
+extern CreateSprite(int nVid, int x, int y, int z) 206;
+extern Action(int unit, int act, int p1, int p2) 207;
+extern Flagman(int index) 208;
+extern Log(string msg) 209;
+extern itoa(int val) 210;
+extern getEquipmentByCategory(int field, int category, int index, int extra) 211;
+
+// --- Local helpers (stubs) ---
+arrowToMissionMonster()
+{
+}
+
+getCurrentInGameDifficulty()
+{
+  return 0;
+}
+
+getMonsterQuantityDifficultyShift(int inGameDifficulty)
+{
+  return 0;
+}
+
+// ==========================================
+// Body from bug doc (monstersCreationTact — survive mod spawn tact)
+// ==========================================
+monstersCreationTact(int dummy)
+{
+  int category = categoryMission;
+  arrowToMissionMonster();
+
+  int coorX = GetX(dummy);
+  int coorY = GetY(dummy);
+
+  int inGameDifficulty = getCurrentInGameDifficulty();
+  int shift = getMonsterQuantityDifficultyShift(inGameDifficulty);
+  int difficultyPeriod = GetRegInt(GAME_SESSION_TIME_INSECONDS, 0) / DIFFICULTY_INGAME_SHIFT_PERIOD;
+
+  int killMonsterOverrideCount = getEquipmentByCategory(EQUIPMENT_KILL_MONSTER_QUANTITY_COUNT, category, missionIndex, -999999);
+  int killMonsterNVid = getEquipmentByCategory(EQUIPMENT_KILL_MONSTER, category, missionIndex, -999999);
+  int no_monster = 0;
+  int monsterIndex = UNDEFINED_INDEX;
+  int i;
+  for( i = 0; i <  missionMonsterTypeCount; i++)
+  {
+    monsterIndex = missionMonsterTypeIndex[i];
+    int monsterNVid = MonsterQuantity[monsterIndex];
+    no_monster = GetVidData(monsterNVid, VID_COUNT1);
+    if( (killMonsterOverrideCount > 0) && (monsterNVid == killMonsterNVid) )
+    {
+      if(difficultyPeriod < killMonsterOverrideCount)
+        MonsterQuantity[shift+monsterIndex] = getEquipmentByCategory(EQUIPMENT_KILL_MONSTER_QUANTITY, category, missionIndex, difficultyPeriod);
+      else
+        MonsterQuantity[shift+monsterIndex] = getEquipmentByCategory(EQUIPMENT_KILL_MONSTER_QUANTITY, category, missionIndex, killMonsterOverrideCount-1);
+    }
+
+    int requiredMonsterQuantity = MonsterQuantity[shift+monsterIndex];
+    if(no_monster >=  requiredMonsterQuantity)
+      missionMonsterTypeFull[i] = 1;
+    else
+      missionMonsterTypeFull[i] = 0;
+  }
+
+  int sum_p = 0;
+  for( i = 0; i <  missionMonsterTypeCount; i++)
+  {
+    if(!missionMonsterTypeFull[i])
+    {
+      monsterIndex = missionMonsterTypeIndex[i];
+      sum_p += MonsterQuantity[shift+monsterIndex];
+    }
+  }
+
+  monsterIndex = UNDEFINED_INDEX;
+
+  int createBoss = 0;
+  int type = getEquipmentByCategory(EQUIPMENT_TYPE, category, missionIndex, -999999);
+  if (type == typeBossMission)
+  {
+    int sessionTimeInSeconds = GetRegInt(GAME_SESSION_TIME_INSECONDS, 0);
+    int timeBeforeBoss = getEquipmentByCategory(EQUIPMENT_TIME_BEFORE_BOSS, category, missionIndex, -999999);
+    int killCount = getEquipmentByCategory(EQUIPMENT_KILL_COUNT, category, missionIndex, -999999);
+    if( (sessionTimeInSeconds >= timeBeforeBoss) && (killCount > bossCreated) )
+    {
+      createBoss = 1;
+      int monsterNVid = getEquipmentByCategory(EQUIPMENT_KILL_MONSTER, category, missionIndex, -999999);
+      for( monsterIndex = 0; monsterIndex < MONSTERS_VID_COUNT; monsterIndex++)
+      {
+        if(monsterNVid == MonsterQuantity[monsterIndex])
+          break;
+      }
+
+      if(monsterIndex == MONSTERS_VID_COUNT)
+      {
+        Log("!WARNING! ERROR: No boss nvid in MonsterQuantity table! Boss nvid = " + itoa(monsterNVid));
+        return;
+      }
+    }
+  }
+
+  if(!createBoss)
+  {
+    int randomValue = Random(sum_p);
+    for( i = 0; i <  missionMonsterTypeCount; i++)
+    {
+      if(!missionMonsterTypeFull[i])
+      {
+        monsterIndex = missionMonsterTypeIndex[i];
+        if( (randomValue -= MonsterQuantity[shift+monsterIndex]) < 0 )
+          break;
+      }
+    }
+
+    if( i >= missionMonsterTypeCount )
+      return;
+
+    no_monster = GetVidData(MonsterQuantity[monsterIndex], VID_COUNT1);
+    if(no_monster >=  MonsterQuantity[shift+monsterIndex])
+      return;
+  }
+
+  int deltaX = 0;
+  int deltaY = 0;
+  int maxAttemps = 10;
+  int attemps = 0;
+  do
+  {
+    attemps++;
+    if(attemps == maxAttemps)
+      return;
+
+    int x = Random(3);
+    if     ( x==0 ) deltaX = -50;
+    else if( x==1 ) deltaX =  50;
+    else if( x==2 ) deltaY = -50;
+    else            deltaY =  50;
+  }
+  while( CanPlace(MonsterQuantity[monsterIndex], coorX+deltaX, coorY+deltaY, 0) );
+
+  if(createBoss)
+  {
+    bossCreated++;
+  }
+
+  int unit = CreateSprite(MonsterQuantity[monsterIndex], coorX+deltaX, coorY+deltaY, 0);
+  Action( unit, ACT_ATTACK, Flagman(0), 0);
+}
