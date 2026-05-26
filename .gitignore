@@ -47,8 +47,8 @@ scripts/**/data
 scripts/**/output
 scripts/endless_loop_detect/*.txt
 
-#!level_01.lgd.c
-#!lgc_compiler.exe.c
+
+# !lgc_compiler.exe.c
 
 
 
