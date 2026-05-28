@@ -23,8 +23,10 @@
 ### 2.1 函数 → 行号切段（segment）
 
 1. `split_top_level_functions()`，记录每函数 `min_line` / `max_line`
-2. 按 Global ID 顺序：若 **`next.min_line < prev.max_line`** → 新 segment
+2. 按 注释 顺序：若 **`next.min_line < prev.max_line`** → 新 segment
 3. 依据：LGC 先定义后调用；同文件内行号不交叉。函数体内回跳不参与。
+4. export.lgc下也可能写一点其他函数，所以第一次发生行号跳转之前的所有方法依然归为export
+5. 在每个拆分文件的开头加一行注释说明他被引用了多少次
 
 segment 命名：泄露源码对齐 > `segment_NN.lgc`。
 

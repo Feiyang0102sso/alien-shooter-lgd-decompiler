@@ -24,7 +24,7 @@ Its compilation method mainly consists of three parts:
 
 ## Version and Usage Instructions
 
-Currently, we have two versions of the compiler on hand (Sigma's confidentiality is extremely strict, but they occasionally gift us some developer tools. I suspect this might also be related to the publisher `8-floor-games`; quite a few good things were leaked from versions collaborated with them, so Sigma terminated their partnership around 2022-2023). For convenience, let's call them the New Version and the Old Version. The main analysis in this article is based on the New Version.
+Currently, we have two versions of the compiler on hand (Sigma's confidentiality is somehow strict, but they occasionally gift us some developer tools. I suspect this might also be related to the publisher `8-floor-games`; quite a few good things were leaked from versions collaborated with them, so Sigma terminated their partnership around 2022-2023). For convenience, let's call them the New Version and the Old Version. The main analysis in this article is based on the New Version.
 
 + Old version `lgd_generator.exe` compilation time: 2013-12-14 14:39:05
 + New version `lgc_compiler.exe` compilation time: 2017-10-31 08:36:40
