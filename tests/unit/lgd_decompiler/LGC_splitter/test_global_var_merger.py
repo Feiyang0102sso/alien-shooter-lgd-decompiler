@@ -39,25 +39,9 @@ def test_process_globals_all_identical(tmp_path: Path) -> None:
         ]
     }
 
-    # 模拟各大文件的最后一个段代码
-    file_last_segment = {
-        "tutorial_00.lgc": [
-            "func_tutorial_00_main()",
-            "{",
-            "    // --- Line 100 ---",
-            "}"
-        ],
-        "tutorial_01.lgc": [
-            "func_tutorial_01_main()",
-            "{",
-            "    // --- Line 200 ---",
-            "}"
-        ]
-    }
-
-    updated_segments = process_global_variables(
+    # 调用全局变量合流核心方法
+    file_local_injections = process_global_variables(
         file_to_globals=file_to_globals,
-        file_last_segment_lines=file_last_segment,
         output_dir=tmp_path
     )
 
@@ -69,12 +53,9 @@ def test_process_globals_all_identical(tmp_path: Path) -> None:
     assert "int SoundVolume;" in written_text
     assert "int StartTeleport = 0;" in written_text
 
-    # 2. 验证主入口没有发生任何本地局部变量注入（内容应该和原来完全一样）
-    assert len(updated_segments["tutorial_00.lgc"]) == 4
-    assert updated_segments["tutorial_00.lgc"][0] == "func_tutorial_00_main()"
-    
-    assert len(updated_segments["tutorial_01.lgc"]) == 4
-    assert updated_segments["tutorial_01.lgc"][0] == "func_tutorial_01_main()"
+    # 2. 验证主入口没有发生任何本地局部变量注入（注入列表为空）
+    assert len(file_local_injections["tutorial_00.lgc"]) == 0
+    assert len(file_local_injections["tutorial_01.lgc"]) == 0
 
 
 def test_process_globals_with_conflicts_and_uniques(tmp_path: Path) -> None:
@@ -96,18 +77,8 @@ def test_process_globals_with_conflicts_and_uniques(tmp_path: Path) -> None:
         ]
     }
 
-    file_last_segment = {
-        "tutorial_00.lgc": [
-            "func_tutorial_00_main()"
-        ],
-        "tutorial_01.lgc": [
-            "func_tutorial_01_main()"
-        ]
-    }
-
-    updated_segments = process_global_variables(
+    file_local_injections = process_global_variables(
         file_to_globals=file_to_globals,
-        file_last_segment_lines=file_last_segment,
         output_dir=tmp_path
     )
 
@@ -119,24 +90,14 @@ def test_process_globals_with_conflicts_and_uniques(tmp_path: Path) -> None:
     assert "int MapOnlyVar = 99;" in written_text
     assert "StartTeleport" not in written_text
 
-    # 2. 验证 tutorial_00.lgc 主脚本的局部注入
-    # 应当仅成功在头部注入了存在冲突的变量 StartTeleport = 0，而无 MapOnlyVar
-    lines_00 = updated_segments["tutorial_00.lgc"]
-    assert len(lines_00) > 1
-    assert "Local/Conflict Global Variables" in lines_00[1]
-    assert "Total: 1 items" in lines_00[2]
-    assert "int StartTeleport = 0;" in lines_00[4]
-    assert "MapOnlyVar" not in "".join(lines_00)
-    # 物理原有代码应被拼在最尾端
-    assert lines_00[-1] == "func_tutorial_00_main()"
+    # 2. 验证私有变量定义的分发
+    # tutorial_00.lgc 应分发了具有冲突的 StartTeleport = 0
+    decls_00 = file_local_injections["tutorial_00.lgc"]
+    assert len(decls_00) == 1
+    assert decls_00[0] == "int StartTeleport = 0;"
 
-    # 3. 验证 tutorial_01.lgc 主脚本的局部注入
-    # 应当仅成功在头部注入了存在冲突的变量 StartTeleport = 1，且绝不含有 MapOnlyVar
-    lines_01 = updated_segments["tutorial_01.lgc"]
-    assert len(lines_01) > 1
-    assert "Local/Conflict Global Variables" in lines_01[1]
-    assert "Total: 1 items" in lines_01[2]
-    assert "int StartTeleport = 1;" in lines_01[4]
-    assert "MapOnlyVar" not in "".join(lines_01)
-    assert lines_01[-1] == "func_tutorial_01_main()"
+    # tutorial_01.lgc 应分发了具有冲突的 StartTeleport = 1
+    decls_01 = file_local_injections["tutorial_01.lgc"]
+    assert len(decls_01) == 1
+    assert decls_01[0] == "int StartTeleport = 1;"
 

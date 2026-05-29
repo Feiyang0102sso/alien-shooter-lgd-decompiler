@@ -246,20 +246,26 @@ def write_segment_files(
 
         seg_file = output_dir / seg_file_name
 
+        # 生成防重复引用的唯一 sentinel 宏名
+        macro_name = f"_{seg_file_name.upper().replace('.', '_').replace('-', '_')}_"
+
         seg_lines = []
+        seg_lines.append(f"#ifndef {macro_name}")
+        seg_lines.append(f"#define {macro_name} aaa")
+        seg_lines.append("")
         seg_lines.append("// ==========================================")
         seg_lines.append(f"// file {seg_file_name}")
         seg_lines.append("// ==========================================")
         seg_lines.append("")
 
         for func in seg:
-            # seg_lines.append(
-            #     f"// 函数: {func.name} (行号范围: {func.min_line} ~ {func.max_line})"
-            # )
             for line in func.lines:
                 seg_lines.append(line)
             seg_lines.append("")
 
+        seg_lines.append("#endif")
+        seg_lines.append("")
+
         seg_file.write_text("\n".join(seg_lines), encoding="utf-8")
-        logger.info("Successfully wrote segment file to: %s", seg_file)
+        logger.info("Successfully wrote segment file with include guard to: %s", seg_file)
 

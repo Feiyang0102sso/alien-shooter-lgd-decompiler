@@ -70,11 +70,19 @@ def test_export_file_writing(tmp_path: Path) -> None:
     written_content = output_file.read_text(encoding="utf-8")
     written_lines = written_content.splitlines()
 
-    # 头四行应当是注释信息
-    assert written_lines[0] == "// =========================================="
-    assert written_lines[1] == "// Export Definitions"
-    assert written_lines[2] == "// Total Declarations: 173"
-    assert written_lines[3] == "// =========================================="
+    # 头三行应当是 Sentinel 防重包含保护
+    assert written_lines[0] == "#ifndef _CORE_EXPORT_LGC_"
+    assert written_lines[1] == "#define _CORE_EXPORT_LGC_ aaa"
+    assert written_lines[2] == ""
 
-    # 第 6 行应当是第一个 extern（因为第 5 行为空行）
-    assert written_lines[5] == "extern stackObject(int stackObject_arg0) 100;"
+    # 注释信息
+    assert written_lines[3] == "// =========================================="
+    assert written_lines[4] == "// Export Definitions"
+    assert written_lines[5] == "// Total Declarations: 173"
+    assert written_lines[6] == "// =========================================="
+
+    # 第 9 行应当是第一个 extern（因为第 8 行为空行）
+    assert written_lines[8] == "extern stackObject(int stackObject_arg0) 100;"
+
+    # 尾部应当以 #endif 结束
+    assert written_content.strip().endswith("#endif")

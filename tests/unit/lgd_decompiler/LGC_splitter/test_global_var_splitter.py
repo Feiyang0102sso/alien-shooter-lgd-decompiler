@@ -113,12 +113,21 @@ def test_globals_writing(tmp_path: Path) -> None:
     written = output_file.read_text(encoding="utf-8")
     lines = written.splitlines()
     
-    assert lines[0] == "// =========================================="
-    assert lines[1] == "// Public Global Variables"
+    # 头三行应当是 Sentinel 防重包含保护
+    assert lines[0] == "#ifndef _CORE_GLOBAL_VARIABLE_LGC_"
+    assert lines[1] == "#define _CORE_GLOBAL_VARIABLE_LGC_ aaa"
+    assert lines[2] == ""
+
+    # 注释信息
     assert lines[3] == "// =========================================="
+    assert lines[4] == "// Public Global Variables"
+    assert lines[6] == "// =========================================="
     
-    # 第 6 行应当是第一个全局变量（因为第 5 行为空行）
-    assert lines[5] == "int SoundVolume;"
+    # 第 9 行应当是第一个全局变量（因为第 8 行为空行）
+    assert lines[8] == "int SoundVolume;"
+
+    # 尾部应当以 #endif 结束
+    assert written.strip().endswith("#endif")
 
     # 测试完成后，显式干掉产生的文件与空目录，保持绝对清洁 (Wipe)
     if output_file.exists():

@@ -2,7 +2,8 @@
 export_splitter.py
 
 LGC export 提取与拆分工具。
-专门用于识别、提取并保存 LGC 源码中的 `extern` 引擎内置函数声明。
+专门用于识别、提取并保存 LGC 源码中的 `extern` 引擎内置函数声明，
+以及第一次行号跳转前的 export 段函数实现（用户定义的共享工具函数）。
 """
 
 import re
@@ -46,6 +47,7 @@ def extract_extern_declarations(lgc_content: str) -> list[str]:
 def write_export_file(extern_declarations: list[str], output_path: Path) -> None:
     """
     将提取出的 extern 声明写入指定的 core/export.lgc 目标文件中。
+    使用 #ifndef / #define 哨兵机制，规避多重引入时的声明重定义问题。
 
     参数:
         extern_declarations: extern 声明行列表。
@@ -54,8 +56,11 @@ def write_export_file(extern_declarations: list[str], output_path: Path) -> None
     # 确保父目录存在
     output_path.parent.mkdir(parents=True, exist_ok=True)
     
-    # 按照文档标准，头部添加注释说明
+    # 按照文档标准，头部与尾部添加 Ifndef 哨兵机制，防止重复引用报错
     file_lines = []
+    file_lines.append("#ifndef _CORE_EXPORT_LGC_")
+    file_lines.append("#define _CORE_EXPORT_LGC_ aaa")
+    file_lines.append("")
     file_lines.append("// ==========================================")
     file_lines.append("// Export Definitions")
     file_lines.append(f"// Total Declarations: {len(extern_declarations)}")
@@ -66,7 +71,9 @@ def write_export_file(extern_declarations: list[str], output_path: Path) -> None
         file_lines.append(decl)
         
     file_lines.append("")  # 尾部留空行
+    file_lines.append("#endif")
+    file_lines.append("")
     
     content = "\n".join(file_lines)
     output_path.write_text(content, encoding="utf-8")
-    logger.info("Successfully wrote export file to: %s", output_path)
+    logger.info("Successfully wrote export file with include guard to: %s", output_path)

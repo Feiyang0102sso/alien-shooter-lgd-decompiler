@@ -65,6 +65,7 @@ def extract_globals_from_content(lgc_content: str) -> list[str]:
 def write_global_variable_file(global_decls: list[str], output_path: Path) -> None:
     """
     将公共的无冲突全局变量写入 core/global_variable.lgc 文件中。
+    使用 #ifndef / #define 哨兵机制，规避多重引入时的变量重定义问题。
 
     参数:
         global_decls: 要写入公共库的全局变量声明字符串列表。
@@ -73,6 +74,9 @@ def write_global_variable_file(global_decls: list[str], output_path: Path) -> No
     output_path.parent.mkdir(parents=True, exist_ok=True)
     
     file_lines = []
+    file_lines.append("#ifndef _CORE_GLOBAL_VARIABLE_LGC_")
+    file_lines.append("#define _CORE_GLOBAL_VARIABLE_LGC_ aaa")
+    file_lines.append("")
     file_lines.append(GLOBAL_VAR_END_MARKER)
     file_lines.append("// Public Global Variables")
     file_lines.append(f"// Total Variables: {len(global_decls)}")
@@ -83,7 +87,9 @@ def write_global_variable_file(global_decls: list[str], output_path: Path) -> No
         file_lines.append(decl)
         
     file_lines.append("")  # 尾部空行
+    file_lines.append("#endif")
+    file_lines.append("")
     
     content = "\n".join(file_lines)
     output_path.write_text(content, encoding="utf-8")
-    logger.info("Successfully wrote global variables to: %s", output_path)
+    logger.info("Successfully wrote global variables with include guard to: %s", output_path)

@@ -137,29 +137,26 @@ def extract_variable_name(declaration: str) -> str:
 
 def process_global_variables(
     file_to_globals: dict[str, list[str]],
-    file_last_segment_lines: dict[str, list[str]],
     output_dir: Path,
 ) -> dict[str, list[str]]:
     """
-    对多个源大文件的全局变量进行合并、分类去重并向主脚本头部注入。
+    对多个源大文件的全局变量进行合并、分类去重，并返回差异/冲突变量映射。
     
     分类规则:
         1. 公共全局变量: 在所有大文件中都有声明且定义完全一致。合入 core/global_variable.lgc 文件。
         2. 差异/冲突全局变量: 在不同文件中声明不一致，或仅被部分大文件独占。
            - 不写入公共全局变量文件。
            - 使用 logger.warning 提醒用户注意该变量的物理定义冲突详情。
-           - 直接注入分发到对应大文件拆分出的最后一个段脚本（即主入口脚本）的代码头部。
+           - 返回私有/冲突全局变量列表，供后续主入口文件在包含普通段之前进行提早注入。
 
     :param file_to_globals: 各大文件提取出来的原始全局变量行映射，格式为 { "tutorial_00.lgc": [原始变量行] }。
-    :param file_last_segment_lines: 各大文件拆分出的最后一个段物理代码行映射，格式为 { "tutorial_00.lgc": [代码行] }。
     :param output_dir: 物理输出的 LGC 根目录。
-    :return: 注入了局部差异全局变量后的、最新主入口脚本代码行映射。
+    :return: 记录各大文件需要本地注入的差异/独占全局变量声明，格式为 { "tutorial_00.lgc": [局部变量声明] }。
     """
     from lgd_tool.lgd_decompiler.LGC_splitter import write_global_variable_file
 
     # 1. 全局变量注册，结构为: { 变量名: { 文件名: 归一化声明 } }
     var_registry = {}
-    total_files = len(file_to_globals)
 
     for file_name, decl_lines in file_to_globals.items():
         for line in decl_lines:
@@ -184,10 +181,10 @@ def process_global_variables(
         if len(unique_declarations) == 1:
             public_globals.append(list(unique_declarations)[0])
         else:
-            # 存在定义冲突（即同名但在不同关卡赋值不同或类型不同），输出明确的 warning 日志提醒用户注意
+            # 存在定义冲突（或在某些关卡独占定义），输出明确的 warning 日志提醒用户注意
             warning_detail = (
-                f"[Global Merger] Global Var '{var_name}' have conflicting between files\n"
-                f"  -> Specific conflict distribution and details: \n"
+                f"[Global Merger] Global Var '{var_name}' have conflict or is exclusive between files\n"
+                f"  -> Conflict/Exclusive distribution and details: \n"
                 f"{occurrences}"
             )
             logger.warning(warning_detail)
@@ -196,38 +193,11 @@ def process_global_variables(
             for file_name, decl_text in occurrences.items():
                 file_local_injections[file_name].append(decl_text)
 
-
     # 3. 物理写入 core/global_variable.lgc 公共文件
     output_globals_file = output_dir / "core" / "global_variable.lgc"
     write_global_variable_file(public_globals, output_globals_file)
 
-    # 4. 执行对各大文件最后一个段（主入口）的物理头部注入
-    updated_last_segment_lines = {}
-    for file_name, original_lines in file_last_segment_lines.items():
-        local_decls = file_local_injections.get(file_name, [])
-        
-        if len(local_decls) > 0:
-            # 构造要注入的干净代码行
-            injected_header = []
-            injected_header.append("// ==========================================")
-            injected_header.append("// Local/Conflict Global Variables (Injected Entrance Definitions)")
-            injected_header.append(f"// Total: {len(local_decls)} items")
-            injected_header.append("// ==========================================")
-            for decl in local_decls:
-                injected_header.append(decl)
-            injected_header.append("")  # 留空行
-
-            # 拼接到原主脚本入口代码的最开头
-            new_lines = injected_header + original_lines
-            updated_last_segment_lines[file_name] = new_lines
-            logger.info(
-                f"Successfully injected {len(local_decls)} conflict/local variables into "
-                f"the entrance segment of: {file_name}"
-            )
-        else:
-            updated_last_segment_lines[file_name] = original_lines
-
-    return updated_last_segment_lines
+    return file_local_injections
 
 
 class LgcSegmentPool:
@@ -317,16 +287,37 @@ class LgcSegmentPool:
     def _write_segment_to_disk(self, file_name: str, content: str) -> None:
         """
         物理落盘写入一个合并去重后的普通段文件。
+        在头部自动添加对 core/export.lgc 以及 core/global_variable.lgc 的引用，
+        并通过 #ifndef 哨兵机制规避因游戏引擎重复包含产生的重定义报错。
+
+        :param file_name: 普通段物理文件名。
+        :param content: 段的完整内容文本。
         """
         out_path = self.output_dir / file_name
         self.output_dir.mkdir(parents=True, exist_ok=True)
 
+        # 生成唯一的防重包含 include guard 宏名，例如 segment_01.lgc -> _SEGMENT_01_LGC_
+        macro_name = f"_{file_name.upper().replace('.', '_').replace('-', '_')}_"
+
         file_lines = []
+        # 写入 ifndef 哨兵头部
+        file_lines.append(f"#ifndef {macro_name}")
+        file_lines.append(f"#define {macro_name} aaa")
+        file_lines.append("")
         file_lines.append("// ==========================================")
         file_lines.append(f"// file {file_name}")
         file_lines.append("// ==========================================")
         file_lines.append("")
+
+        # 针对每一个普通 segment，在其头部引用 core/export.lgc 以及 core/global_variable.lgc
+        file_lines.append('#include "core\\export.lgc"')
+        file_lines.append('#include "core\\global_variable.lgc"')
+        file_lines.append("")
+
         file_lines.append(content)
+        file_lines.append("")
+        # 写入 ifndef 哨兵尾部
+        file_lines.append("#endif")
         file_lines.append("")
 
         out_path.write_text("\n".join(file_lines), encoding="utf-8")
@@ -374,16 +365,15 @@ def merge_decompiled_project(
     public_export_file = output_dir / "core" / "export.lgc"
     write_export_file(clean_exports, public_export_file)
 
-    # 2. 第二阶段：合流全局变量。有冲突/特异的在内存中注入到 last_segment_lines 头部
+    # 2. 第二阶段：合流全局变量。有冲突/特异的会返回在 file_local_injections 字典中
     file_to_globals = {}
     file_last_segment_lines = {}
     for file_name, parts in project_data.items():
         file_to_globals[file_name] = parts.get("globals", [])
         file_last_segment_lines[file_name] = parts.get("last_segment_lines", [])
 
-    updated_last_segments = process_global_variables(
+    file_local_injections = process_global_variables(
         file_to_globals=file_to_globals,
-        file_last_segment_lines=file_last_segment_lines,
         output_dir=output_dir
     )
 
@@ -400,13 +390,6 @@ def merge_decompiled_project(
         # 确保该主入口脚本所在的子物理文件夹已被安全创建
         main_script_path.parent.mkdir(parents=True, exist_ok=True)
         
-        # 动态计算当前大文件相对于输出根目录的反向相对路径层级前缀
-        rel_p = Path(file_name)
-        depth = len(rel_p.parent.parts)
-        path_prefix = ""
-        for _ in range(depth):
-            path_prefix += "..\\"
-            
         # 构造带有标准公共与普通非主段依赖 include 链的完整主脚本
         main_file_lines = []
         main_file_lines.append("// ==========================================")
@@ -414,18 +397,32 @@ def merge_decompiled_project(
         main_file_lines.append("// ==========================================")
         main_file_lines.append("")
         
-        # 注入基础公共头 include（相对路径）
-        main_file_lines.append(f'#include "{path_prefix}core\\export.lgc"')
-        main_file_lines.append(f'#include "{path_prefix}core\\global_variable.lgc"')
+        # 注入基础公共头 include（统一使用项目根目录相对路径）
+        main_file_lines.append('#include "core\\export.lgc"')
+        main_file_lines.append('#include "core\\global_variable.lgc"')
+        main_file_lines.append("")
+
+        # 【关键修复点】提前注入本关私有/有冲突的局部全局变量声明，
+        # 从而确保这些定义在后面的普通代码段文件被 #include 时已经对编译器可见！
+        # 完美解决编译报错: Undeclared identifier waitSprite
+        local_decls = file_local_injections.get(file_name, [])
+        if len(local_decls) > 0:
+            main_file_lines.append("// ==========================================")
+            main_file_lines.append("// Local/Conflict Global Variables")
+            main_file_lines.append(f"// Total: {len(local_decls)} items")
+            main_file_lines.append("// ==========================================")
+            for decl in local_decls:
+                main_file_lines.append(decl)
+            main_file_lines.append("")
         
         # 注入该地图有序依赖的哈希去重后的公共普通代码段 include
         for ref_seg in pool.file_references[file_name]:
-            main_file_lines.append(f'#include "{path_prefix}{ref_seg}"')
+            main_file_lines.append(f'#include "{ref_seg}"')
             
         main_file_lines.append("")  # 留空行
         
-        # 拼接在此前第二阶段中被注入了特异冲突变量的末端主脚本代码
-        local_main_code = updated_last_segments[file_name]
+        # 拼接在此前第二阶段中未包含局部变量的原生末端主脚本代码
+        local_main_code = file_last_segment_lines[file_name]
         for line in local_main_code:
             main_file_lines.append(line)
             

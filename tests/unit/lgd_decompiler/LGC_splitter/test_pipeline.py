@@ -254,8 +254,8 @@ def test_run_splitter_pipeline_deep_directories():
         l2_entry = addon_dir / "level_02.lgc"
         assert l2_entry.exists()
         
-        # 6. 核心验证：子目录主脚本中拼合的 include 是否自动计算出正确的相对前导相对前缀 (..\\)
+        # 6. 核心验证：子目录主脚本中拼合的 include 不再带有任何 ..\\ 前缀
         l2_entry_text = l2_entry.read_text(encoding="utf-8")
-        assert '#include "..\\core\\export.lgc"' in l2_entry_text
-        assert '#include "..\\core\\global_variable.lgc"' in l2_entry_text
-        assert '#include "..\\segment_01.lgc"' in l2_entry_text
+        assert '#include "core\\export.lgc"' in l2_entry_text
+        assert '#include "core\\global_variable.lgc"' in l2_entry_text
+        assert '#include "segment_01.lgc"' in l2_entry_text

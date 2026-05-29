@@ -208,10 +208,16 @@ def test_merge_decompiled_project_pipeline(tmp_path: Path) -> None:
 
     # 3. 验证普通段去重合并
     # 两关依赖同一个普通段，物理上仅写出一份 segment_01.lgc
-    assert (tmp_path / "segment_01.lgc").exists()
+    seg_file = tmp_path / "segment_01.lgc"
+    assert seg_file.exists()
     assert not (tmp_path / "segment_02.lgc").exists()
     assert file_references["level_01.lgc"] == ["segment_01.lgc"]
     assert file_references["level_02.lgc"] == ["segment_01.lgc"]
+
+    # 验证普通段头部是否已经成功引入了 core/export 以及 core/global_variable
+    seg_content = seg_file.read_text(encoding="utf-8")
+    assert '#include "core\\export.lgc"' in seg_content
+    assert '#include "core\\global_variable.lgc"' in seg_content
 
     # 4. 验证最终物理主入口脚本（level_01.lgc 与 level_02.lgc）是否被成功拼装
     main_01 = tmp_path / "level_01.lgc"
@@ -221,8 +227,12 @@ def test_merge_decompiled_project_pipeline(tmp_path: Path) -> None:
     assert '#include "core\\export.lgc"' in content_01
     assert '#include "core\\global_variable.lgc"' in content_01
     assert '#include "segment_01.lgc"' in content_01
-    # 验证中段注入了特异冲突变量 StartTeleport = 0
+    # 验证注入了特异冲突变量 StartTeleport = 0，且注入位置必须在普通段 segment_01.lgc 被 include 之前！
     assert 'int StartTeleport = 0;' in content_01
+    idx_decl_01 = content_01.index('int StartTeleport = 0;')
+    idx_inc_01 = content_01.index('#include "segment_01.lgc"')
+    assert idx_decl_01 < idx_inc_01
+
     # 验证尾段拼接了原有主入口函数
     assert 'func_level_01_main() { }' in content_01
 
@@ -232,6 +242,12 @@ def test_merge_decompiled_project_pipeline(tmp_path: Path) -> None:
     assert '#include "core\\export.lgc"' in content_02
     assert '#include "core\\global_variable.lgc"' in content_02
     assert '#include "segment_01.lgc"' in content_02
-    assert 'int StartTeleport = 1;' in content_02 # 验证特异冲突变量注入
+
+    # 同理校验第二关中特异冲突变量 StartTeleport = 1 的顺序
+    assert 'int StartTeleport = 1;' in content_02
+    idx_decl_02 = content_02.index('int StartTeleport = 1;')
+    idx_inc_02 = content_02.index('#include "segment_01.lgc"')
+    assert idx_decl_02 < idx_inc_02
+
     assert 'func_level_02_main() { }' in content_02
 
