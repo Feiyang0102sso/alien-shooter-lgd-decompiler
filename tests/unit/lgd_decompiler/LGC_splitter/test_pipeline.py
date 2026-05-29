@@ -72,9 +72,9 @@ def test_run_splitter_pipeline_single_file():
         global_text = global_file.read_text(encoding="utf-8")
         assert "int SoundVolume = 1;" in global_text
         
-        # 验证段落切分文件（segment_01.lgc 应被正确生成）
-        segment_01_file = output_dir / "segment_01.lgc"
-        assert segment_01_file.exists()
+        # 验证段落切分文件（segment_00.lgc 应被正确生成）
+        segment_00_file = output_dir / "segment_00.lgc"
+        assert segment_00_file.exists()
 
 
 def test_run_splitter_pipeline_batch_mode():
@@ -155,14 +155,16 @@ def test_run_splitter_pipeline_batch_mode():
         # 验证 core 部分
         export_file = temp_path / "core" / "export.lgc"
         assert export_file.exists()
-        assert "extern int Log(string msg);" in export_file.read_text(encoding="utf-8")
+        export_text = export_file.read_text(encoding="utf-8")
+        assert "extern int Log(string msg);" in export_text
+        assert '#include "segment_00.lgc"' in export_text  # 第 0 份段前置引入且去除了 ..\\ 前缀
         
         global_file = temp_path / "core" / "global_variable.lgc"
         assert global_file.exists()
         assert "int SoundVolume = 1;" in global_file.read_text(encoding="utf-8")
         
         # 验证普通去重段
-        common_func_file = temp_path / "segment_01.lgc"
+        common_func_file = temp_path / "segment_00.lgc"
         assert common_func_file.exists()
         
         # 验证地图入口依赖拼合
@@ -171,7 +173,7 @@ def test_run_splitter_pipeline_batch_mode():
         l1_entry_text = l1_entry.read_text(encoding="utf-8")
         assert '#include "core\\export.lgc"' in l1_entry_text
         assert '#include "core\\global_variable.lgc"' in l1_entry_text
-        assert '#include "segment_01.lgc"' in l1_entry_text
+        assert '#include "segment_00.lgc"' not in l1_entry_text  # 已经被剥离
 
 
 def test_run_splitter_pipeline_deep_directories():
@@ -258,4 +260,4 @@ def test_run_splitter_pipeline_deep_directories():
         l2_entry_text = l2_entry.read_text(encoding="utf-8")
         assert '#include "core\\export.lgc"' in l2_entry_text
         assert '#include "core\\global_variable.lgc"' in l2_entry_text
-        assert '#include "segment_01.lgc"' in l2_entry_text
+        assert '#include "segment_00.lgc"' not in l2_entry_text  # 已经被剥离

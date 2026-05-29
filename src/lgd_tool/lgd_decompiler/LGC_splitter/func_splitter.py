@@ -199,7 +199,9 @@ def write_segment_files(
     original_name: str = "main.lgc",
 ) -> None:
     """
-    将从决定段落中切分出来的顶级函数段（export 与 segments）写入指定的输出目录中。
+    将从决定段落中切分出来的顶级函数普通段（segments）写入指定的输出目录中。
+    第一次发生跳转之前的 export 段顶级函数实现，将直接由 pipeline 整合入 core/export.lgc，
+    因此本函数内部不再向输出目录根写入独立的 export.lgc 文件。
 
     参数:
         segments: decide_segments 返回的切分后的函数映射字典。
@@ -209,30 +211,9 @@ def write_segment_files(
     # make sure dir exist
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    export_list = segments.get("export", [])
     segment_lists = segments.get("segments", [])
 
-    # 1. first seg write into export.lgc
-    if len(export_list) > 0:
-        export_file = output_dir / "export.lgc"
-        export_lines = []
-        export_lines.append("// ==========================================")
-        export_lines.append("// file core/export.lgc")
-        export_lines.append("// ==========================================")
-        export_lines.append("")
-
-        for func in export_list:
-            # export_lines.append(
-            #     f"// 函数: {func.name} (行号范围: {func.min_line} ~ {func.max_line})"
-            # )
-            for line in func.lines:
-                export_lines.append(line)
-            export_lines.append("")
-
-        export_file.write_text("\n".join(export_lines), encoding="utf-8")
-        logger.info("Successfully wrote export functions to: %s", export_file)
-
-    # 2. write into each segment_XX.lgc
+    # 1. write into each segment_XX.lgc
     num_segs = len(segment_lists)
     for idx, seg in enumerate(segment_lists):
         # 最后一个 segment 使用原来的名字，不使用 segment_xx.lgc
@@ -242,7 +223,7 @@ def write_segment_files(
             else:
                 seg_file_name = f"{original_name}.lgc"
         else:
-            seg_file_name = f"segment_{idx + 1:02d}.lgc"
+            seg_file_name = f"segment_{idx:02d}.lgc"
 
         seg_file = output_dir / seg_file_name
 
@@ -268,4 +249,5 @@ def write_segment_files(
 
         seg_file.write_text("\n".join(seg_lines), encoding="utf-8")
         logger.info("Successfully wrote segment file with include guard to: %s", seg_file)
+
 

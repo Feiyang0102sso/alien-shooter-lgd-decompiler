@@ -13,12 +13,11 @@ from lgd_tool.lgd_decompiler.LGC_splitter import (
 )
 
 
-
 def test_segment_pool_match_and_deduplication(tmp_path: Path) -> None:
     """
     测试 1：两关切分出的代码段内容完全一模一样（差一个字节都不行）时：
-    1. 它们应当在全局哈希池中被合并去重，物理磁盘上仅写出唯一的 segment_01.lgc 物理文件。
-    2. 两关在 file_references 中对应的物理文件名引用序列，都应成功且有序地指向同一个 "segment_01.lgc"！
+    1. 它们应当在全局哈希池中被合并去重，物理磁盘上仅写出唯一的 segment_00.lgc 物理文件。
+    2. 两关在 file_references 中对应的物理文件名引用序列，都应成功且有序地指向同一个 "segment_00.lgc"！
     """
     pool = LgcSegmentPool(tmp_path)
 
@@ -33,7 +32,7 @@ def test_segment_pool_match_and_deduplication(tmp_path: Path) -> None:
             "}"
         ]
     )
-    seg_01_level1 = [func_a]
+    seg_00_level1 = [func_a]
 
     # 2. 模拟第二关的普通段，在字符上与第一关完完全全 100% 相同
     func_a_identical = LgcFunction(
@@ -46,20 +45,20 @@ def test_segment_pool_match_and_deduplication(tmp_path: Path) -> None:
             "}"
         ]
     )
-    seg_01_level2 = [func_a_identical]
+    seg_00_level2 = [func_a_identical]
 
     # 3. 注册两关的数据
-    pool.register_file_segments("level_01.lgc", [seg_01_level1])
-    pool.register_file_segments("level_02.lgc", [seg_01_level2])
+    pool.register_file_segments("level_01.lgc", [seg_00_level1])
+    pool.register_file_segments("level_02.lgc", [seg_00_level2])
 
     # 4. 验证合并结果
-    # 4.1 物理上仅生成了 segment_01.lgc
-    assert (tmp_path / "segment_01.lgc").exists()
-    assert not (tmp_path / "segment_02.lgc").exists()
+    # 4.1 物理上仅生成了 segment_00.lgc
+    assert (tmp_path / "segment_00.lgc").exists()
+    assert not (tmp_path / "segment_01.lgc").exists()
 
-    # 4.2 两关的物理引用顺序列表均准确且有序指向同一个 "segment_01.lgc"
-    assert pool.file_references["level_01.lgc"] == ["segment_01.lgc"]
-    assert pool.file_references["level_02.lgc"] == ["segment_01.lgc"]
+    # 4.2 两关的物理引用顺序列表均准确且有序指向同一个 "segment_00.lgc"
+    assert pool.file_references["level_01.lgc"] == ["segment_00.lgc"]
+    assert pool.file_references["level_02.lgc"] == ["segment_00.lgc"]
 
 
 def test_segment_pool_different_by_one_space(tmp_path: Path) -> None:
@@ -95,17 +94,16 @@ def test_segment_pool_different_by_one_space(tmp_path: Path) -> None:
     pool.register_file_segments("level_01.lgc", [[func_a]])
     pool.register_file_segments("level_02.lgc", [[func_a_with_space]])
 
-    # 验证物理上生成了两个独立的代码文件（没有强行去重）
+    # 验证物理上生成了两个独立的代码文件（没有强行去重，从 00 开始分配）
+    assert (tmp_path / "segment_00.lgc").exists()
     assert (tmp_path / "segment_01.lgc").exists()
-    assert (tmp_path / "segment_02.lgc").exists()
-
 
 
 def test_segment_pool_new_and_naming_collisions(tmp_path: Path) -> None:
     """
-    测试 2：当不同关卡有多个内容完全不同的新代码段时，以及当名字被意外抢占时：
-    1. 两个内容不同新段，应当物理生成各自独立的物理文件（segment_01.lgc 与 segment_02.lgc）。
-    2. 当分配的文件名已被 assigned_filenames 占用（物理抢占冲突），防撞名安全阀应能自动递增为 segment_01_001.lgc 保证落盘安全。
+    测试 3：当不同关卡有多个内容完全不同的新代码段时，以及当名字被意外抢占时：
+    1. 两个内容不同新段，应当物理生成各自独立的物理文件（segment_00.lgc 与 segment_01.lgc）。
+    2. 当分配的文件名已被 assigned_filenames 占用（物理抢占冲突），防撞名安全阀应能自动递增为 segment_00_001.lgc 保证落盘安全。
     """
     pool = LgcSegmentPool(tmp_path)
 
@@ -123,26 +121,26 @@ def test_segment_pool_new_and_naming_collisions(tmp_path: Path) -> None:
         lines=["funcB() { string s = \"hello\"; }"]
     )
 
-    # 3. 人为强行占用文件名 "segment_01.lgc"，模拟严重的抢占命名冲突
-    pool.assigned_filenames.add("segment_01.lgc")
+    # 3. 人为强行占用文件名 "segment_00.lgc"，模拟严重的抢占命名冲突
+    pool.assigned_filenames.add("segment_00.lgc")
 
     # 4. 注册不同新段
     pool.register_file_segments("level_01.lgc", [[func_a]])
     pool.register_file_segments("level_02.lgc", [[func_b]])
 
     # 5. 验证命名避让机制是否成功触发
-    # 5.1 第一个本该分配 segment_01.lgc 的新段，由于被我们人为抢占，安全避让为生成 segment_01_001.lgc！
-    assert (tmp_path / "segment_01_001.lgc").exists()
-    assert pool.file_references["level_01.lgc"] == ["segment_01_001.lgc"]
+    # 5.1 第一个本该分配 segment_00.lgc 的新段，由于被我们人为抢占，安全避让为生成 segment_00_001.lgc！
+    assert (tmp_path / "segment_00_001.lgc").exists()
+    assert pool.file_references["level_01.lgc"] == ["segment_00_001.lgc"]
 
-    # 5.2 第二个段顺利以 segment_02.lgc 分配落盘！
-    assert (tmp_path / "segment_02.lgc").exists()
-    assert pool.file_references["level_02.lgc"] == ["segment_02.lgc"]
+    # 5.2 第二个段顺利以 segment_01.lgc 分配落盘！
+    assert (tmp_path / "segment_01.lgc").exists()
+    assert pool.file_references["level_02.lgc"] == ["segment_01.lgc"]
 
 
 def test_merge_decompiled_project_pipeline(tmp_path: Path) -> None:
     """
-    测试 3：全项目一键统一合并（Pipeline）的集成测试：
+    测试 4：全项目一键统一合并（Pipeline）的集成测试：
     1. 验证 Export 强一致校验通过并写盘。
     2. 验证 Global 无冲突合流写盘、冲突变量在主入口中被注入。
     3. 验证普通段哈希匹配去重，物理只写出一份普通段。
@@ -207,12 +205,12 @@ def test_merge_decompiled_project_pipeline(tmp_path: Path) -> None:
     assert "StartTeleport" not in public_global.read_text(encoding="utf-8") # 冲突的被剔除
 
     # 3. 验证普通段去重合并
-    # 两关依赖同一个普通段，物理上仅写出一份 segment_01.lgc
-    seg_file = tmp_path / "segment_01.lgc"
+    # 两关依赖同一个普通段，物理上仅写出一份 segment_00.lgc
+    seg_file = tmp_path / "segment_00.lgc"
     assert seg_file.exists()
-    assert not (tmp_path / "segment_02.lgc").exists()
-    assert file_references["level_01.lgc"] == ["segment_01.lgc"]
-    assert file_references["level_02.lgc"] == ["segment_01.lgc"]
+    assert not (tmp_path / "segment_01.lgc").exists()
+    assert file_references["level_01.lgc"] == ["segment_00.lgc"]
+    assert file_references["level_02.lgc"] == ["segment_00.lgc"]
 
     # 验证普通段头部是否已经成功引入了 core/export 以及 core/global_variable
     seg_content = seg_file.read_text(encoding="utf-8")
@@ -226,11 +224,11 @@ def test_merge_decompiled_project_pipeline(tmp_path: Path) -> None:
     # 验证头部依赖 include 链顺利拼合
     assert '#include "core\\export.lgc"' in content_01
     assert '#include "core\\global_variable.lgc"' in content_01
-    assert '#include "segment_01.lgc"' in content_01
-    # 验证注入了特异冲突变量 StartTeleport = 0，且注入位置必须在普通段 segment_01.lgc 被 include 之前！
+    assert '#include "segment_00.lgc"' in content_01
+    # 验证注入了特异冲突变量 StartTeleport = 0，且注入位置必须在普通段 segment_00.lgc 被 include 之前！
     assert 'int StartTeleport = 0;' in content_01
     idx_decl_01 = content_01.index('int StartTeleport = 0;')
-    idx_inc_01 = content_01.index('#include "segment_01.lgc"')
+    idx_inc_01 = content_01.index('#include "segment_00.lgc"')
     assert idx_decl_01 < idx_inc_01
 
     # 验证尾段拼接了原有主入口函数
@@ -241,13 +239,12 @@ def test_merge_decompiled_project_pipeline(tmp_path: Path) -> None:
     content_02 = main_02.read_text(encoding="utf-8")
     assert '#include "core\\export.lgc"' in content_02
     assert '#include "core\\global_variable.lgc"' in content_02
-    assert '#include "segment_01.lgc"' in content_02
+    assert '#include "segment_00.lgc"' in content_02
 
     # 同理校验第二关中特异冲突变量 StartTeleport = 1 的顺序
     assert 'int StartTeleport = 1;' in content_02
     idx_decl_02 = content_02.index('int StartTeleport = 1;')
-    idx_inc_02 = content_02.index('#include "segment_01.lgc"')
+    idx_inc_02 = content_02.index('#include "segment_00.lgc"')
     assert idx_decl_02 < idx_inc_02
 
     assert 'func_level_02_main() { }' in content_02
-

@@ -264,7 +264,7 @@ class LgcSegmentPool:
                 )
             else:
                 # 3. 这是一个全新的普通段，按顺序为其分配全局文件名
-                desired_name = f"segment_{len(self.pool) + 1:02d}.lgc"
+                desired_name = f"segment_{len(self.pool):02d}.lgc"
 
                 # 4. 名字冲突避让安全阀：若文件名已被其他地方抢占（防撞名），自动加后缀递增
                 suffix_idx = 1
@@ -356,14 +356,13 @@ def merge_decompiled_project(
     """
     from lgd_tool.lgd_decompiler.LGC_splitter.export_splitter import write_export_file
 
-    # 1. 第一阶段：提取并执行 Export 强一致原序校验，成功后物理落盘公共 API 库
+    # 1. 第一阶段：提取并执行 Export 强一致原序校验，成功后准备公共 API 库
     file_to_exports = {}
     for file_name, parts in project_data.items():
         file_to_exports[file_name] = parts.get("exports", [])
     
     clean_exports = verify_exports_strictly_identical(file_to_exports)
     public_export_file = output_dir / "core" / "export.lgc"
-    write_export_file(clean_exports, public_export_file)
 
     # 2. 第二阶段：合流全局变量。有冲突/特异的会返回在 file_local_injections 字典中
     file_to_globals = {}
@@ -382,6 +381,21 @@ def merge_decompiled_project(
     for file_name, parts in project_data.items():
         file_segments = parts.get("segments", [])
         pool.register_file_segments(file_name, file_segments)
+
+    # 【重构调整】在第三阶段注册完毕后，收集所有有关卡的第 0 份 segment 去重文件名列表并写入 core/export.lgc 末尾
+    segment_0_files = set()
+    for file_name, parts in project_data.items():
+        export_funcs = parts.get("export_functions", [])
+        if len(export_funcs) > 0:
+            refs = pool.file_references.get(file_name, [])
+            if len(refs) > 0:
+                segment_0_files.add(refs[0])
+
+    write_export_file(
+        extern_declarations=clean_exports,
+        output_path=public_export_file,
+        include_segments=list(segment_0_files)
+    )
 
     # 4. 物理拼装并落盘各大文件的主入口脚本（主地图脚本入口）
     for file_name in project_data.keys():
@@ -402,9 +416,7 @@ def merge_decompiled_project(
         main_file_lines.append('#include "core\\global_variable.lgc"')
         main_file_lines.append("")
 
-        # 【关键修复点】提前注入本关私有/有冲突的局部全局变量声明，
-        # 从而确保这些定义在后面的普通代码段文件被 #include 时已经对编译器可见！
-        # 完美解决编译报错: Undeclared identifier waitSprite
+        # 提前注入本关私有/有冲突的局部全局变量声明，
         local_decls = file_local_injections.get(file_name, [])
         if len(local_decls) > 0:
             main_file_lines.append("// ==========================================")
@@ -415,8 +427,16 @@ def merge_decompiled_project(
                 main_file_lines.append(decl)
             main_file_lines.append("")
         
-        # 注入该地图有序依赖的哈希去重后的公共普通代码段 include
-        for ref_seg in pool.file_references[file_name]:
+        # 注入该地图有序依赖的哈希去重后的公共普通代码段 include (剥离第 0 份段，因其已在 core/export.lgc 中前置内嵌引用)
+        refs = pool.file_references[file_name]
+        export_funcs = project_data[file_name].get("export_functions", [])
+        
+        if len(export_funcs) > 0 and len(refs) > 0:
+            remaining_refs = refs[1:]
+        else:
+            remaining_refs = refs
+
+        for ref_seg in remaining_refs:
             main_file_lines.append(f'#include "{ref_seg}"')
             
         main_file_lines.append("")  # 留空行
@@ -481,17 +501,29 @@ def split_and_backup_single_file(lgd_file_path: str, output_dir: Path) -> None:
     logger.info(f"[SPLITTER] Running Splitter for single file: {lgd_file_path}")
     lgc_content = lgc_file_path.read_text(encoding="utf-8", errors="replace")
     
-    # 2.1 提取并物理写入 core/export.lgc
+    functions = parse_lgc_functions(lgc_content)
+    segments_dict = decide_segments(functions)
+    export_functions = segments_dict.get("export", [])
+    
+    has_segment_0 = len(export_functions) > 0
+    if has_segment_0:
+        segments_dict["segments"].insert(0, export_functions)
+        segments_dict["export"] = []
+        
+    # 2.1 提取并物理写入 core/export.lgc (内嵌包含 segment_00.lgc 如果存在)
     externs = extract_extern_declarations(lgc_content)
-    write_export_file(externs, output_dir / "core" / "export.lgc")
+    include_segs = ["segment_00.lgc"] if has_segment_0 else None
+    write_export_file(
+        externs,
+        output_dir / "core" / "export.lgc",
+        include_segments=include_segs
+    )
     
     # 2.2 提取并物理写入 core/global_variable.lgc
     globals_list = extract_globals_from_content(lgc_content)
     write_global_variable_file(globals_list, output_dir / "core" / "global_variable.lgc")
     
     # 2.3 物理切分普通段落落盘
-    functions = parse_lgc_functions(lgc_content)
-    segments_dict = decide_segments(functions)
     write_segment_files(segments_dict, output_dir, lgd_p.name)
     logger.info(f"[SPLITTER] Splitter completed successfully for: {lgd_file_path}")
 
@@ -544,6 +576,11 @@ def merge_and_backup_project(lgd_file_paths: list[str], output_dir: Path) -> Non
             # 2.4 切分普通段并剥离最后一个段（主入口段）
             segments_dict = decide_segments(functions)
             all_segs = segments_dict.get("segments", [])
+            export_funcs = segments_dict.get("export", [])
+            
+            # 将第一次跳转前的 export 顶级函数作为第 0 份 segment，插入普通段的最前面
+            if len(export_funcs) > 0:
+                all_segs.insert(0, export_funcs)
             
             pure_segments = []
             last_segment_lines = []
@@ -570,6 +607,7 @@ def merge_and_backup_project(lgd_file_paths: list[str], output_dir: Path) -> Non
             # 录入合并数据库
             project_data[key_name] = {
                 "exports": externs,
+                "export_functions": export_funcs,
                 "globals": globals_list,
                 "segments": pure_segments,
                 "last_segment_lines": last_segment_lines
