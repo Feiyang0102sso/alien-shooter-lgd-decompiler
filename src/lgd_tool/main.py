@@ -1,4 +1,3 @@
-
 import argparse
 from pathlib import Path
 from . import config  # ini app
@@ -7,6 +6,8 @@ from lgd_tool.lgd_decompiler.core.pipeline import LgdPipeline
 from .logger import logger
 import sys
 from .logger import FatalError
+from lgd_tool.lgd_decompiler.LGC_splitter import run_splitter_pipeline
+
 
 
 def scan_lgd_files(target_dir: str) -> list:
@@ -74,13 +75,21 @@ def main():
         help="Apply LGC refinement (extern and constant symbol replacement) after decompilation."
     )
 
+    parser.add_argument(
+        "--splitter",
+        action="store_true",
+        help="Split LGC into multiple core/segment files and merge identical segments."
+    )
+
     args = parser.parse_args()
+
     config.init_app_env()
 
     target_path = args.target_path
     keep_files = not args.clean
     stop_on_error = args.stop_on_error
     refine = args.refine
+    splitter = args.splitter
 
     try:
         logger.set_stop_on_error(stop_on_error)
@@ -97,8 +106,13 @@ def main():
             is_success = process_single_file(target_path, keep_files, refine)
             if is_success:
                 logger.info(f"[PROCESSING] Task Finished Successfully: {target_path}")
+                
+                # 若启用 --splitter 选项，自动执行单大文件切分写盘
+                if splitter:
+                    run_splitter_pipeline(target_p)
             else:
                 logger.error(f"[PROCESSING] Task Failed: {target_path}")
+
 
         elif target_p.is_dir():
             # batch mode
@@ -146,6 +160,11 @@ def main():
                     logger.warning(f"    {idx}. {failed_file}")
 
             print("=" * 50 + "\n")
+
+            # 若启用 --splitter 选项且有文件成功反编译，执行全项目合并去重一键 Pipeline
+            if splitter and success_list:
+                run_splitter_pipeline(target_p, success_list=success_list)
+
 
         else:
             logger.error_and_stop(f"[PROCESSING] Target path does not exist: {target_path}")

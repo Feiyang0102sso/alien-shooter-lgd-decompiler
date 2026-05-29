@@ -1,5 +1,5 @@
 """
-splitter_core.py
+func_splitter.py
 
 core in splitting the large LGC into different segments
 based on next.min_line < prev.max_line algorithm
