@@ -80,13 +80,13 @@ def _fill_line_bounds(func: LgcFunction) -> None:
 
 def parse_lgc_functions(lgc_content: str) -> list[LgcFunction]:
     """
-    解析大型 LGC 源码文本，将其分割并提取出所有的顶级函数信息。
+    read big LGC and get the func info
 
-    参数:
-        lgc_content: 大的 .lgc 文件全部文本内容。
+    :param
+        lgc_content: all contents in big LGC
 
-    返回:
-        解析出的 LgcFunction 对象列表，保持它们在源文件中的物理定义顺序。
+    :return
+        LgcFunction list, with its original order
     """
     lines = lgc_content.splitlines()
     functions: list[LgcFunction] = []
@@ -121,11 +121,11 @@ def parse_lgc_functions(lgc_content: str) -> list[LgcFunction]:
                 start_line_idx=start_idx,
                 lines=current_lines,
             )
-            # 解析并提取该函数体内的行号范围
+            # cal line num bound
             _fill_line_bounds(func_obj)
             functions.append(func_obj)
 
-            # 重置解析状态
+            # reset status
             in_func = False
             current_name = ""
             current_lines = []
@@ -137,18 +137,17 @@ def parse_lgc_functions(lgc_content: str) -> list[LgcFunction]:
 
 def decide_segments(functions: list[LgcFunction]) -> dict[str, list[LgcFunction]]:
     """
-    依据行号回跳规则将顶级函数列表划分为不同的段（segment）：
-    - 第一次行号回跳（next.min_line < prev.max_line）发生之前的所有顶级方法，归为 "export" 公共段。
-    - 之后每次发生行号回跳，都将切分为一个新的独立普通段。
-    - 不带任何行号的空函数等无行号函数默认继续并入当前被分配的容器中。
+    decided segment based on line num jumps
+    - first jump belongs to export
+    - the jumps after that belongs to each new segment
+    - empty funcs belong to current segment
 
-    参数:
-        functions: 顶层函数 LgcFunction 对象列表。
+    :param
+        functions: list of LgcFunction
 
-    返回:
-        包含以下键的字典：
-        - "export": list[LgcFunction] (公共导出段包含的函数列表)
-        - "segments": list[list[LgcFunction]] (每个普通 segment 包含的函数列表)
+    :return
+        - "export": list[LgcFunction] segment that belongs to export
+        - "segments": list[list[LgcFunction]] normal segment
     """
     segments: dict[str, list] = {"export": [], "segments": []}
 
@@ -158,11 +157,11 @@ def decide_segments(functions: list[LgcFunction]) -> dict[str, list[LgcFunction]
     has_jumped = False
     current_segment: list[LgcFunction] = []
 
-    # 记录上一个有效含有行号的函数的最大行号
+    # max line num of last func
     prev_max = 0
 
     for func in functions:
-        # 如果函数内没有任何行号，我们不引发错误，默认归入当前所处的容器中
+        # if no line num, it will belong to current segment
         if func.min_line is None or func.max_line is None:
             if not has_jumped:
                 segments["export"].append(func)
@@ -170,10 +169,10 @@ def decide_segments(functions: list[LgcFunction]) -> dict[str, list[LgcFunction]
                 current_segment.append(func)
             continue
 
-        # 判断是否发生了回跳。回跳规则：当前函数的最小行号小于前一有效函数的最大行号
+        # decide whether jump happened
         if func.min_line < prev_max:
             has_jumped = True
-            # 如果之前的普通段列表已经有了内容，则保存为已完成的普通段，并重启新段
+            # if the segment already have contents, save as current segment and start new
             if len(current_segment) > 0:
                 segments["segments"].append(current_segment)
             current_segment = [func]
@@ -183,10 +182,10 @@ def decide_segments(functions: list[LgcFunction]) -> dict[str, list[LgcFunction]
             else:
                 current_segment.append(func)
 
-        # 更新有效的前一个最大行号
+        # update max line num
         prev_max = func.max_line
 
-    # 遍历结束，如果普通段里还有未导出的函数，将其作为最后一个 segment 追加
+    # If there are any unexported functions in segment, append them as the last segment.
     if len(current_segment) > 0:
         segments["segments"].append(current_segment)
 
@@ -199,14 +198,16 @@ def write_segment_files(
     original_name: str = "main.lgc",
 ) -> None:
     """
-    将从决定段落中切分出来的顶级函数普通段（segments）写入指定的输出目录中。
-    第一次发生跳转之前的 export 段顶级函数实现，将直接由 pipeline 整合入 core/export.lgc，
-    因此本函数内部不再向输出目录根写入独立的 export.lgc 文件。
+    write segment into file
+    !!!
+    functions that belong to export.lgc are now taking handle by the pipeline
+    This file no longer write them into file
+    !!!
 
-    参数:
-        segments: decide_segments 返回的切分后的函数映射字典。
-        output_dir: 目标物理输出目录。
-        original_name: 最后一个（主入口）段落的文件名。
+    :param
+        segments: decide_segments, the returned dictionary of split function maps
+        output_dir: output directory
+        original_name: last file is the main entrance, keep the original name
     """
     # make sure dir exist
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -216,7 +217,7 @@ def write_segment_files(
     # 1. write into each segment_XX.lgc
     num_segs = len(segment_lists)
     for idx, seg in enumerate(segment_lists):
-        # 最后一个 segment 使用原来的名字，不使用 segment_xx.lgc
+        # last segment will use original name, instead segment_xx.lgc
         if idx == num_segs - 1:
             if original_name.lower().endswith(".lgc"):
                 seg_file_name = original_name
@@ -227,7 +228,7 @@ def write_segment_files(
 
         seg_file = output_dir / seg_file_name
 
-        # 生成防重复引用的唯一 sentinel 宏名
+        # introduce sentinels
         macro_name = f"_{seg_file_name.upper().replace('.', '_').replace('-', '_')}_"
 
         seg_lines = []

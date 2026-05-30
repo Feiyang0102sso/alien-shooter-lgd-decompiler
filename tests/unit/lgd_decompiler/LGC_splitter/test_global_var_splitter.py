@@ -5,7 +5,6 @@ LGC 全局变量提取与拆分工具的单元测试。
 100% 独立的 pytest 自动化单元测试脚本。
 """
 
-import pytest
 from pathlib import Path
 
 from lgd_tool.lgd_decompiler.LGC_splitter.global_var_splitter import (
@@ -129,12 +128,13 @@ def test_globals_writing(tmp_path: Path) -> None:
     # 尾部应当以 #endif 结束
     assert written.strip().endswith("#endif")
 
-    # 测试完成后，显式干掉产生的文件与空目录，保持绝对清洁 (Wipe)
-    if output_file.exists():
-        output_file.unlink()
-        
-    core_dir = output_file.parent
-    if core_dir.exists():
-        # 如果 core_dir 已经为空，则顺手删除它以保持完美零残留
-        if len(list(core_dir.iterdir())) == 0:
-            core_dir.rmdir()
+    # no need pytest will auto remove them
+    # # 测试完成后，显式干掉产生的文件与空目录，保持绝对清洁 (Wipe)
+    # if output_file.exists():
+    #     output_file.unlink()
+    #
+    # core_dir = output_file.parent
+    # if core_dir.exists():
+    #     # 如果 core_dir 已经为空，则顺手删除它以保持完美零残留
+    #     if len(list(core_dir.iterdir())) == 0:
+    #         core_dir.rmdir()

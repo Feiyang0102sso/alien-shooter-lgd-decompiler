@@ -6,9 +6,7 @@ LGC export 提取与拆分工具的单元测试。
 验证是否成功读取 `regression_tutorial_00.lgc` 里的 173 个 extern 声明并能成功写入文件。
 """
 
-import sys
 from pathlib import Path
-import pytest
 
 from lgd_tool.lgd_decompiler.LGC_splitter.export_splitter import (
     extract_extern_declarations,
