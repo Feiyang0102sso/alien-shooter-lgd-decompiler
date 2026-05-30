@@ -64,14 +64,70 @@ def refine_reorganized_files(output_dir: Path) -> None:
     for lgc_file in lgc_files:
         try:
             raw_code = lgc_file.read_text(encoding='utf-8')
-            refined_code = refiner.refine(raw_code)
+            refined_code = refiner.refine(raw_code, file_name=lgc_file.name)
             lgc_file.write_text(refined_code, encoding='utf-8')
             refine_count = refine_count + 1
             logger.debug(f"[Refiner] Refined file successfully: {lgc_file.name}")
+
         except Exception as e:
             logger.error(f"[Refiner] Failed to refine file {lgc_file.name}: {e}")
             
     logger.info(f"[Refiner SUMMARY] Post-Reorganize refinement completed! Successfully refined {refine_count} LGC files.")
+
+
+def cleanup_existing_lgc_files(target_dir: Path) -> bool:
+    """
+    delete all .lgc in directory to avoid problems
+    a prompt will be shown to user
+
+    :param target_dir: input path
+    :return: True user confirm cleaning or no lgc need to be cleaned
+             False user refuse to clean
+    """
+    # find all lgc
+    lgc_files = []
+    for p in target_dir.rglob("*.lgc"):
+        if p.is_file():
+            lgc_files.append(p)
+
+    # if no lgc need to be cleaned
+    if not lgc_files:
+        return True
+
+    # purple
+    purple_start = "\033[1;35m"
+    color_reset = "\033[0m"
+
+    print("\n" + purple_start + "!" * 80)
+    print("[WARNING] This program will clean up all existing .lgc files in the target folder to avoid conflicts.")
+    print(f"Target Directory: {target_dir}")
+    print(f"Found {len(lgc_files)} existing .lgc files that will be deleted.")
+    print("!" * 80 + color_reset)
+
+    try:
+        prompt_text = purple_start + "Are you sure you want to delete these files and continue? (y/n): " + color_reset
+        user_input = input(prompt_text)
+    except (KeyboardInterrupt, EOFError):
+        print("\n" + purple_start + "[ABORT] Operation cancelled." + color_reset)
+        return False
+
+    # y / yes
+    user_input_clean = user_input.strip().lower()
+    if user_input_clean != "y" and user_input_clean != "yes":
+        print(purple_start + "[ABORT] Operation cancelled by user." + color_reset)
+        return False
+
+    # delete
+    deleted_count = 0
+    for file_path in lgc_files:
+        try:
+            file_path.unlink()
+            deleted_count = deleted_count + 1
+        except Exception as e:
+            logger.warning(f"[CLEANUP] Failed to delete file {file_path.name}: {e}")
+
+    logger.info(f"[CLEANUP] Cleaned up {deleted_count} existing .lgc files successfully to prevent decompilation conflicts.")
+    return True
 
 
 def main():
@@ -134,6 +190,19 @@ def main():
         logger.set_stop_on_error(stop_on_error)
         
         target_p = Path(target_path)
+
+        # 确定要清理的目标根文件夹
+        if target_p.is_dir():
+            clean_root = target_p
+        elif target_p.is_file():
+            clean_root = target_p.parent
+        else:
+            logger.error_and_stop(f"[PROCESSING] Target path does not exist: {target_path}")
+            return
+
+        # 敏感操作：执行前置冲突 LGC 清理，如用户取消则优雅中止
+        if not cleanup_existing_lgc_files(clean_root):
+            sys.exit(0)
 
         if target_p.is_file():
             # single mode

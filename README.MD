@@ -1,4 +1,4 @@
-# LgdDecompiler V 0.5.0
+# LgdDecompiler V 0.6.0
 
 🌍 **Language / 语言**
 
@@ -11,6 +11,10 @@
 
 ### Changelog
 
+- **v0.6.0 (2026-05-30):**
+  - Added `--reorganize` option to split large LGC scripts and merge similar items.
+  - Optimized the `--refine` option logic; it can now only be used after `--reorganize`.
+  - Added conflict resolution functionality to automatically clear all LGC files in the folder on each run.
 - **v0.5.0 (2026-05-22):**
   - Fixed do-while latches mis-structured as empty `while (cond) {}` or `while(1)` without `break`, extending the v0.3.0 multi-block fix.
   - Fixed do-while inverted loop-exit semantics when generating `if (cond) break;` (outer `!` stripped incorrectly).
@@ -119,6 +123,10 @@ LgdDecompiler/
 
 ### 更新日志
 
+- **v0.6.0 (2026-05-30):**
+  - 新增 `--reorganize` 选项，对大 LGC 脚本进行拆分并合并同类项
+  - 优化`--refine` 选项逻辑，现在其仅能在  `--reorganize` 之后使用
+  - 新增冲突处理功能，会在每次运行时自动清空文件夹下所有 LGC 文件
 - **v0.5.0 (2026-05-22):**
   - 修复 do-while latch 被错误结构化为空 `while (cond) {}` 或缺少 `break` 的 `while(1)`；在 v0.3.0 多基本块修复基础上继续完善。
   - 修复 do-while 生成 `if (cond) break;` 时外层 `!` 被误剥，导致循环退出语义反转。

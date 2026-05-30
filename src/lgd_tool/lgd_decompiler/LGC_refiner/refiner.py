@@ -33,23 +33,48 @@ class LgcRefiner:
         self.const_db = load_constants_database(const_path)
         self.const_raw_db = load_constants_raw_database(const_path)
 
-    def refine(self, lgc_text: str) -> str:
+    def refine(self, lgc_text: str, file_name: str = "") -> str:
         """
-        对 LGC 文本执行全部优化。
+        对 LGC 文本执行精炼与优化。
 
-        :param lgc_text: 原始 LGC 文本
-        :return: 优化后的 LGC 文本
+        根据传入的文件名进行差异化处理：
+        1. 以 .bak.lgc 结尾的备份文件将跳过全部优化以防破坏备份。
+        2. 重组后的核心导出文件 export.lgc (或未指定文件名时) 将在文件头部注入常量声明，并执行 extern 替换和常量符号替换。
+        3. 其他普通 LGC 文件不注入常量声明，但会执行 extern 替换和常量符号替换。
+
+        :param lgc_text: 原始 LGC 文本内容
+        :param file_name: 正在处理的 LGC 文件名 (例如 export.lgc)
+        :return: 优化/替换后的 LGC 文本内容
         """
-        logger.info("[Refiner] Starting LGC refinement...")
+        if file_name:
+            log_name = file_name
+        else:
+            log_name = "unknown"
+        logger.info(f"[Refiner] Starting LGC refinement for file: {log_name}...")
 
-        lgc_text = inject_all_constants_to_top(lgc_text, self.const_raw_db)
+        # 1. 过滤判断是否为备份文件（以 .bak.lgc 结尾）
+        # 统一转为小写后判断是否以 .bak.lgc 结尾
+        file_name_lower = file_name.lower()
+        if file_name_lower.endswith(".bak.lgc"):
+            logger.info(f"[Refiner] File '{file_name}' is a backup file, skipping all refinements.")
+            return lgc_text
 
+        # 2. 判断是否需要注入常量声明到文件头部
+        # 只对没有指定文件名（向后兼容），或者文件名为 export.lgc 的文件进行常数注入
+        if not file_name or file_name_lower == "export.lgc":
+            logger.info(f"[Refiner] Injecting constants at the top of file: {log_name}")
+            lgc_text = inject_all_constants_to_top(lgc_text, self.const_raw_db)
+        else:
+            logger.info(f"[Refiner] Skipping constant injection for non-export file: {log_name}")
+
+        # 3. 对非备份文件执行其余优化（即 extern 替换和常量符号替换）
+        logger.info(f"[Refiner] Applying externs and constants substitutions for file: {log_name}")
         lgc_text = refine_externs(lgc_text, self.extern_db)
-
         lgc_text = refine_constants(lgc_text, self.const_db)
 
-        logger.info("[Refiner] LGC refinement completed")
+        logger.info(f"[Refiner] LGC refinement completed for file: {log_name}")
         return lgc_text
+
 
 
 def inject_all_constants_to_top(lgc_text: str, const_raw_db: dict) -> str:
@@ -108,6 +133,7 @@ def _remove_previous_generated_block(lgc_text: str) -> str:
 
 def _build_constants_block(const_raw_db: dict) -> str:
     lines = []
+    lines.append("")
     lines.append(CONST_BLOCK_START)
     lines.append("// =======================================================")
     lines.append("// Auto generated from constants_database.json")

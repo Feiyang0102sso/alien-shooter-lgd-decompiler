@@ -175,8 +175,9 @@ class LgdPipeline:
 
                 refiner = LgcRefiner(REFINER_DATA_DIR)
                 raw_lgc_code = lgc_p.read_text(encoding='utf-8')
-                refined_lgc_code = refiner.refine(raw_lgc_code)
+                refined_lgc_code = refiner.refine(raw_lgc_code, file_name=lgc_p.name)
                 lgc_p.write_text(refined_lgc_code, encoding='utf-8')
+
             else:
                 logger.warning(f"[Refiner] Generated LGC file not found: {clean_output_lgc}")
 
