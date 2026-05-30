@@ -85,7 +85,7 @@ LgdDecompiler/
 │   ├── analyzer.py             # Further analysis of wrapped objects
 │   ├── context.py              # State management for the decompilation context
 │   ├── parsers.py              # Parses raw data and wraps into objects
-│   └── pipeline.py             # Main pipeline scheduler
+│   └── reorganizer.py             # Main pipeline scheduler
 │
 ├── generate_intermediate/      # Intermediate product generation
 │   ├── lgd_decryptor.py        # Decrypts the raw .lgd binary file
@@ -194,7 +194,7 @@ LgdDecompiler/
 │   ├── analyzer.py             # 对封装对象进行进一步分析
 │   ├── context.py              # 反编译对象上下文状态管理
 │   ├── parsers.py              # 解析二进制并封装为对象
-│   └── pipeline.py             # 总体任务调度
+│   └── reorganizer.py             # 总体任务调度
 │
 ├── generate_intermediate/      # 中间产物生成
 │   ├── lgd_decryptor.py        # 解密原始的 .lgd 二进制文件

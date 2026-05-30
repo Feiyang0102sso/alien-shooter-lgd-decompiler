@@ -3,7 +3,7 @@ manual_test_globals.py
 """
 
 from manual_test_utils import load_tutorial_lgc_content, setup_temp_dir, wait_and_cleanup_tmp_dir
-from lgd_tool.lgd_decompiler.LGC_splitter.global_var_splitter import (
+from lgd_tool.lgd_decompiler.LGC_reorganizer.global_var_processor import (
     extract_globals_from_content,
     write_global_variable_file,
 )

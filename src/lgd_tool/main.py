@@ -6,7 +6,9 @@ from lgd_tool.lgd_decompiler.core.pipeline import LgdPipeline
 from .logger import logger
 import sys
 from .logger import FatalError
-from lgd_tool.lgd_decompiler.LGC_splitter import run_splitter_pipeline
+from lgd_tool.lgd_decompiler.LGC_reorganizer import run_splitter_pipeline
+from lgd_tool.lgd_decompiler.LGC_refiner.refiner import LgcRefiner
+from lgd_tool.config import REFINER_DATA_DIR
 
 
 
@@ -38,6 +40,38 @@ def process_single_file(file_path: str, keep_files: bool, refine: bool = False) 
     except Exception as e:
         logger.error_and_stop(f"[!] Critical Error processing '{file_path}': {e}")
         return False
+
+
+def refine_reorganized_files(output_dir: Path) -> None:
+    """
+    递归遍历并获取指定输出目录下生成的全部小 LGC 文件，
+    对它们分别应用 LgcRefiner 进行就地常量与 extern 符号精炼替换。
+
+    :param output_dir: 重组分割落盘后的小文件工程目录 Path
+    """
+
+    logger.info("=== Post-Reorganize Phase: Refining Final Reorganized LGCs ===")
+    refiner = LgcRefiner(REFINER_DATA_DIR)
+    
+    # 递归查找目录下所有的 .lgc 文件，平铺直叙
+    lgc_files = []
+    for p in output_dir.rglob("*.lgc"):
+        if p.is_file():
+            lgc_files.append(p)
+            
+    # 逐一执行就地精炼
+    refine_count = 0
+    for lgc_file in lgc_files:
+        try:
+            raw_code = lgc_file.read_text(encoding='utf-8')
+            refined_code = refiner.refine(raw_code)
+            lgc_file.write_text(refined_code, encoding='utf-8')
+            refine_count = refine_count + 1
+            logger.debug(f"[Refiner] Refined file successfully: {lgc_file.name}")
+        except Exception as e:
+            logger.error(f"[Refiner] Failed to refine file {lgc_file.name}: {e}")
+            
+    logger.info(f"[Refiner SUMMARY] Post-Reorganize refinement completed! Successfully refined {refine_count} LGC files.")
 
 
 def main():
@@ -72,11 +106,11 @@ def main():
     parser.add_argument(
         "--refine",
         action="store_true",
-        help="Apply LGC refinement (extern and constant symbol replacement) after decompilation."
+        help="Apply LGC refinement (extern and constant symbol replacement) after decompilation and reorganize."
     )
 
     parser.add_argument(
-        "--splitter",
+        "--reorganize",
         action="store_true",
         help="Split LGC into multiple core/segment files and merge identical segments."
     )
@@ -89,7 +123,12 @@ def main():
     keep_files = not args.clean
     stop_on_error = args.stop_on_error
     refine = args.refine
-    splitter = args.splitter
+    splitter = args.reorganize
+
+    # 校验参数：refine 必须在 reorganize 开启时才能使用
+    if refine and not splitter:
+        logger.error_and_stop("[CONFIG] --refine option can only be used when --reorganize is enabled.")
+        return
 
     try:
         logger.set_stop_on_error(stop_on_error)
@@ -103,13 +142,19 @@ def main():
                 return
 
             logger.info(f"[PROCESSING] Starting Single File Mode: {target_path}")
-            is_success = process_single_file(target_path, keep_files, refine)
+            # 运行顺序调整：反编译大 LGC 时暂不精炼，在切分重组后再统一对所有小 LGC 进行精炼
+            is_success = process_single_file(target_path, keep_files, refine=False)
             if is_success:
                 logger.info(f"[PROCESSING] Task Finished Successfully: {target_path}")
                 
                 # 若启用 --splitter 选项，自动执行单大文件切分写盘
                 if splitter:
                     run_splitter_pipeline(target_p)
+                    
+                    # refine 运行顺序在 reorganize 之后
+                    if refine:
+                        output_dir = target_p.parent / target_p.stem
+                        refine_reorganized_files(output_dir)
             else:
                 logger.error(f"[PROCESSING] Task Failed: {target_path}")
 
@@ -140,7 +185,8 @@ def main():
                 logger.info(f"\n[BATCH PROGRESS] Processing file {idx}/{total_files}: {file_path}")
                 print("-" * 50)
 
-                if process_single_file(file_path, keep_files, refine):
+                # 运行顺序调整：反编译大 LGC 时暂不精炼，在合并重组后再统一对所有小 LGC 进行精炼
+                if process_single_file(file_path, keep_files, refine=False):
                     success_list.append(file_path)
                 else:
                     failed_list.append(file_path)
@@ -161,9 +207,12 @@ def main():
 
             print("=" * 50 + "\n")
 
-            # 若启用 --splitter 选项且有文件成功反编译，执行全项目合并去重一键 Pipeline
             if splitter and success_list:
                 run_splitter_pipeline(target_p, success_list=success_list)
+                
+                # refine 运行顺序在 reorganize 之后
+                if refine:
+                    refine_reorganized_files(target_p)
 
 
         else:

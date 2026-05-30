@@ -6,7 +6,7 @@ test_global_var_merger.py
 
 import pytest
 from pathlib import Path
-from lgd_tool.lgd_decompiler.LGC_splitter import (
+from lgd_tool.lgd_decompiler.LGC_reorganizer import (
     extract_variable_name,
     process_global_variables,
 )

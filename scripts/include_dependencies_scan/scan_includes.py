@@ -26,7 +26,7 @@ if str(_PROJECT_ROOT) not in sys.path:
 if str(_SRC_DIR) not in sys.path:
     sys.path.insert(0, str(_SRC_DIR))
 
-from lgd_tool.lgd_decompiler.LGC_splitter import parse_lgc_functions
+from lgd_tool.lgd_decompiler.LGC_reorganizer import parse_lgc_functions
 
 # ==================== 硬编码配置变量 ====================
 # 要扫描的目标 LGC 文件路径（支持绝对或相对路径，Windows下首选前缀 r 以防斜杠转义）

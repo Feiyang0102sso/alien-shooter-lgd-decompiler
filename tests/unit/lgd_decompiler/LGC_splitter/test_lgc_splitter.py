@@ -3,11 +3,11 @@ test_lgc_splitter.py
 
 针对 LGC 顶层函数提取、行号范围提取及行号跳转切段状态机逻辑的单元测试。
 本测试通过在内存中直接手写构造（Inline）模拟的 LGC 代码字符串，
-验证 LGC_splitter 中的核心解析与决策方法。
+验证 LGC_reorganizer 中的核心解析与决策方法。
 """
 
 import pytest
-from lgd_tool.lgd_decompiler.LGC_splitter import (
+from lgd_tool.lgd_decompiler.LGC_reorganizer import (
     parse_lgc_functions,
     decide_segments,
 )

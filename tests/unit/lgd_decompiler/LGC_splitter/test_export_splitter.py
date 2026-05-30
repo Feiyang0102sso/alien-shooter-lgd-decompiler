@@ -8,7 +8,7 @@ LGC export 提取与拆分工具的单元测试。
 
 from pathlib import Path
 
-from lgd_tool.lgd_decompiler.LGC_splitter.export_splitter import (
+from lgd_tool.lgd_decompiler.LGC_reorganizer.export_processor import (
     extract_extern_declarations,
     write_export_file,
 )
@@ -18,8 +18,8 @@ def get_fixture_lgc_path() -> Path:
     """获取 regression_tutorial_00.lgc 的物理路径。"""
     current_file = Path(__file__).resolve()
     # 向上寻找项目根目录 (向上第 5 级)
-    # d:\python coding\lgd_tool\tests\unit\lgd_decompiler\LGC_splitter\test_export_splitter.py
-    # -> LGC_splitter -> lgd_decompiler -> unit -> tests -> project_root
+    # d:\python coding\lgd_tool\tests\unit\lgd_decompiler\LGC_reorganizer\test_export_splitter.py
+    # -> LGC_reorganizer -> lgd_decompiler -> unit -> tests -> project_root
     project_root = current_file.parents[4]
     lgc_path = project_root / "tests" / "fixtures" / "regression_lgc" / "regression_tutorial_00.lgc"
     return lgc_path

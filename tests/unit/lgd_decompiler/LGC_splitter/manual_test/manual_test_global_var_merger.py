@@ -28,7 +28,7 @@ if str(_PROJECT_ROOT) not in sys.path:
 if str(_SRC_DIR) not in sys.path:
     sys.path.insert(0, str(_SRC_DIR))
 
-from lgd_tool.lgd_decompiler.LGC_splitter import process_global_variables
+from lgd_tool.lgd_decompiler.LGC_reorganizer import process_global_variables
 
 
 def run_manual_test() -> None:

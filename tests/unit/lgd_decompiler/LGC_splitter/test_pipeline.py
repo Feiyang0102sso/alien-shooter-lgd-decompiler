@@ -7,7 +7,7 @@ test_pipeline.py
 import tempfile
 import shutil
 from pathlib import Path
-from lgd_tool.lgd_decompiler.LGC_splitter import run_splitter_pipeline
+from lgd_tool.lgd_decompiler.LGC_reorganizer import run_splitter_pipeline
 
 
 def test_run_splitter_pipeline_single_file():

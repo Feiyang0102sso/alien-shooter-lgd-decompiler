@@ -4,7 +4,7 @@ manual_test_export.py
 
 from manual_test_utils import load_tutorial_lgc_content, setup_temp_dir, wait_and_cleanup_tmp_dir
 
-from lgd_tool.lgd_decompiler.LGC_splitter import (
+from lgd_tool.lgd_decompiler.LGC_reorganizer import (
     extract_extern_declarations,
     write_export_file,
 )

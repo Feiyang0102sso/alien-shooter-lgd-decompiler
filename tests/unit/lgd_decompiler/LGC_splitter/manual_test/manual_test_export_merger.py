@@ -23,7 +23,7 @@ if str(_PROJECT_ROOT) not in sys.path:
 if str(_SRC_DIR) not in sys.path:
     sys.path.insert(0, str(_SRC_DIR))
 
-from lgd_tool.lgd_decompiler.LGC_splitter import (
+from lgd_tool.lgd_decompiler.LGC_reorganizer import (
     extract_extern_declarations,
     write_export_file,
     verify_exports_strictly_identical,

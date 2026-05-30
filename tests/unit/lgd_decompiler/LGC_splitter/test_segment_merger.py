@@ -6,7 +6,7 @@ test_segment_merger.py
 
 import pytest
 from pathlib import Path
-from lgd_tool.lgd_decompiler.LGC_splitter import (
+from lgd_tool.lgd_decompiler.LGC_reorganizer import (
     LgcFunction,
     LgcSegmentPool,
     merge_decompiled_project,
@@ -51,10 +51,17 @@ def test_segment_pool_match_and_deduplication(tmp_path: Path) -> None:
     pool.register_file_segments("level_01.lgc", [seg_00_level1])
     pool.register_file_segments("level_02.lgc", [seg_00_level2])
 
+    # 统一物理落盘
+    pool.write_all_segments()
+
     # 4. 验证合并结果
     # 4.1 物理上仅生成了 segment_00.lgc
     assert (tmp_path / "segment_00.lgc").exists()
     assert not (tmp_path / "segment_01.lgc").exists()
+    
+    # 验证段头部的引用次数注释属性为 2
+    seg_content = (tmp_path / "segment_00.lgc").read_text(encoding="utf-8")
+    assert "// references: 2" in seg_content
 
     # 4.2 两关的物理引用顺序列表均准确且有序指向同一个 "segment_00.lgc"
     assert pool.file_references["level_01.lgc"] == ["segment_00.lgc"]
@@ -94,9 +101,18 @@ def test_segment_pool_different_by_one_space(tmp_path: Path) -> None:
     pool.register_file_segments("level_01.lgc", [[func_a]])
     pool.register_file_segments("level_02.lgc", [[func_a_with_space]])
 
+    # 统一物理落盘
+    pool.write_all_segments()
+
     # 验证物理上生成了两个独立的代码文件（没有强行去重，从 00 开始分配）
     assert (tmp_path / "segment_00.lgc").exists()
     assert (tmp_path / "segment_01.lgc").exists()
+
+    # 验证段头部的引用次数注释属性为 1
+    seg_00_content = (tmp_path / "segment_00.lgc").read_text(encoding="utf-8")
+    seg_01_content = (tmp_path / "segment_01.lgc").read_text(encoding="utf-8")
+    assert "// references: 1" in seg_00_content
+    assert "// references: 1" in seg_01_content
 
 
 def test_segment_pool_new_and_naming_collisions(tmp_path: Path) -> None:
@@ -128,6 +144,9 @@ def test_segment_pool_new_and_naming_collisions(tmp_path: Path) -> None:
     pool.register_file_segments("level_01.lgc", [[func_a]])
     pool.register_file_segments("level_02.lgc", [[func_b]])
 
+    # 统一物理落盘
+    pool.write_all_segments()
+
     # 5. 验证命名避让机制是否成功触发
     # 5.1 第一个本该分配 segment_00.lgc 的新段，由于被我们人为抢占，安全避让为生成 segment_00_001.lgc！
     assert (tmp_path / "segment_00_001.lgc").exists()
@@ -136,6 +155,12 @@ def test_segment_pool_new_and_naming_collisions(tmp_path: Path) -> None:
     # 5.2 第二个段顺利以 segment_01.lgc 分配落盘！
     assert (tmp_path / "segment_01.lgc").exists()
     assert pool.file_references["level_02.lgc"] == ["segment_01.lgc"]
+
+    # 验证段头部的引用次数注释属性为 1
+    seg_00_content = (tmp_path / "segment_00_001.lgc").read_text(encoding="utf-8")
+    seg_01_content = (tmp_path / "segment_01.lgc").read_text(encoding="utf-8")
+    assert "// references: 1" in seg_00_content
+    assert "// references: 1" in seg_01_content
 
 
 def test_merge_decompiled_project_pipeline(tmp_path: Path) -> None:
@@ -211,6 +236,9 @@ def test_merge_decompiled_project_pipeline(tmp_path: Path) -> None:
     assert not (tmp_path / "segment_01.lgc").exists()
     assert file_references["level_01.lgc"] == ["segment_00.lgc"]
     assert file_references["level_02.lgc"] == ["segment_00.lgc"]
+    
+    # 验证段头部的引用次数注释属性为 2（表示两关都引用了该段）
+    assert "// references: 2" in seg_file.read_text(encoding="utf-8")
 
     # 验证普通段头部是否已经成功引入了 core/export 以及 core/global_variable
     seg_content = seg_file.read_text(encoding="utf-8")

@@ -1,5 +1,5 @@
 """
-core/pipeline.py
+core/reorganizer.py
 """
 
 import sys

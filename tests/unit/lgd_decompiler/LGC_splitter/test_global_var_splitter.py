@@ -7,7 +7,7 @@ LGC 全局变量提取与拆分工具的单元测试。
 
 from pathlib import Path
 
-from lgd_tool.lgd_decompiler.LGC_splitter.global_var_splitter import (
+from lgd_tool.lgd_decompiler.LGC_reorganizer.global_var_processor import (
     extract_globals_from_content,
     write_global_variable_file,
     normalize_decl_text,

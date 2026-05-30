@@ -18,7 +18,7 @@ if str(_PROJECT_ROOT) not in sys.path:
 if str(_SRC_DIR) not in sys.path:
     sys.path.insert(0, str(_SRC_DIR))
 
-from lgd_tool.lgd_decompiler.LGC_splitter.global_var_splitter import extract_globals_from_content
+from lgd_tool.lgd_decompiler.LGC_reorganizer.global_var_processor import extract_globals_from_content
 
 
 def scan_globals_statistics(lgc_content: str) -> dict[str, int]:

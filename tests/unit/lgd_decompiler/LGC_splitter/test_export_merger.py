@@ -5,7 +5,7 @@ test_export_merger.py
 """
 
 import pytest
-from lgd_tool.lgd_decompiler.LGC_splitter import (
+from lgd_tool.lgd_decompiler.LGC_reorganizer import (
     normalize_declaration_line,
     verify_exports_strictly_identical,
 )
