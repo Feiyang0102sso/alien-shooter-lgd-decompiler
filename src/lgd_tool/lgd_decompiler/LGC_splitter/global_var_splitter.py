@@ -69,9 +69,8 @@ def write_global_variable_file(global_decls: list[str], output_path: Path) -> No
     write into core/global_variable.lgc
     introduce #ifndef / #define sentinel
 
-    :param
-        global_decls: global vars length
-        output_path: output path
+    :param global_decls: global vars length
+    :param output_path: output path
     """
     output_path.parent.mkdir(parents=True, exist_ok=True)
     

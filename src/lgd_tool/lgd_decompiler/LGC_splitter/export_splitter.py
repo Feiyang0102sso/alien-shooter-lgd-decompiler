@@ -18,11 +18,9 @@ def extract_extern_declarations(lgc_content: str) -> list[str]:
     """
     rad & extract extern declarations
 
-    :param
-        lgc_content: contents lines of the lgc file
+    :param lgc_content: contents lines of the lgc file
 
-    :return
-        a list contains all extern declarations
+    :return: a list contains all extern declarations
     """
     lines = lgc_content.splitlines()
     extern_declarations = []
@@ -52,10 +50,9 @@ def write_export_file(
     introduce #ifndef / #define sentinel
     included segment 00 before #endif
 
-    :param
-        extern_declarations: extern func produced by extract_extern_declarations()
-        output_path: path for export.lgc
-        include_segments: included segments name
+    :param extern_declarations: extern func produced by extract_extern_declarations()
+    :param output_path: path for export.lgc
+    :param include_segments: included segments name
     """
     output_path.parent.mkdir(parents=True, exist_ok=True)
     

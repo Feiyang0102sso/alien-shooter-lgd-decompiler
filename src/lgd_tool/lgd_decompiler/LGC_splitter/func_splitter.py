@@ -33,7 +33,7 @@ class LgcFunction:
     """
     Data structure for storing LGC function datas
 
-    property:
+    Attributes:
         name: func name
         start_line_idx: index from original LGC, from 0
         lines: func lines
@@ -82,11 +82,9 @@ def parse_lgc_functions(lgc_content: str) -> list[LgcFunction]:
     """
     read big LGC and get the func info
 
-    :param
-        lgc_content: all contents in big LGC
+    :param lgc_content: all contents in big LGC
 
-    :return
-        LgcFunction list, with its original order
+    :return: LgcFunction list, with its original order
     """
     lines = lgc_content.splitlines()
     functions: list[LgcFunction] = []
@@ -142,12 +140,10 @@ def decide_segments(functions: list[LgcFunction]) -> dict[str, list[LgcFunction]
     - the jumps after that belongs to each new segment
     - empty funcs belong to current segment
 
-    :param
-        functions: list of LgcFunction
+    :param functions: list of LgcFunction
 
-    :return
-        - "export": list[LgcFunction] segment that belongs to export
-        - "segments": list[list[LgcFunction]] normal segment
+    :return: - "export": list[LgcFunction] segment that belongs to export
+    :return: - "segments": list[list[LgcFunction]] normal segment
     """
     segments: dict[str, list] = {"export": [], "segments": []}
 
@@ -204,10 +200,9 @@ def write_segment_files(
     This file no longer write them into file
     !!!
 
-    :param
-        segments: decide_segments, the returned dictionary of split function maps
-        output_dir: output directory
-        original_name: last file is the main entrance, keep the original name
+    :param segments: decide_segments, the returned dictionary of split function maps
+    :param output_dir: output directory
+    :param original_name: last file is the main entrance, keep the original name
     """
     # make sure dir exist
     output_dir.mkdir(parents=True, exist_ok=True)

@@ -1,8 +1,5 @@
 """
 merger.py
-
-用于合并与比对多个大 LGC 文件拆分产物的合并去重核心模块。
-第一阶段：重点实现对各文件的 Export（extern 声明）进行绝对物理行顺序的严格比对与熔断合并。
 """
 
 import sys
@@ -12,11 +9,10 @@ from lgd_tool.logger import logger
 
 def normalize_declaration_line(line: str) -> str:
     """
-    对提取出来的声明行进行基础的去白归一化处理。
-    去除首尾空白，并将多余的连续内部空格压缩为一个空格，确保比对不受无意义的排版空格干扰。
+    normalize declaration line
 
-    :param line: 原始声明代码行
-    :return: 归一化后的干净字符串
+    :arg line: original line
+    :return: normalized line
     """
     stripped_text = line.strip()
     words = stripped_text.split()
@@ -26,18 +22,14 @@ def normalize_declaration_line(line: str) -> str:
 
 def verify_exports_strictly_identical(file_to_exports: dict[str, list[str]]) -> list[str]:
     """
-    100% 严苛地按照原始物理行顺序校验所有文件的 Export 声明是否完全一致。
-    允许部分文件的 extern 声明完全为空（即含有 0 个 extern 声明，表示该地图无 extern 逻辑），
-    但凡是声明不为空的文件，其声明的条目数量、行内容和物理顺序必须 100% 完全相同。
+    exam the extern declarations, should be EXACTLY same
+    including the declaration order
+    if anything is not same, throw a error and stop the pipeline
 
-    若检测到任何不为空的声明与基准声明有行数不对等、内容不吻合或顺序错乱：
-        1. 使用 logger.error 打印出具体的行冲突差异细节。
-        2. 绕过一切其他错误过滤设置，直接调用 sys.exit(1) 强制退出整个进程实现硬熔断。
-
-    :param file_to_exports: 字典格式，Key 为大文件绝对路径或名字，Value 为该文件提取出的原始 extern 声明行列表。
-    :return: 经过归一化清洗后的非空基准 Export 声明行列表（如均为空则返回空列表 []）。
+    :param file_to_exports: dict, Key,name/dir for the large lgc; Value extern declarations
+    :return: a list of extern that is normalized and set as the golden
     """
-    # 1. 对所有文件提取的原始声明进行归一化清洗
+    # 1. normalize all
     file_to_clean_decls = {}
     for file_name, raw_lines in file_to_exports.items():
         clean_decls = []
@@ -47,7 +39,7 @@ def verify_exports_strictly_identical(file_to_exports: dict[str, list[str]]) -> 
                 clean_decls.append(clean_line)
         file_to_clean_decls[file_name] = clean_decls
 
-    # 2. 寻找第一个非空的声明列表作为我们的绝对比对基准
+    # 2. find a non-empty list as gold to compare
     base_file_name = None
     base_decls = []
     for file_name, clean_decls in file_to_clean_decls.items():
@@ -56,23 +48,23 @@ def verify_exports_strictly_identical(file_to_exports: dict[str, list[str]]) -> 
             base_decls = clean_decls
             break
 
-    # 3. 如果所有文件的声明都为空，不需要进行任何一致性比对，直接返回空列表 []
+    # 3. if all extern is empty, return empty list []
     if base_file_name is None:
         logger.info("All export signatures are empty, skipping export consistency check.")
         return []
 
-    # 4. 依次对比其他所有文件的 Export
+    # 4. compare one with another
     for other_file_name, other_decls in file_to_clean_decls.items():
-        # 跳过基准文件自身的对比
+        # skip itself for comparing
         if other_file_name == base_file_name:
             continue
 
-        # 允许某些文件的声明为空（不包含任何 extern 声明）
+        # empty extern is allowed (such as temp.lgc)
         if len(other_decls) == 0:
             logger.info(f"Skipped export consistency check for empty file: '{other_file_name}'")
             continue
 
-        # 4.1 优先验证两个文件的 extern 声明总条目数量是否相等
+        # 4.1 check the extern nums
         if len(base_decls) != len(other_decls):
             error_message = (
                 f" [Exporter Merger] The number of Export interface entries in each source file is inconsistent!\n"
@@ -82,7 +74,7 @@ def verify_exports_strictly_identical(file_to_exports: dict[str, list[str]]) -> 
             logger.error(error_message)
             sys.exit(1)
 
-        # 4.2 严格按照物理出现顺序，逐行精确对比内容
+        # 4.2 check the order and the declaration details
         total_count = len(base_decls)
         for idx in range(total_count):
             base_line_content = base_decls[idx]
@@ -105,26 +97,26 @@ def verify_exports_strictly_identical(file_to_exports: dict[str, list[str]]) -> 
 
 def extract_variable_name(declaration: str) -> str:
     """
-    从归一化后的全局变量声明字符串中提取其纯变量名称。
-    用于后续冲突分类与特定主入口头部注入。
+    extract var name from normalized lines
 
-    例如:
+    eg:
         "int SoundVolume;" -> "SoundVolume"
         "string musicAmbient = \"music\\\\mus00.ogg\";" -> "musicAmbient"
         "int AmmoPrice[11] = { 0 };" -> "AmmoPrice"
 
-    :param declaration: 归一化后的全局变量定义文本。
-    :return: 提取出的纯变量名称字符串。
+    :param declaration: normalized global var lines
+    :return: str: global var names
     """
     clean_decl = declaration.strip()
     
-    # 1. 剥除已知的类型前缀
+    # 1. remove type prefixes
     if clean_decl.startswith("int "):
         clean_decl = clean_decl[4:].strip()
     elif clean_decl.startswith("string "):
         clean_decl = clean_decl[7:].strip()
         
-    # 2. 依次过滤出变量名字段。遇到空格、中括号、等号或分号时立即终止
+    # 2. Filter the variable name fields sequentially.
+    # Stop when meeting a space, square brackets, equal sign, or semicolon.
     name_chars = []
     for char in clean_decl:
         if char == " " or char == "[" or char == "=" or char == ";":
@@ -140,22 +132,20 @@ def process_global_variables(
     output_dir: Path,
 ) -> dict[str, list[str]]:
     """
-    对多个源大文件的全局变量进行合并、分类去重，并返回差异/冲突变量映射。
+    Merge and categorize global var from multiple large lgc to remove duplicates,
+    and return a map of differences/conflicts.
     
-    分类规则:
-        1. 公共全局变量: 在所有大文件中都有声明且定义完全一致。合入 core/global_variable.lgc 文件。
-        2. 差异/冲突全局变量: 在不同文件中声明不一致，或仅被部分大文件独占。
-           - 不写入公共全局变量文件。
-           - 使用 logger.warning 提醒用户注意该变量的物理定义冲突详情。
-           - 返回私有/冲突全局变量列表，供后续主入口文件在包含普通段之前进行提早注入。
+    Rule:
+        1. If everything is same, merge into core/global_variable.lgc
+        2. If collision happen, it belongs to last segment (main entrance)
 
-    :param file_to_globals: 各大文件提取出来的原始全局变量行映射，格式为 { "tutorial_00.lgc": [原始变量行] }。
-    :param output_dir: 物理输出的 LGC 根目录。
-    :return: 记录各大文件需要本地注入的差异/独占全局变量声明，格式为 { "tutorial_00.lgc": [局部变量声明] }。
+    :param file_to_globals: global vars mapping from big lgc, format { "tutorial_00.lgc": [global vars] }。
+    :param output_dir: output dir
+    :return: distinguished var that need to be injected into its own file, format { "tutorial_00.lgc": [global local vars] }。
     """
     from lgd_tool.lgd_decompiler.LGC_splitter import write_global_variable_file
 
-    # 1. 全局变量注册，结构为: { 变量名: { 文件名: 归一化声明 } }
+    # 1. Global var format { variable name: { file name: normalized declaration } }
     var_registry = {}
 
     for file_name, decl_lines in file_to_globals.items():
@@ -170,18 +160,19 @@ def process_global_variables(
                 var_registry[var_name][file_name] = normalized
 
     public_globals = []
-    # 记录各大文件需要本地注入的差异/独占全局变量声明
+    # record the var that need to be injected into each one (conflict)
     file_local_injections = {name: [] for name in file_to_globals.keys()}
 
-    # 2. 对每个变量名进行分类研判
+    # 2. Classify and analyze each variable name.
     for var_name, occurrences in var_registry.items():
         unique_declarations = set(occurrences.values())
         
-        # 只要没有发生定义冲突（即该变量名对应的不同声明只有 1 种），就一律归于公共 global
+        # As long as there is no definition conflict it is all classified as global.
         if len(unique_declarations) == 1:
             public_globals.append(list(unique_declarations)[0])
         else:
-            # 存在定义冲突（或在某些关卡独占定义），输出明确的 warning 日志提醒用户注意
+            # conflicting
+            # eg: int var = 100; && int var = 10;
             warning_detail = (
                 f"[Global Merger] Global Var '{var_name}' have conflict or is exclusive between files\n"
                 f"  -> Conflict/Exclusive distribution and details: \n"
@@ -189,11 +180,11 @@ def process_global_variables(
             )
             logger.warning(warning_detail)
 
-            # 分发保存到对应文件的私有注入队列
+            # Distribute and save to the private injection queue of the corresponding file
             for file_name, decl_text in occurrences.items():
                 file_local_injections[file_name].append(decl_text)
 
-    # 3. 物理写入 core/global_variable.lgc 公共文件
+    # 3. write into core/global_variable.lgc
     output_globals_file = output_dir / "core" / "global_variable.lgc"
     write_global_variable_file(public_globals, output_globals_file)
 
@@ -202,20 +193,22 @@ def process_global_variables(
 
 class LgcSegmentPool:
     """
-    全局 LGC 普通代码段（Segment）管理与去重合并池。
+    Global segment management and deduplication merging pool.
     
-    核心原理:
-        - 针对各大文件拆分出来的每一个普通函数段（一组 LgcFunction），在内存中完整拼接并计算其 MD5 哈希指纹。
-        - 用内容 MD5 作为 Key，在全局字典中追踪它。
-        - 遇到完全相同的指纹，直接抛弃物理写盘，物理上复用已有的文件名，解耦不同文件的载入/引用物理顺序。
-        - 遇到全新指纹，动态分配一个未被占用的文件名（如 segment_01.lgc，遇冲突则递增后缀为 segment_01_001.lgc），物理写盘并记录。
+    Rule:
+        - each segment will assemble in memory and its MD5 hash fingerprint is calculated.
+        - Use the content's MD5 hash as the key to track it in the global dictionary.
+        - if same fingerprints, not write into disk and combine to a existing one
+        - if meet new fingerprint, dynamically allocated (e.g., segment_01.lgc;
+        if a conflict occurs, the suffix is incremented to segment_01_001.lgc),
+        and the fingerprint is physically written to the disk and recorded.
     """
 
     def __init__(self, output_dir: Path):
         """
-        初始化段管理池。
+        init seg pool
 
-        :param output_dir: 合并去重后的 LGC 子物理文件物理写入根目录。
+        :param output_dir: The merged and deduplicated LGC segment written root directory.
         """
         self.output_dir = output_dir
         # 保存已注册去重的全局段，格式为 { md5_hash: 物理文件名(如 "segment_01.lgc") }
