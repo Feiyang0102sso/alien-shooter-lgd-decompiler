@@ -169,6 +169,7 @@ def split_and_backup_single_file(lgd_file_path: str, output_dir: Path) -> None:
     """
     单大文件模式一键处理器：在原大文件所在处自动建立物理 .bak.lgc 原地备份，
     解析大文件并将其分割提取为 core/export.lgc、core/global_variable.lgc 与 segment_XX.lgc。
+    并在原大文件位置重写为只包含 include 和尾部主逻辑入口的引导文件。
 
     :param lgd_file_path: 成功反编译出的原始大 LGD/LGC 文件物理位置
     :param output_dir: 写出解耦后小模块文件的目标工程根目录 Path
@@ -196,13 +197,26 @@ def split_and_backup_single_file(lgd_file_path: str, output_dir: Path) -> None:
     segments_dict = decide_segments(functions)
     export_functions = segments_dict.get("export", [])
     
+    all_segs = segments_dict.get("segments", [])
     # 若存在前置调用的段落，将其作为第 0 份 segment 插入
     has_segment_0 = len(export_functions) > 0
     if has_segment_0:
-        segments_dict["segments"].insert(0, export_functions)
-        segments_dict["export"] = []
-        
-    # 2.1 物理写出导出函数核心库 core/export.lgc（如果存在 segment_0 则前置内联 include）
+        all_segs.insert(0, export_functions)
+
+    # 3. 剥离最后一段作为主入口引导脚本的末尾代码
+    pure_segments = []
+    last_segment_lines = []
+    if len(all_segs) > 0:
+        last_seg = all_segs[-1]
+        pure_segments = all_segs[:-1]
+        for func in last_seg:
+            for line in func.lines:
+                last_segment_lines.append(line)
+            last_segment_lines.append("")
+    
+    prefix_name = output_dir.name
+
+    # 3.1 物理写出导出函数核心库 core/export.lgc（如果存在 segment_0 则前置内联 include）
     externs = extract_extern_declarations(lgc_content)
     include_segs = None
     if has_segment_0:
@@ -214,17 +228,42 @@ def split_and_backup_single_file(lgd_file_path: str, output_dir: Path) -> None:
         include_segments=include_segs
     )
     
-    # 2.2 物理写出全局公共变量 core/global_variable.lgc
+    # 3.2 物理写出全局公共变量 core/global_variable.lgc
     globals_list = extract_globals_from_content(lgc_content)
     write_global_variable_file(globals_list, output_dir / "core" / "global_variable.lgc")
     
-    # 2.3 物理写出各个切分后的普通代码分段
-    write_segment_files(segments_dict, output_dir, lgd_p.name)
+    # 3.3 物理写出各个切分后的普通代码分段
+    segment_filenames = write_segment_files(pure_segments, output_dir)
     
-    seg_count = len(segments_dict.get("segments", []))
+    # 4. 组装并重写入口主引导脚本 (lgc_file_path)
+    # 因为单文件模式直接平铺在地图文件夹下，所以此处只需要在原位重写这一份主脚本
+    outer_lines = []
+    outer_lines.append("// ==========================================")
+    outer_lines.append(f"// Entrance Map Script: {lgc_file_path.name}")
+    outer_lines.append("// ==========================================")
+    outer_lines.append("")
+    outer_lines.append('#include "core\\export.lgc"')
+    outer_lines.append('#include "core\\global_variable.lgc"')
+    outer_lines.append("")
+    
+    # 拼入依赖的普通段 include
+    # 如果 has_segment_0 为 True，则 segment_00.lgc 已经被 export.lgc 包含了，需跳过以防重复包含
+    remaining_segs = segment_filenames[1:] if has_segment_0 else segment_filenames
+    for seg_name in remaining_segs:
+        outer_lines.append(f'#include "{seg_name}"')
+        
+    outer_lines.append("")
+    for line in last_segment_lines:
+        outer_lines.append(line)
+    outer_lines.append("")
+    
+    lgc_file_path.write_text("\n".join(outer_lines), encoding="utf-8")
+    logger.debug("Successfully rewrote entrance script to: %s", lgc_file_path)
+
+    seg_count = len(pure_segments)
     logger.info(
         f"[SPLITTER SUMMARY] Completed single file split for '{lgd_p.name}'. "
-        f"Created 1 backup file and generated {seg_count} code segments."
+        f"Created 1 backup file, 1 entrance script, and generated {seg_count} code segments."
     )
 
 
@@ -342,8 +381,8 @@ def run_splitter_pipeline(target_path: Path, success_list: list = None) -> None:
             logger.error(f"[SPLITTER] Cannot find generated LGC file to split: {lgc_file_path}")
             return
 
-        # 写出到大文件所在的同名独立物理文件夹中进行归档
-        output_dir = target_path.parent / target_path.stem
+        # 直接散在原地图文件夹下面，不额外在内部创建子同名文件夹
+        output_dir = target_path.parent
         logger.info(f"[SPLITTER] Executing single-file split for: {target_path}")
         split_and_backup_single_file(str(target_path), output_dir)
 

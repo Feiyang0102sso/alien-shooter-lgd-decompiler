@@ -184,34 +184,24 @@ def decide_segments(functions: list[LgcFunction]) -> dict[str, list]:
 
 
 def write_segment_files(
-    segments: dict[str, list],
+    segments: list[list[LgcFunction]],
     output_dir: Path,
-    original_name: str = "main.lgc",
-) -> None:
+) -> list[str]:
     """
-    单大文件模式下直接物理将各个拆分出的普通段写入磁盘文件。
-    注意：归属于 export.lgc 的函数已由管线高层流程单独托管写盘，此处仅写出普通段 segments。
+    单大文件模式下直接物理将各个拆分出的普通段写入磁盘文件，统一命名为 segment_XX.lgc。
+    注意：此函数仅写出传入的代码段列表，头部会自动注入 core 引用与哨兵包含保护。
 
-    :param segments: 经由 decide_segments 切分好的段落映射字典
+    :param segments: 普通段列表（每个段是 LgcFunction 的列表）
     :param output_dir: 物理输出的目录 Path
-    :param original_name: 最后一个段落（即游戏地图的主逻辑入口）要保持的原始脚本文件名（如 level_01.lgc）
+    :return: 写入成功的普通段文件名列表
     """
     output_dir.mkdir(parents=True, exist_ok=True)
-
-    segment_lists = segments.get("segments", [])
+    segment_filenames = []
 
     # 1. 物理写入各个普通的 segment_XX.lgc 段文件
-    num_segs = len(segment_lists)
-    for idx, seg in enumerate(segment_lists):
-        # 最后一个段落（即地图主逻辑入口）保留原物理文件名，否则按顺序命名为 segment_XX.lgc
-        if idx == num_segs - 1:
-            if original_name.lower().endswith(".lgc"):
-                seg_file_name = original_name
-            else:
-                seg_file_name = f"{original_name}.lgc"
-        else:
-            seg_file_name = f"segment_{idx:02d}.lgc"
-
+    for idx, seg in enumerate(segments):
+        seg_file_name = f"segment_{idx:02d}.lgc"
+        segment_filenames.append(seg_file_name)
         seg_file = output_dir / seg_file_name
 
         # 构建 #ifndef 防重定义包含保护哨兵
@@ -223,8 +213,13 @@ def write_segment_files(
         seg_lines.append("")
         seg_lines.append("// ==========================================")
         seg_lines.append(f"// file {seg_file_name}")
-        seg_lines.append("// references: 0")
+        seg_lines.append("// references: 1")
         seg_lines.append("// ==========================================")
+        seg_lines.append("")
+
+        # 在所有的分段头部，全部前置引用核心导出及公共全局变量
+        seg_lines.append('#include "core\\export.lgc"')
+        seg_lines.append('#include "core\\global_variable.lgc"')
         seg_lines.append("")
 
         for func in seg:
@@ -237,6 +232,8 @@ def write_segment_files(
 
         seg_file.write_text("\n".join(seg_lines), encoding="utf-8")
         logger.debug("Successfully wrote segment file with include guard to: %s", seg_file)
+
+    return segment_filenames
 
 
 class LgcSegmentPool:

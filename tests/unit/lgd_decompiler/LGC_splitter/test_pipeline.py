@@ -57,9 +57,8 @@ def test_run_splitter_pipeline_single_file():
         assert bak_file.exists()
         assert bak_file.read_text(encoding="utf-8") == lgc_content
         
-        # 4. 验证是否拆分产出到同名子文件夹中
-        output_dir = temp_path / "level_test"
-        assert output_dir.exists()
+        # 4. 验证是否直接平铺产出在同级目录下
+        output_dir = temp_path
         
         # 验证 core 目录的 export 与 global
         export_file = output_dir / "core" / "export.lgc"
@@ -75,6 +74,14 @@ def test_run_splitter_pipeline_single_file():
         # 验证段落切分文件（segment_00.lgc 应被正确生成）
         segment_00_file = output_dir / "segment_00.lgc"
         assert segment_00_file.exists()
+
+        # 验证最外层 lgc 主脚本被重写，且包含正确的相对路径 #include
+        assert lgc_file.exists()
+        outer_text = lgc_file.read_text(encoding="utf-8")
+        assert '#include "core\\export.lgc"' in outer_text
+        assert '#include "core\\global_variable.lgc"' in outer_text
+        assert '#include "segment_01.lgc"' in outer_text
+        assert "main()" in outer_text
 
 
 def test_run_splitter_pipeline_batch_mode():
