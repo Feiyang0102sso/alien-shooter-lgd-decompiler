@@ -150,17 +150,34 @@ class LgcContext:
                     func_part = name.split('_arg')[0]
                     p_type = row.get('Type', 'int').lstrip('\t')
 
-                    decl = f"{p_type} {name}"
-                    if is_init and raw_val != 'N/A':
-                        if p_type == 'string':
-                            # 对于 string 类型的 parameter，原样读取引号内的值如果自身是 "" 就直接赋
-                            if not raw_val.startswith('"') and raw_val != '""':
-                                safe_str = self._escape_string(raw_val)
-                                decl += f' = "{safe_str}"'
+                    if is_array:
+                        decl = f"{p_type} {name}[{size_str}]"
+                        if is_init and raw_val not in ('N/A', ''):
+                            try:
+                                val_list = json.loads(raw_val)
+                                formatted_vals = []
+                                for v in val_list:
+                                    if p_type == 'string':
+                                        safe_str = self._escape_string(v)
+                                        formatted_vals.append(f'"{safe_str}"')
+                                    else:
+                                        formatted_vals.append(str(v))
+                                init_str = ', '.join(formatted_vals)
+                                decl += f" = {{ {init_str} }}"
+                            except json.JSONDecodeError as e:
+                                logger.error_and_stop(f"[LGC-CONTEXT] PARAM array JSON decode error at row {row_idx} ({name}): {e}")
+                    else:
+                        decl = f"{p_type} {name}"
+                        if is_init and raw_val != 'N/A':
+                            if p_type == 'string':
+                                # 对于 string 类型的 parameter，原样读取引号内的值如果自身是 "" 就直接赋
+                                if not raw_val.startswith('"') and raw_val != '""':
+                                    safe_str = self._escape_string(raw_val)
+                                    decl += f' = "{safe_str}"'
+                                else:
+                                    decl += f" = {raw_val}"
                             else:
                                 decl += f" = {raw_val}"
-                        else:
-                            decl += f" = {raw_val}"
 
                     if func_part not in self.func_params:
                         logger.error_and_stop(
@@ -227,7 +244,7 @@ class LgcContext:
                             decl = f"{l_type} {local_name};"
 
                     if func_part not in self.func_locals:
-                        self._report_error(
+                        logger.error_and_stop(
                             f"[LGC-CONTEXT] LOCAL_VAR '{name}' mapped to unknown function '{func_part}' at row {row_idx}. Auto-registering.")
                         self.func_locals[func_part] = []
                     self.func_locals[func_part].append(decl)

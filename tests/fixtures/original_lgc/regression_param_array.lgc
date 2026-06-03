@@ -1,0 +1,14 @@
+test_param_array(
+    int arg0[10],
+    string arg1[5],
+    int arg2[3] = {1, 2, 3},
+    string arg3[2] = {"a", "b"}
+)
+{
+    int a;
+    a = 1;
+}
+
+main()
+{
+}
