@@ -219,7 +219,7 @@ def split_and_backup_single_file(lgd_file_path: str, output_dir: Path) -> None:
     # 3.1 物理写出导出函数核心库 core/export.lgc（如果存在 segment_0 则前置内联 include）
     externs = extract_extern_declarations(lgc_content)
     include_segs = None
-    if has_segment_0:
+    if has_segment_0 and len(pure_segments) > 0:
         include_segs = ["segment_00.lgc"]
     
     write_export_file(
@@ -247,8 +247,12 @@ def split_and_backup_single_file(lgd_file_path: str, output_dir: Path) -> None:
     outer_lines.append("")
     
     # 拼入依赖的普通段 include
-    # 如果 has_segment_0 为 True，则 segment_00.lgc 已经被 export.lgc 包含了，需跳过以防重复包含
-    remaining_segs = segment_filenames[1:] if has_segment_0 else segment_filenames
+    # 如果 has_segment_0 为 True 且物理上生成了 segment_00.lgc，
+    # 则 segment_00.lgc 已经被 export.lgc 包含了，需跳过以防重复包含。
+    if has_segment_0 and len(pure_segments) > 0:
+        remaining_segs = segment_filenames[1:]
+    else:
+        remaining_segs = segment_filenames
     for seg_name in remaining_segs:
         outer_lines.append(f'#include "{seg_name}"')
         

@@ -268,3 +268,62 @@ def test_run_splitter_pipeline_deep_directories():
         assert '#include "core\\export.lgc"' in l2_entry_text
         assert '#include "core\\global_variable.lgc"' in l2_entry_text
         assert '#include "segment_00.lgc"' not in l2_entry_text  # 已经被剥离
+
+
+def test_run_splitter_pipeline_single_file_no_segments():
+    """
+    测试单大文件模式下，仅含有前置导出函数（无其他普通函数段）的情形。
+    确保：
+    1. 物理上不生成任何 segment_XX.lgc 物理文件。
+    2. core/export.lgc 中没有引入 '#include "segment_00.lgc"'。
+    3. 主入口文件 level_test.lgc 里正常包含 main() 逻辑，且没有引入任何 segment 文件。
+    """
+    with tempfile.TemporaryDirectory() as temp_dir:
+        temp_path = Path(temp_dir)
+        
+        # 1. 模拟生成虚拟 .lgd 文件与对应的 .lgc 源码文件（无普通跳跃段，仅有主 main 函数段）
+        lgd_file = temp_path / "level_test.lgd"
+        lgd_file.write_text("dummy lgd binary", encoding="utf-8")
+        
+        lgc_file = temp_path / "level_test.lgc"
+        lgc_content = (
+            "extern int Log(string msg);\n\n"
+            "// --- Global Variables ---\n"
+            "int SoundVolume = 1;\n\n"
+            "main()\n"
+            "{\n"
+            "    // --- Line 50 ---\n"
+            "    Log(\"main\");\n"
+            "}\n"
+        )
+        lgc_file.write_text(lgc_content, encoding="utf-8")
+
+        
+        # 2. 调用顶层一键 Pipeline
+        run_splitter_pipeline(lgd_file)
+        
+        # 3. 验证是否直接平铺产出在同级目录下
+        output_dir = temp_path
+        
+        # 验证 core 目录的 export 与 global
+        export_file = output_dir / "core" / "export.lgc"
+        assert export_file.exists()
+        export_text = export_file.read_text(encoding="utf-8")
+        assert "extern int Log(string msg);" in export_text
+        assert '#include "segment_00.lgc"' not in export_text  # 核心点：不能包含段引用
+        
+        global_file = output_dir / "core" / "global_variable.lgc"
+        assert global_file.exists()
+        
+        # 核心点：物理上绝对不应该生成任何 segment 文件
+        segment_files = list(output_dir.glob("segment_*.lgc"))
+        assert len(segment_files) == 0
+        
+        # 验证最外层 lgc 主脚本被重写，且没有引入任何 segment 文件
+        assert lgc_file.exists()
+        outer_text = lgc_file.read_text(encoding="utf-8")
+        assert '#include "core\\export.lgc"' in outer_text
+        assert '#include "core\\global_variable.lgc"' in outer_text
+        assert '#include "segment_' not in outer_text
+        assert "main()" in outer_text
+

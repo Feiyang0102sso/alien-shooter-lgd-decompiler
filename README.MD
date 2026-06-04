@@ -15,6 +15,7 @@
   - Optimized and fixed the path logic of the reorganize module. 
   - Fixed the issue where paths would contain the root directory during single-file decompilation.
   - Fixed the issue where parameter array parameters in function declarations lost their array brackets `[]` when generating LGC.
+  - Fixed the issue where `#include "segment_00.lgc"` was incorrectly written to `export.lgc` when no physical segment_00 was generated. This occurs when decompiling a previously merged LGC file compiled into LGD again.
 - **v0.6.0 (2026-05-30):**
   - Added `--reorganize` option to split large LGC scripts and merge similar items.
   - Optimized the `--refine` option logic; it can now only be used after `--reorganize`.
@@ -131,6 +132,7 @@ LgdDecompiler/
   - 优化并修复 reorganize 模块的路径逻辑。
   - 修复单文件反编译时路径会包含根目录的问题。
   - 修复函数声明参数中的数组参数在生成 LGC 时丢失数组符号 `[]` 的问题。
+  - 修复未物理生成段文件却在 `core/export.lgc` 错误写入 `#include "segment_00.lgc"` 的问题（主要因使用未重组的单大 LGC 编译为 LGD 后，再次尝试使用重组反编译所触发）。
 - **v0.6.0 (2026-05-30):**
   - 新增 `--reorganize` 选项，对大 LGC 脚本进行拆分并合并同类项
   - 优化`--refine` 选项逻辑，现在其仅能在  `--reorganize` 之后使用
