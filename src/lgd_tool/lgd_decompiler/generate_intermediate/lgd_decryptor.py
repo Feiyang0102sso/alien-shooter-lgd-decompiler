@@ -1,6 +1,9 @@
 """
 generate_intermediate/lgd_decryptor.py
 Decrypts the entire LGD file structure into a plaintext binary.
+
+!!! Legacy Code !!!
+New code is now written in src/lgd_tool/crypt/cryptor.py
 """
 
 import struct

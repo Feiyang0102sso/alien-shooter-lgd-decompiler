@@ -130,6 +130,119 @@ def cleanup_existing_lgc_files(target_dir: Path) -> bool:
     return True
 
 
+def process_crypt_file(file_path: Path, decrypt: bool, encrypt: bool) -> bool:
+    """
+    处理单个 LGD 文件的加密或解密转换。
+
+    :param file_path: 输入文件的 Path 对象
+    :param decrypt: 是否执行解密
+    :param encrypt: 是否执行加密
+    :return: 转换成功返回 True，失败返回 False
+    """
+    try:
+        from lgd_tool.crypt import LgdCryptor
+        cryptor = LgdCryptor()
+
+        # 确定输出路径，保持一致的路径转换规则
+        if decrypt:
+            if file_path.suffix.lower() == '.lgd':
+                output_path = file_path.with_suffix(file_path.suffix + '.bak')
+            else:
+                output_path = file_path.with_name(file_path.name + '.bak')
+            action_name = "Decrypt"
+        else:
+            if file_path.suffix.lower() == '.bak':
+                output_path = file_path.with_suffix('')
+            else:
+                output_path = file_path
+            action_name = "Encrypt"
+
+        logger.info(f"[CRYPT] {action_name}ing file: {file_path.name} -> {output_path.name}")
+
+        data = file_path.read_bytes()
+        transformed = cryptor.transform(data)
+        output_path.write_bytes(transformed)
+
+        logger.info(f"[CRYPT] {action_name} success! Saved to {output_path.name}")
+        return True
+    except Exception as e:
+        logger.error(f"[CRYPT] Failed to process file {file_path.name}: {e}")
+        return False
+
+
+def process_crypt_dir(dir_path: Path, decrypt: bool, encrypt: bool) -> None:
+    """
+    递归批量处理目录下的所有加密/解密文件。
+
+    :param dir_path: 输入目录的 Path 对象
+    :param decrypt: 是否执行解密
+    :param encrypt: 是否执行加密
+    """
+    files_to_process = []
+
+    if decrypt:
+        for p in dir_path.rglob("*"):
+            if p.is_file() and p.suffix.lower() == '.lgd':
+                files_to_process.append(p)
+        action_name = "Decryption"
+    else:
+        for p in dir_path.rglob("*"):
+            if p.is_file() and p.suffix.lower() == '.bak':
+                files_to_process.append(p)
+        action_name = "Encryption"
+
+    if not files_to_process:
+        logger.warning(f"[CRYPT] No files found for {action_name} in '{dir_path}'")
+        return
+
+    total = len(files_to_process)
+    logger.info(f"[CRYPT] Found {total} files to process. Starting batch {action_name}...")
+
+    success_count = 0
+    failed_list = []
+
+    for idx, file_path in enumerate(files_to_process, start=1):
+        logger.info(f"[CRYPT PROGRESS] Processing file {idx}/{total}: {file_path.name}")
+        if process_crypt_file(file_path, decrypt=decrypt, encrypt=encrypt):
+            success_count = success_count + 1
+        else:
+            failed_list.append(file_path)
+
+    print("\n" + "=" * 50)
+    logger.info(f"[CRYPT SUMMARY] BATCH {action_name.upper()} REPORT")
+    print("=" * 50)
+    logger.info(f"    Total files found  : {total}")
+    logger.info(f"    Successfully done  : {success_count}")
+    logger.info(f"    Failed             : {len(failed_list)}")
+    if failed_list:
+        print("-" * 50)
+        logger.warning("[CRYPT] The following files failed:")
+        for idx, f in enumerate(failed_list, start=1):
+            logger.warning(f"    {idx}. {f.name}")
+    print("=" * 50 + "\n")
+
+
+def run_crypt_workflow(target_path: str, decrypt: bool, encrypt: bool) -> None:
+    """
+    运行加密解密工作流，分流处理单文件与目录路径。
+
+    :param target_path: 输入路径字符串
+    :param decrypt: 是否执行解密
+    :param encrypt: 是否执行加密
+    """
+    target_p = Path(target_path)
+    if not target_p.exists():
+        logger.error_and_stop(f"[CRYPT] Target path does not exist: {target_path}")
+        return
+
+    if target_p.is_file():
+        process_crypt_file(target_p, decrypt=decrypt, encrypt=encrypt)
+    elif target_p.is_dir():
+        process_crypt_dir(target_p, decrypt=decrypt, encrypt=encrypt)
+    else:
+        logger.error_and_stop(f"[CRYPT] Invalid target path: {target_path}")
+
+
 def main():
     parser = argparse.ArgumentParser(
         description=f"{__app_name__} Pipeline - V {__version__}",
@@ -171,6 +284,18 @@ def main():
         help="Split LGC into multiple core/segment files and merge identical segments."
     )
 
+    parser.add_argument(
+        "-d", "--decrypt",
+        action="store_true",
+        help="Decrypt .lgd file(s) to .lgd.bak"
+    )
+
+    parser.add_argument(
+        "-e", "--encrypt",
+        action="store_true",
+        help="Encrypt decrypted .lgd.bak file(s) back to .lgd"
+    )
+
     args = parser.parse_args()
 
     config.init_app_env()
@@ -180,10 +305,29 @@ def main():
     stop_on_error = args.stop_on_error
     refine = args.refine
     splitter = args.reorganize
+    decrypt = args.decrypt
+    encrypt = args.encrypt
 
     # 校验参数：refine 必须在 reorganize 开启时才能使用
     if refine and not splitter:
         logger.error_and_stop("[CONFIG] --refine option can only be used when --reorganize is enabled.")
+        return
+
+    # 校验加密解密参数
+    if decrypt and encrypt:
+        logger.error_and_stop("[CONFIG] Cannot specify both --decrypt and --encrypt.")
+        return
+
+    # 若指定了加密或解密，则执行专有逻辑，不走原反编译 pipeline
+    if decrypt or encrypt:
+        try:
+            logger.set_stop_on_error(stop_on_error)
+            run_crypt_workflow(target_path, decrypt=decrypt, encrypt=encrypt)
+        except FatalError:
+            if args.debug:
+                import traceback
+                traceback.print_exc()
+            sys.exit(1)
         return
 
     try:

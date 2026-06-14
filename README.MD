@@ -1,4 +1,4 @@
-# LgdDecompiler V 0.6.1
+# LgdDecompiler V 0.7.0
 
 🌍 **Language / 语言**
 
@@ -12,6 +12,9 @@
 
 ### Changelog
 
+- **v0.7.0 (2026-06-14):**
+  - Added new standalone encryption/decryption package for binary patching workflows.
+  - Added CLI options `--decrypt` (`-d`) and `--encrypt` (`-e`) for file-level or directory-level batch encryption and decryption.
 - **v0.6.1 (2026-06-03):**
   - Optimized and fixed the path logic of the reorganize module. 
   - Fixed the issue where paths would contain the root directory during single-file decompilation.
@@ -70,7 +73,9 @@ Or
 
 ### How to Use
 
-Simply drag and drop a directory containing `.lgd` files, or a single `.lgd` file, onto the corresponding `.bat` script.
+Simply drag and drop a directory containing `.lgd`/`.lgd.bak` files, or a single file, onto the corresponding `.bat` script.
+
+You can select the Decrypt (2) or Encrypt (3) main modes to decode `.lgd` files into editable plaintext `.lgd.bak` (for hex binary patching) and encrypt them back.
 
 You have the option to keep the intermediate files generated during the analysis process, or clear them to strictly output only the final `.LGC` files.
 
@@ -83,6 +88,9 @@ During execution, please ignore any yellow `[Warning]` logs. As long as there ar
 
 ### 更新日志
 
+- **v0.7.0 (2026-06-14):**
+  - 新增独立的 LGD 二进制文件加密解密模块，用以支持二进制补丁（binary patch）修改流。
+  - 主 CLI 新增 `--decrypt` (`-d`) 与 `--encrypt` (`-e`) 命令行参数，支持单文件与目录批量加解密。
 - **v0.6.1 (2026-06-03):**
   - 优化并修复 reorganize 模块的路径逻辑。
   - 修复单文件反编译时路径会包含根目录的问题。
@@ -142,7 +150,9 @@ During execution, please ignore any yellow `[Warning]` logs. As long as there ar
 
 ### 如何使用
 
-将含有 `.lgd` 的文件夹路径或单个 `.lgd` 文件直接拖拽到对应的 `.bat` 脚本上即可执行。
+将含有 `.lgd` / `.lgd.bak` 的文件夹路径或单个文件直接拖拽到对应的 `.bat` 脚本上即可执行。
+
+拖拽文件至脚本后，你还可以选择运行解密 (2) 或加密 (3) 模式，将 `.lgd` 文件解密为明文 `.lgd.bak`（以便使用 Hex 工具直接进行二进制补丁修改），或将其重新打包回密。
 
 你可以选择保留分析过程中的中间产物，或者清除它们只保留最终生成的 `.LGC` 源码文件。
 
