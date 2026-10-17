@@ -33,6 +33,7 @@ dist/
 *.c
 *.h
 *.json
+_sample/
 
 
 # --- allow test data ---

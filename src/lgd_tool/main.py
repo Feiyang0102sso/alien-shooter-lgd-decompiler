@@ -10,6 +10,11 @@ from lgd_tool.lgd_decompiler.LGC_reorganizer import run_splitter_pipeline
 from lgd_tool.lgd_decompiler.LGC_refiner.refiner import LgcRefiner
 from lgd_tool.config import REFINER_DATA_DIR
 
+# 编译器要求：每个 X.map 必须能找到 X.lgc，否则回退到同目录的 default.lgc，两者都没有则编译报错
+MAP_SUFFIX = ".map"
+LGC_SUFFIX = ".lgc"
+DEFAULT_LGC_NAME = "default.lgc"
+
 
 
 def scan_lgd_files(target_dir: str) -> list:
@@ -73,6 +78,42 @@ def refine_reorganized_files(output_dir: Path) -> None:
             logger.error(f"[Refiner] Failed to refine file {lgc_file.name}: {e}")
             
     logger.info(f"[Refiner SUMMARY] Post-Reorganize refinement completed! Successfully refined {refine_count} LGC files.")
+
+
+def create_missing_default_lgc(target_dir: Path) -> list[Path]:
+    """
+    为“只有 .map、没有任何 .lgc”的纯地图文件夹补一个空的 default.lgc。
+
+    编译器对每个 X.map 先找同目录 X.lgc，找不到再用同目录 default.lgc，两者皆无则报
+    "Can't open script source"。原工程里这类文件夹的 default.lgc 是空文件，编译后不产出 .lgd，
+    因此游戏包里没有可反编译的来源，需要在此处补回。
+    文件夹里只要有任何 .lgc 就不处理：缺 default 属于异常（反编译器丢文件），交给编译器报错暴露。
+
+    :param target_dir: 反编译的目标根目录
+    :return: 新创建的 default.lgc 路径列表
+    """
+    # 收集所有含 .map 的文件夹
+    map_folders = set()
+    for map_path in target_dir.rglob(f"*{MAP_SUFFIX}"):
+        if map_path.is_file():
+            map_folders.add(map_path.parent)
+
+    created_files = []
+    for folder in sorted(map_folders):
+        # 文件夹内已有任何 .lgc 则跳过，不做兜底
+        has_lgc = False
+        for _ in folder.glob(f"*{LGC_SUFFIX}"):
+            has_lgc = True
+            break
+        if has_lgc:
+            continue
+
+        default_lgc = folder / DEFAULT_LGC_NAME
+        default_lgc.write_text("", encoding="utf-8")
+        created_files.append(default_lgc)
+        logger.info(f"[DEFAULT LGC] Created empty {DEFAULT_LGC_NAME} in map-only folder: '{folder}'")
+
+    return created_files
 
 
 def cleanup_existing_lgc_files(target_dir: Path) -> bool:
@@ -426,6 +467,9 @@ def main():
                 # refine 运行顺序在 reorganize 之后
                 if refine:
                     refine_reorganized_files(target_p)
+
+            # 最后为缺少脚本的地图文件夹补空 default.lgc（放在 refine 之后，避免空文件被精炼改写）
+            create_missing_default_lgc(target_p)
 
 
         else:
