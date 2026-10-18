@@ -46,6 +46,25 @@ class LgcContext:
         """
         return str(raw_str).replace('\\', '\\\\').replace('"', '\\"')
 
+    def _format_array_init(self, val_list: list, elem_type: str) -> str:
+        """
+        将 CSV 中 JSON 数组形式的初始值格式化为 LGC 初始化列表内容（不含花括号）。
+        string 元素逐个转义并加引号。数组元素的值与二进制完全一致（空串即 JSON ""，不使用占位符），
+        因此元素恰为两个双引号字符时是真实数据（如 ASF453 的 Supply_table），须原样转义为 "\\"\\""。
+
+        :param val_list: json.loads 得到的元素列表
+        :param elem_type: 元素类型（'string' / 'int' 等）
+        :return: 形如 '"a", "", "c"' 的字符串
+        """
+        formatted_vals = []
+        for v in val_list:
+            if elem_type == 'string':
+                safe_str = self._escape_string(v)
+                formatted_vals.append(f'"{safe_str}"')
+            else:
+                formatted_vals.append(str(v))
+        return ', '.join(formatted_vals)
+
     def load_from_csv(self, csv_path: str) -> None:
         """从指定的 CSV 文件读取配置，分类填充到上下文中，并执行严格的错误校验。"""
         if not os.path.exists(csv_path):
@@ -100,15 +119,7 @@ class LgcContext:
                         else:
                             try:
                                 val_list = json.loads(raw_val)
-                                formatted_vals = []
-                                for v in val_list:
-                                    if g_type == 'string':
-                                        safe_str = self._escape_string(v)
-                                        formatted_vals.append(f'"{safe_str}"')
-                                    else:
-                                        formatted_vals.append(str(v))
-
-                                init_str = ', '.join(formatted_vals)
+                                init_str = self._format_array_init(val_list, g_type)
                                 self.header_manager.add_global(f"{g_type} {name}[{size_str}] = {{ {init_str} }};")
                             except json.JSONDecodeError as e:
                                 logger.error_and_stop(f"[LGC-CONTEXT] VAR array JSON decode error at row {row_idx} ({name}): {e}")
@@ -155,14 +166,7 @@ class LgcContext:
                         if is_init and raw_val not in ('N/A', ''):
                             try:
                                 val_list = json.loads(raw_val)
-                                formatted_vals = []
-                                for v in val_list:
-                                    if p_type == 'string':
-                                        safe_str = self._escape_string(v)
-                                        formatted_vals.append(f'"{safe_str}"')
-                                    else:
-                                        formatted_vals.append(str(v))
-                                init_str = ', '.join(formatted_vals)
+                                init_str = self._format_array_init(val_list, p_type)
                                 decl += f" = {{ {init_str} }}"
                             except json.JSONDecodeError as e:
                                 logger.error_and_stop(f"[LGC-CONTEXT] PARAM array JSON decode error at row {row_idx} ({name}): {e}")
@@ -201,15 +205,7 @@ class LgcContext:
                             # static 数组：有预设初始值
                             try:
                                 val_list = json.loads(raw_val)
-                                formatted_vals = []
-                                for v in val_list:
-                                    if l_type == 'string':
-                                        safe_str = self._escape_string(v)
-                                        formatted_vals.append(f'"{safe_str}"')
-                                    else:
-                                        formatted_vals.append(str(v))
-
-                                init_str = ', '.join(formatted_vals)
+                                init_str = self._format_array_init(val_list, l_type)
                                 decl = f"static {l_type} {local_name}[{size_str}] = {{ {init_str} }};"
                             except json.JSONDecodeError as e:
                                 logger.error_and_stop(f"[LGC-CONTEXT] LOCAL_VAR array JSON decode error at row {row_idx} ({name}): {e}")

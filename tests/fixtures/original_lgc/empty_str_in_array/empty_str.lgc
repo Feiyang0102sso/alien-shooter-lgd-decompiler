@@ -1,0 +1,34 @@
+// ==========================================
+// empty_str.lgc
+// 最小复刻：字符串数组初始化列表中的空串 "" 被反编译成 "\"\""
+// 覆盖 lgc_context 的三条数组路径：全局数组 / 数组参数默认值 / static 局部数组
+// 对应 ASNE startEquipmentTemplatesInInventory：以 "" 作结尾哨兵的 while 循环会死循环
+// ==========================================
+
+// 全局数组：以空串作结尾哨兵
+string items[4] = { "a", "b", "c", "" };
+
+// 对照组：值为两个双引号字符（长度 2）的字符串，必须与空串（长度 0）区分
+// ASF453 源码中 Supply_table 写的是空串宏 UNDEFINED_STRING_VALUE，
+// 但正式版 lgd 里该元素实际存成了两个双引号字符；此处直接写出该值，复现同样的二进制
+string quoted[2] = { "\"\"", "" };
+
+// 数组参数默认值中含空串
+pick(string names[2] = { "x", "" })
+{
+  return names[0];
+}
+
+main()
+{
+  // static 局部数组中含空串
+  static string tags[3] = { "t1", "", "t3" };
+  int i = 0;
+
+  // 反编译错误时 items[3] 变成两个引号字符，循环找不到哨兵而越界
+  while (items[i] != "")
+  {
+    i++;
+  }
+  pick();
+}

@@ -1,4 +1,4 @@
-# LgdDecompiler V 0.7.0
+# LgdDecompiler V 0.8.0
 
 🌍 **Language / 语言**
 
@@ -12,6 +12,10 @@
 
 ### Changelog
 
+- **v0.8.0 (2026-10-18):**
+  - Fixed reorganize errors caused by empty functions, where `core/export.lgc` could incorrectly include multiple segments.
+  - Fixed various errors caused by `&ArrayIndex[i]` (taking the address of an array element).
+  - Fixed errors caused by incorrect handling of empty strings.
 - **v0.7.0 (2026-06-14):**
   - Added new standalone encryption/decryption package for binary patching workflows.
   - Added CLI options `--decrypt` (`-d`) and `--encrypt` (`-e`) for file-level or directory-level batch encryption and decryption.
@@ -88,6 +92,10 @@ During execution, please ignore any yellow `[Warning]` logs. As long as there ar
 
 ### 更新日志
 
+- **v0.8.0 (2026-10-18):**
+  - 修复空函数（empty）导致的拆分错误，`core/export.lgc` 会错误引用多份 segment。
+  - 修复 `&ArrayIndex[i]`（取数组元素地址）导致的诸多错误。
+  - 修复空字符串处理异常导致的错误。
 - **v0.7.0 (2026-06-14):**
   - 新增独立的 LGD 二进制文件加密解密模块，用以支持二进制补丁（binary patch）修改流。
   - 主 CLI 新增 `--decrypt` (`-d`) 与 `--encrypt` (`-e`) 命令行参数，支持单文件与目录批量加解密。

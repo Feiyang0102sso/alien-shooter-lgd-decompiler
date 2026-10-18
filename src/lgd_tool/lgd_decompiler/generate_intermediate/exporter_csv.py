@@ -12,6 +12,10 @@ from lgd_tool.lgd_decompiler.common.definitions import LgdDefinitions
 from lgd_tool.lgd_decompiler.common.structures import P1LiteralEntry, P2SymbolEntry
 from lgd_tool.lgd_decompiler.core.context import LgdAnalysisContext
 
+# 标量空串在 CSV 中的占位符：单元格留空无法区分“未初始化”与“初始化为空串”
+# 数组以 JSON 存储，JSON 的 "" 已能无歧义表示空串，因此数组元素不使用占位符
+EMPTY_STR_PLACEHOLDER = '""'
+
 
 class LgdCsvExporter:
     def __init__(self, context: LgdAnalysisContext):
@@ -192,14 +196,15 @@ class LgdCsvExporter:
                         # Fetch all elements within the array bounds
                         for e in entries[i: i + entry.id_size]:
                             val = e.str_val if data_type == "string" else e.int_val
-                            if data_type == "string":
-                                val = f'""' if val in (None, "") else val
+                            # 数组元素的空串直接以 JSON "" 表示，不使用占位符
+                            if data_type == "string" and val is None:
+                                val = ""
                             vals.append(val)
                         sub_row["Init_Value"] = json.dumps(vals)
                     else:
                         val = entry.str_val if data_type == "string" else entry.int_val
                         if data_type == "string":
-                            val = f'""' if val in (None, "") else val
+                            val = EMPTY_STR_PLACEHOLDER if val in (None, "") else val
                         sub_row["Init_Value"] = f"\t{val}" if data_type != "string" else val
 
                 rows_to_return.append(sub_row)
@@ -242,14 +247,15 @@ class LgdCsvExporter:
                         vals = []
                         for e in entries[:size]:
                             val = e.str_val if data_type == "string" else e.int_val
-                            if data_type == "string":
-                                val = f'""' if val in (None, "") else val
+                            # 数组元素的空串直接以 JSON "" 表示，不使用占位符
+                            if data_type == "string" and val is None:
+                                val = ""
                             vals.append(val)
                         row["Init_Value"] = json.dumps(vals)
                     else:
                         val = head.str_val if data_type == "string" else head.int_val
                         if data_type == "string":
-                            val = f'""' if val in (None, "") else val
+                            val = EMPTY_STR_PLACEHOLDER if val in (None, "") else val
                         row["Init_Value"] = f"\t{val}" if data_type != "string" else val
 
         elif category == "FUNC":
