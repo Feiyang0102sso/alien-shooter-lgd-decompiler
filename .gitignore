@@ -42,6 +42,7 @@ _sample/
 # --- allow lgc in bug docs ---
 !_bug_docs/**/*.lgc
 !_bug_docs/**/*.map
+!_bug_docs/**/*.asm
 
 # --- regression test runtime (keep fixtures only) ---
 tests/output/

@@ -1,0 +1,72 @@
+// ==========================================
+// refreshEnemyPathDirections() 源码还原（推测）
+// 依据：scene/refreshEnemyPathDirections.asm 与 .decompiled.lgc
+// 变量名、宏名为推测；数值常量保持 asm 原值
+// ==========================================
+
+// 每波开始时，为场上的特定敌人随机分配一条可走的路径
+refreshEnemyPathDirections()
+{
+  // 同一波只刷新一次
+  if (lastRefreshPathDirectionsWaveNumber == nextWaveNumber)
+    return;                                                           // Line 31
+
+  int waveCount = getEquipmentByCategory(164, 15, missionIndex);      // Line 33
+  if (nextWaveNumber >= waveCount)
+    return;                                                           // Line 36
+
+  lastRefreshPathDirectionsWaveNumber = nextWaveNumber;               // Line 38
+  int waveIndex = nextWaveIndex;                                      // Line 40
+  if (waveIndex == -1)
+    return;                                                           // Line 43
+
+  // 本波配置的路径数量，最多 4 条
+  int pathCount = getEquipmentByCategory(152, 23, waveIndex);         // Line 44
+  if (pathCount > 4)
+    return;                                                           // Line 47
+  if (pathCount <= 0)
+    return;                                                           // Line 49
+
+  int    pathEnabled[4];   // local3  : 第 i 条路径是否存在
+  string pathName[4];      // local7  : 第 i 条路径的名字 "path_i"
+  int    i;                // local11
+
+  for (i = 0; i < 4; ++i)
+    pathEnabled[i] = 0;                                               // Line 56
+
+  // 查表确认每条路径在地图上真实存在，存在则记下名字
+  for (i = 0; i < pathCount; i++)
+  {
+    string pathKey = getEquipmentByCategory(153, 23, waveIndex, i);   // Line 58
+    int pathIdx = getEquipmentIndexByName(24, pathKey);               // Line 60
+    if (pathIdx != -1)
+    {
+      pathEnabled[i] = 1;                                             // Line 64
+      pathName[i] = "path_" + itoa(i);                                // Line 66
+    }
+  }
+
+  // 遍历场上所有单位
+  int unit = FirstSprite();                                           // Line 71
+  while (unit)
+  {
+    int vid = GetUnitVid(unit);                                       // Line 73
+    if (vid == 1364 || vid == 3956)
+    {
+      vid = 3956;                                                     // Line 78
+      for (i = 0; i < pathCount; ++i)
+      {
+        // ★ 问题现场：取字符串数组元素的地址传给 extern Action
+        //   asm: PUSH_VAR i / ARRAY_IDX / ADDR_OF pathName
+        //   Action_arg3、Action_arg4 未传，由编译器以 PUSH_VAR Action_arg3/4 补默认值
+        if (pathEnabled[i] && Action(unit, 165, &pathName[i]))
+        {
+          vid = 1364;                                                 // Line 85
+          break;
+        }
+      }
+      Action(unit, 62, vid);                                          // Line 90
+    }
+    unit = NextSprite();                                              // Line 72
+  }
+}

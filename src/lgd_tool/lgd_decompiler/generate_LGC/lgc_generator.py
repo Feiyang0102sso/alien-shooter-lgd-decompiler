@@ -92,6 +92,12 @@ class LgcGenerator:
                 # 4.4 调用优化器清理双分号与无意义的占位返回
                 pseudo_code = LgcOptimizer.optimize(raw_pseudo_code, method.name)
 
+                # 默认参数占位符必须在组装调用时被全部过滤，残留到输出即为反编译错误
+                if "__DUMMY_ARG__" in pseudo_code:
+                    logger.error_and_stop(
+                        f"[LGC-GENERATOR] Unfiltered __DUMMY_ARG__ left in output of {method.name}()."
+                    )
+
                 # 4.5 合并非 static 数组的逐元素赋值，从函数体中移除并收集初始化值
                 arr_metas = context.func_local_arrays.get(method.name, [])
                 array_inits = {}

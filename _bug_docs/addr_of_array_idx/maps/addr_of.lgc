@@ -1,0 +1,20 @@
+// ==========================================
+// addr_of.lgc
+// 最小复刻：取数组元素地址 &arr[i] 作为 extern 参数，且其后跟着未传的默认参数
+// 对应 ASTD main.lgd -> refreshEnemyPathDirections() Line 80~85
+// ==========================================
+
+extern Action(int Action_arg0, int Action_arg1, int Action_arg2 = 0, int Action_arg3 = 0, int Action_arg4 = 0) 79;
+
+main()
+{
+  string pathName[4];
+  int i;
+
+  for (i = 0; i < 4; ++i)
+  {
+    pathName[i] = "path";
+    // Action_arg3、Action_arg4 走默认值 -> 反编译得到 (&pathName), __DUMMY_ARG__[i]
+    Action(0, 165, &pathName[i]);
+  }
+}

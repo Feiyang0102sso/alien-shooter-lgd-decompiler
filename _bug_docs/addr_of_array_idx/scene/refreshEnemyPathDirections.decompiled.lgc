@@ -1,0 +1,92 @@
+refreshEnemyPathDirections()
+{
+    int refreshEnemyPathDirections_local0;
+    int refreshEnemyPathDirections_local1;
+    int refreshEnemyPathDirections_local2;
+    int refreshEnemyPathDirections_local3[4];
+    string refreshEnemyPathDirections_local7[4];
+    int refreshEnemyPathDirections_local11;
+    string refreshEnemyPathDirections_local12;
+    int refreshEnemyPathDirections_local13;
+    int refreshEnemyPathDirections_local14;
+    int refreshEnemyPathDirections_local15;
+
+    if ((lastRefreshPathDirectionsWaveNumber == nextWaveNumber)) {
+        return;
+        // --- Line 31 ---
+    }
+    refreshEnemyPathDirections_local0 = getEquipmentByCategory(164, 15, missionIndex, -999999);
+    // --- Line 33 ---
+    // --- Line 34 ---
+    if ((nextWaveNumber >= refreshEnemyPathDirections_local0)) {
+        return;
+        // --- Line 36 ---
+    }
+    lastRefreshPathDirectionsWaveNumber = nextWaveNumber;
+    // --- Line 38 ---
+    refreshEnemyPathDirections_local1 = nextWaveIndex;
+    // --- Line 40 ---
+    // --- Line 41 ---
+    if ((refreshEnemyPathDirections_local1 == -1)) {
+        return;
+        // --- Line 43 ---
+    }
+    refreshEnemyPathDirections_local2 = getEquipmentByCategory(152, 23, refreshEnemyPathDirections_local1, -999999);
+    // --- Line 44 ---
+    // --- Line 45 ---
+    if ((refreshEnemyPathDirections_local2 > 4)) {
+        return;
+        // --- Line 47 ---
+    }
+    if ((refreshEnemyPathDirections_local2 <= 0)) {
+        return;
+        // --- Line 49 ---
+    }
+    // --- Line 52 ---
+    // --- Line 53 ---
+    // --- Line 54 ---
+    for (refreshEnemyPathDirections_local11 = 0; (refreshEnemyPathDirections_local11 < 4); (++refreshEnemyPathDirections_local11)) {
+        refreshEnemyPathDirections_local3[refreshEnemyPathDirections_local11] = 0;
+        // --- Line 56 ---
+    }
+    for (refreshEnemyPathDirections_local11 = 0; (refreshEnemyPathDirections_local11 < refreshEnemyPathDirections_local2); (refreshEnemyPathDirections_local11++)) {
+        refreshEnemyPathDirections_local12 = getEquipmentByCategory(153, 23, refreshEnemyPathDirections_local1, refreshEnemyPathDirections_local11);
+        // --- Line 58 ---
+        // --- Line 59 ---
+        refreshEnemyPathDirections_local13 = getEquipmentIndexByName(24, refreshEnemyPathDirections_local12);
+        // --- Line 60 ---
+        // --- Line 61 ---
+        if ((refreshEnemyPathDirections_local13 != -1)) {
+        refreshEnemyPathDirections_local3[refreshEnemyPathDirections_local11] = 1;
+        // --- Line 64 ---
+        refreshEnemyPathDirections_local7[refreshEnemyPathDirections_local11] = ("path_" + itoa(refreshEnemyPathDirections_local11));
+        // --- Line 66 ---
+        }
+    }
+    // --- Line 71 ---
+    refreshEnemyPathDirections_local14 = FirstSprite();
+    // --- Line 72 ---
+    while (refreshEnemyPathDirections_local14) {
+        refreshEnemyPathDirections_local15 = GetUnitVid(refreshEnemyPathDirections_local14);
+        // --- Line 73 ---
+        // --- Line 74 ---
+        if (((refreshEnemyPathDirections_local15 == 1364) || (refreshEnemyPathDirections_local15 == 3956))) {
+            refreshEnemyPathDirections_local15 = 3956;
+            // --- Line 78 ---
+            for (refreshEnemyPathDirections_local11 = 0; (refreshEnemyPathDirections_local11 < refreshEnemyPathDirections_local2); (++refreshEnemyPathDirections_local11)) {
+                if (refreshEnemyPathDirections_local3[refreshEnemyPathDirections_local11]) {
+                if (Action(refreshEnemyPathDirections_local14, 165, (&refreshEnemyPathDirections_local7), __DUMMY_ARG__[refreshEnemyPathDirections_local11])) {
+                refreshEnemyPathDirections_local15 = 1364;
+                // --- Line 85 ---
+                break;
+                }
+                }
+            }
+            Action(refreshEnemyPathDirections_local14, 62, refreshEnemyPathDirections_local15);
+            // --- Line 90 ---
+        }
+        refreshEnemyPathDirections_local14 = NextSprite();
+        // --- Line 72 ---
+    }
+    // return; mark end of function
+}

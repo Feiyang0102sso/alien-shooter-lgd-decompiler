@@ -1,0 +1,22 @@
+// ==========================================
+// addr_of_user_func.lgc
+// 变体：&arr[i] 传给普通（非 extern）函数
+// 普通函数传参是 ASSIGN setPath_arg0 + ARG_COMMIT，泄漏的下标被这条 ASSIGN 吃掉，
+// 参数被识别不出来而整个丢失：反编译得到 setPath(0);  <- 能编译，零报错，语义错
+// ==========================================
+
+setPath(int p, int a = 0)
+{
+  return p + a;
+}
+
+main()
+{
+  string pathName[4];
+  int i;
+  for (i = 0; i < 4; ++i)
+  {
+    pathName[i] = "path";
+    setPath(&pathName[i]);
+  }
+}

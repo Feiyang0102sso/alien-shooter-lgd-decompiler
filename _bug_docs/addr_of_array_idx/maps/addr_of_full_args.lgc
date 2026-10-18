@@ -1,0 +1,23 @@
+// ==========================================
+// addr_of_full_args.lgc
+// 变体：参数全部显式传入，没有默认参数来“接住”泄漏的下标
+// 泄漏的下标会跨过 LINE_NUM，落到下一条语句的第一个 PUSH_VAR 上：
+//   反编译得到 Action(0, 165, (&main_local0), 7, 8);              <- 丢了下标，能编译但语义错
+//             main_local5 = (main_local5[main_local4] + main_local4); <- 被污染的无关语句
+// ==========================================
+
+extern Action(int Action_arg0, int Action_arg1, int Action_arg2 = 0, int Action_arg3 = 0, int Action_arg4 = 0) 79;
+
+main()
+{
+  string pathName[4];
+  int i;
+  int total = 0;
+
+  for (i = 0; i < 4; ++i)
+  {
+    pathName[i] = "path";
+    Action(0, 165, &pathName[i], 7, 8);
+    total = total + i;
+  }
+}

@@ -48,12 +48,25 @@ class ASTBuilder:
 
         # pending_args: List[ASTNode] = []
         pending_array_index: Optional[ASTNode] = None
+        # 最近一条 ARRAY_IDX 在本块中的指令序号
+        array_idx_pos = -1
 
         for i, instr in enumerate(block.instructions):
             self.current_offset = instr.offset
             self.current_mnemonic = instr.mnemonic
             mne = instr.mnemonic
             ops = instr.operands
+
+            # [不变量] ARRAY_IDX 挂起的下标必须被紧随其后的那条变量指令消费
+            # 否则下标会被后续无关变量吞掉（如 &arr[i] 曾把下标漏给默认参数/下一条语句/函数参数）
+            if pending_array_index is not None and i > array_idx_pos + 1:
+                skipped_mne = block.instructions[array_idx_pos + 1].mnemonic
+                logger.error_and_stop(
+                    f"[AST-BUILDER] Array index '{pending_array_index.to_code()}' leaked in '{self.current_method_name}' "
+                    f"at 0x{self.current_offset:X}: instruction {skipped_mne} right after ARRAY_IDX did not consume it."
+                )
+                # 已报错，丢弃泄漏的下标，避免继续污染后续表达式
+                pending_array_index = None
 
             try:
                 # --- 1. Push Operations ---
@@ -81,6 +94,11 @@ class ASTBuilder:
                         # 打上废弃标记，稍后组装函数时直接删掉！
                         dummy_node = VarNode("__DUMMY_ARG__")
                         if pending_array_index is not None:
+                            # 默认参数占位符不可能带下标，必然是前面某条指令漏消费了下标
+                            logger.error_and_stop(
+                                f"[AST-BUILDER] __DUMMY_ARG__ received array index '{pending_array_index.to_code()}' "
+                                f"in '{self.current_method_name}' at 0x{self.current_offset:X} ({var_name})."
+                            )
                             stack.append(ArrayAccessNode(dummy_node, pending_array_index))
                             pending_array_index = None
                         else:
@@ -93,7 +111,13 @@ class ASTBuilder:
                             stack.append(VarNode(var_name))
 
                 elif mne == 'ADDR_OF':
-                    stack.append(UnaryOpNode('&', VarNode(ops[0])))
+                    # 取数组元素地址 &arr[i]：必须消费挂起的下标，否则下标会泄漏给后续变量
+                    if pending_array_index is not None:
+                        addr_target = ArrayAccessNode(VarNode(ops[0]), pending_array_index)
+                        pending_array_index = None
+                    else:
+                        addr_target = VarNode(ops[0])
+                    stack.append(UnaryOpNode('&', addr_target))
 
                 # --- 2. Assignments ---
                 elif mne == 'ASSIGN' or mne == 'OP_ASSIGN':
@@ -110,6 +134,7 @@ class ASTBuilder:
 
                 elif mne == 'ARRAY_IDX':
                     pending_array_index = self._safe_pop(stack)
+                    array_idx_pos = i
 
                 # --- 3. Operations ---
                 # 处理编译器由于 #ifdef 掏空右操作数导致的悬空 LOG_AND LOG_OR
@@ -264,6 +289,23 @@ class ASTBuilder:
 
             except Exception as e:
                 logger.error_and_stop(f"[AST-BUILDER] Error at 0x{instr.offset:X}: {e}")
+
+        # === [不变量] Block 结束时不允许残留未消费的数组下标 ===
+        if pending_array_index is not None:
+            logger.error_and_stop(
+                f"[AST-BUILDER] Array index '{pending_array_index.to_code()}' left unconsumed "
+                f"at block end in '{self.current_method_name}'."
+            )
+
+        # === 后备参数池残留：参数既没进专属参数池也没被任何调用取走，会被静默丢弃 ===
+        if len(pending_args_fallback) > 0:
+            leftover_codes = []
+            for arg in pending_args_fallback:
+                leftover_codes.append(arg.to_code())
+            logger.error_and_stop(
+                f"[AST-BUILDER] {len(pending_args_fallback)} committed argument(s) never passed to any call "
+                f"at block end in '{self.current_method_name}': {', '.join(leftover_codes)}"
+            )
 
         # === 4. 处理 Block 结束时的残留堆栈 ===
         valid_stmts = []
