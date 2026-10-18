@@ -1,0 +1,12 @@
+// test.lgc: common -> defines -> state
+// defines() directly follows common.lgc, so it gets glued onto segment 0
+
+#include "common.lgc"
+#include "defines.lgc"
+#include "state.lgc"
+
+main()
+{
+  int x = add(1, 2);
+  x = twice(x);
+}

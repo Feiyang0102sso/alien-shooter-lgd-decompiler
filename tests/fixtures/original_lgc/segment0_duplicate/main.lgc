@@ -1,0 +1,15 @@
+// main.lgc: common -> extra -> defines -> state
+// defines() follows extra.lgc here, so segment 0 has no defines().
+// Two segment 0 variants -> both included by core\export.lgc -> "Function redefinition"
+
+#include "common.lgc"
+#include "extra.lgc"
+#include "defines.lgc"
+#include "state.lgc"
+
+main()
+{
+  int x = sub(5, 2);
+  x = mul(x, 3);
+  x = twice(x);
+}

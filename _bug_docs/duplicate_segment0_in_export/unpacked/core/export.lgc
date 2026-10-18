@@ -1,0 +1,17 @@
+#ifndef _CORE_EXPORT_LGC_
+#define _CORE_EXPORT_LGC_ aaa
+
+// ==========================================
+// Export Definitions
+// Total Declarations: 0
+// ==========================================
+
+
+// ==========================================
+// Include Segment_00 Functions
+// ==========================================
+
+#include "segment_00.lgc"
+#include "segment_03.lgc"
+
+#endif

@@ -1,0 +1,16 @@
+#ifndef STATE_H
+#define STATE_H aaa
+
+// Always included right after defines.lgc
+
+twice(int a)
+{
+  return a * 2;
+}
+
+half(int a)
+{
+  return a / 2;
+}
+
+#endif

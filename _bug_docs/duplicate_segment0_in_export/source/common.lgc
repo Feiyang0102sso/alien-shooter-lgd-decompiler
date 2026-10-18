@@ -1,0 +1,16 @@
+#ifndef COMMON_H
+#define COMMON_H aaa
+
+// First include of every map -> becomes segment 0 after split
+
+add(int a, int b)
+{
+  return a + b;
+}
+
+sub(int a, int b)
+{
+  return a - b;
+}
+
+#endif

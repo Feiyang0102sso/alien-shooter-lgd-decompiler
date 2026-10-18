@@ -25,6 +25,11 @@ RESERVED_KEYWORDS = frozenset(
 # 匹配反编译出的逻辑行号注释，例如 "// --- Line 965 ---"
 LINE_COMMENT_PATTERN = re.compile(r"//\s*---\s*Line\s+(\d+)\s*---")
 
+# 分段文件名：普通段 segment_XX.lgc；全由空函数组成的段 segment_XX.empty.lgc
+SEGMENT_FILE_PREFIX = "segment_"
+NORMAL_SEGMENT_SUFFIX = ".lgc"
+EMPTY_SEGMENT_SUFFIX = ".empty.lgc"
+
 
 @dataclass
 class LgcFunction:
@@ -134,7 +139,11 @@ def decide_segments(functions: list[LgcFunction]) -> dict[str, list]:
     依据函数包含的逻辑行号变化，判定逻辑代码段发生“向后跳跃”的切分点。
     - 首个发生跳跃前的部分划归为 "export" 字段（后续用于前置引入）
     - 跳跃发生后的多个代码块存入 "segments"
-    - 不包含有效行号的空函数自动跟随上一个活动段
+    - 不包含有效行号的空函数：
+        * 紧挨在回跳前（处于两个源文件边界）的连续空函数单独成段，
+          因为无法判断它属于前一个还是后一个文件（实际多为独立文件，如 defines.lgc）。
+          若粘给前一段，各地图前驱不同会导致同一段出现多个版本（segment 0 尤其致命）
+        * 其余位置的空函数跟随当前活动段
 
     :param functions: 提取的 LgcFunction 函数列表
     :return: 包含 export 段与 segments 分割后段落列表的字典，格式为：
@@ -147,40 +156,96 @@ def decide_segments(functions: list[LgcFunction]) -> dict[str, list]:
 
     has_jumped = False
     current_segment = []
+    # 暂存连续的空函数，等遇到下一个有行号的函数后再决定归属
+    pending_empty_funcs = []
 
     # 上一个正常行号最大的函数的 max_line
     prev_max = 0
 
     for func in functions:
-        # 空函数无条件归于当前活动段
+        # 空函数先暂存，归属由后一个有行号的函数决定
         if func.min_line is None or func.max_line is None:
-            if not has_jumped:
-                segments["export"].append(func)
-            else:
-                current_segment.append(func)
+            pending_empty_funcs.append(func)
             continue
 
         # 判断是否发生了后向逻辑跳跃（当前最小逻辑行号小于上个段最大的逻辑行号）
         if func.min_line < prev_max:
-            has_jumped = True
-            # 当已有段积累了内容，归档当前普通段，并重启一个新的分块
-            if len(current_segment) > 0:
+            # 归档当前段：首次回跳前的内容属于 export，之后的属于普通段
+            if not has_jumped:
+                segments["export"] = current_segment
+            elif len(current_segment) > 0:
                 segments["segments"].append(current_segment)
+
+            # 处于文件边界的空函数单独成段
+            if len(pending_empty_funcs) > 0:
+                segments["segments"].append(pending_empty_funcs)
+                logger.debug(
+                    f"[SEGMENT EMPTY] Boundary empty functions split into standalone segment: "
+                    f"{_join_func_names(pending_empty_funcs)}"
+                )
+
+            has_jumped = True
             current_segment = [func]
         else:
-            if not has_jumped:
-                segments["export"].append(func)
-            else:
-                current_segment.append(func)
+            # 未跨文件边界，空函数跟随当前活动段
+            current_segment.extend(pending_empty_funcs)
+            current_segment.append(func)
 
+        pending_empty_funcs = []
         # 更新历史最大行号
         prev_max = func.max_line
 
-    # 将剩余的所有普通函数块作为最后一个普通段归档
-    if len(current_segment) > 0:
+    # 末尾残留的空函数后面再无回跳，跟随当前活动段
+    current_segment.extend(pending_empty_funcs)
+
+    # 将剩余的所有函数块归档
+    if not has_jumped:
+        segments["export"] = current_segment
+    elif len(current_segment) > 0:
         segments["segments"].append(current_segment)
 
     return segments
+
+
+def _join_func_names(funcs: list[LgcFunction]) -> str:
+    """
+    将函数名拼接成逗号分隔的字符串，用于日志输出。
+
+    :param funcs: LgcFunction 列表
+    :return: 形如 "funcA, funcB" 的字符串
+    """
+    names = []
+    for func in funcs:
+        names.append(func.name)
+    return ", ".join(names)
+
+
+def is_empty_segment(seg_funcs: list[LgcFunction]) -> bool:
+    """
+    判断一个段是否全部由空函数（无任何行号）组成。
+
+    :param seg_funcs: 段内的 LgcFunction 列表
+    :return: 全为空函数时返回 True
+    """
+    for func in seg_funcs:
+        if func.min_line is not None:
+            return False
+    return True
+
+
+def build_segment_file_name(index: int, seg_funcs: list[LgcFunction]) -> str:
+    """
+    生成分段文件名：普通段为 segment_XX.lgc，空函数段为 segment_XX.empty.lgc。
+
+    :param index: 段的序号
+    :param seg_funcs: 段内的 LgcFunction 列表
+    :return: 分段文件名
+    """
+    if is_empty_segment(seg_funcs):
+        suffix = EMPTY_SEGMENT_SUFFIX
+    else:
+        suffix = NORMAL_SEGMENT_SUFFIX
+    return f"{SEGMENT_FILE_PREFIX}{index:02d}{suffix}"
 
 
 def write_segment_files(
@@ -188,7 +253,7 @@ def write_segment_files(
     output_dir: Path,
 ) -> list[str]:
     """
-    单大文件模式下直接物理将各个拆分出的普通段写入磁盘文件，统一命名为 segment_XX.lgc。
+    单大文件模式下直接物理将各个拆分出的普通段写入磁盘文件，命名为 segment_XX.lgc（空函数段为 segment_XX.empty.lgc）。
     注意：此函数仅写出传入的代码段列表，头部会自动注入 core 引用与哨兵包含保护。
 
     :param segments: 普通段列表（每个段是 LgcFunction 的列表）
@@ -200,7 +265,7 @@ def write_segment_files(
 
     # 1. 物理写入各个普通的 segment_XX.lgc 段文件
     for idx, seg in enumerate(segments):
-        seg_file_name = f"segment_{idx:02d}.lgc"
+        seg_file_name = build_segment_file_name(idx, seg)
         segment_filenames.append(seg_file_name)
         seg_file = output_dir / seg_file_name
 
@@ -302,8 +367,8 @@ class LgcSegmentPool:
                     f"combined successfully with '{existing_filename}'"
                 )
             else:
-                # 3. 产生未曾录入的新段，安全分配合并文件名
-                desired_name = f"segment_{len(self.pool):02d}.lgc"
+                # 3. 产生未曾录入的新段，安全分配合并文件名（空函数段带 .empty 后缀）
+                desired_name = build_segment_file_name(len(self.pool), seg_funcs)
 
                 # 4. 安全阀撞名避让逻辑
                 suffix_idx = 1

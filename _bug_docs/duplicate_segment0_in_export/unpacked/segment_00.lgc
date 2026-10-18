@@ -1,0 +1,24 @@
+#ifndef _SEGMENT_00_LGC_
+#define _SEGMENT_00_LGC_ aaa
+
+// ==========================================
+// file segment_00.lgc
+// references: 1
+// ==========================================
+
+#include "core\export.lgc"
+#include "core\global_variable.lgc"
+
+add(int add_arg0, int add_arg1)
+{
+    return (add_arg0 + add_arg1);
+    // --- Line 8 ---
+}
+
+sub(int sub_arg0, int sub_arg1)
+{
+    return (sub_arg0 - sub_arg1);
+    // --- Line 13 ---
+}
+
+#endif

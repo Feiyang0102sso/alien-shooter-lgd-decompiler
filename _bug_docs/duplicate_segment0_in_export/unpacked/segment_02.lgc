@@ -1,0 +1,24 @@
+#ifndef _SEGMENT_02_LGC_
+#define _SEGMENT_02_LGC_ aaa
+
+// ==========================================
+// file segment_02.lgc
+// references: 2
+// ==========================================
+
+#include "core\export.lgc"
+#include "core\global_variable.lgc"
+
+twice(int twice_arg0)
+{
+    return (twice_arg0 * 2);
+    // --- Line 8 ---
+}
+
+half(int half_arg0)
+{
+    return (half_arg0 / 2);
+    // --- Line 13 ---
+}
+
+#endif

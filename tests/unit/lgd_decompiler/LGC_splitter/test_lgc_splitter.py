@@ -213,14 +213,169 @@ funcB()
     functions = parse_lgc_functions(lgc_text)
     result = decide_segments(functions)
 
-    # 第一次发生回跳前，funcA 和 funcNoLine 都应该归入 export 公共段
-    assert len(result["export"]) == 2
+    # funcNoLine 紧挨在回跳前（文件边界），不再粘给 export，export 只剩 funcA
+    assert len(result["export"]) == 1
     assert result["export"][0].name == "funcA"
-    assert result["export"][1].name == "funcNoLine"
 
-    # funcB 的 min_line(50) 小于 funcA 的 max_line(100)，触发回跳并分配到新的普通段中
+    # funcNoLine 单独成段；funcB 的 min_line(50) 小于 funcA 的 max_line(100)，触发回跳进入新段
+    assert len(result["segments"]) == 2
+    assert result["segments"][0][0].name == "funcNoLine"
+    assert result["segments"][1][0].name == "funcB"
+
+
+def _names_of(seg) -> list[str]:
+    """提取段内函数名列表，便于断言。"""
+    names = []
+    for func in seg:
+        names.append(func.name)
+    return names
+
+
+def test_boundary_empty_funcs_grouped_into_one_segment() -> None:
+    """
+    测试回跳前连续的多个空函数合并为同一个独立段，而非一个函数一段。
+    """
+    lgc_text = """
+funcA()
+{
+    // --- Line 100 ---
+}
+
+emptyA()
+{
+}
+
+emptyB()
+{
+}
+
+funcB()
+{
+    // --- Line 50 ---
+}
+"""
+    result = decide_segments(parse_lgc_functions(lgc_text))
+
+    assert _names_of(result["export"]) == ["funcA"]
+    assert len(result["segments"]) == 2
+    assert _names_of(result["segments"][0]) == ["emptyA", "emptyB"]
+    assert _names_of(result["segments"][1]) == ["funcB"]
+
+
+def test_empty_func_inside_segment_follows_current() -> None:
+    """
+    测试不在文件边界（前后行号递增，无回跳）的空函数，仍跟随当前活动段。
+    """
+    lgc_text = """
+funcA()
+{
+    // --- Line 100 ---
+}
+
+emptyMid()
+{
+}
+
+funcB()
+{
+    // --- Line 200 ---
+}
+
+funcC()
+{
+    // --- Line 10 ---
+}
+"""
+    result = decide_segments(parse_lgc_functions(lgc_text))
+
+    assert _names_of(result["export"]) == ["funcA", "emptyMid", "funcB"]
     assert len(result["segments"]) == 1
-    assert result["segments"][0][0].name == "funcB"
+    assert _names_of(result["segments"][0]) == ["funcC"]
+
+
+def test_trailing_empty_func_follows_last_segment() -> None:
+    """
+    测试末尾空函数之后再无回跳，跟随最后一个活动段。
+    """
+    lgc_text = """
+funcA()
+{
+    // --- Line 100 ---
+}
+
+funcB()
+{
+    // --- Line 10 ---
+}
+
+emptyTail()
+{
+}
+"""
+    result = decide_segments(parse_lgc_functions(lgc_text))
+
+    assert _names_of(result["export"]) == ["funcA"]
+    assert len(result["segments"]) == 1
+    assert _names_of(result["segments"][0]) == ["funcB", "emptyTail"]
+
+
+def test_segment0_identical_regardless_of_empty_func_neighbor() -> None:
+    """
+    复刻 ASTD 缺陷：同一个空函数 defines() 在两张地图里的前驱不同，
+    两张地图切出的 export 段（segment 0）仍应完全一致。
+    """
+    # test 图：common -> defines -> state
+    test_map = """
+add()
+{
+    // --- Line 13 ---
+}
+
+defines()
+{
+}
+
+twice()
+{
+    // --- Line 8 ---
+}
+"""
+    # main 图：common -> extra -> defines -> state
+    main_map = """
+add()
+{
+    // --- Line 13 ---
+}
+
+mul()
+{
+    // --- Line 8 ---
+}
+
+div()
+{
+    // --- Line 13 ---
+}
+
+defines()
+{
+}
+
+twice()
+{
+    // --- Line 8 ---
+}
+"""
+    test_result = decide_segments(parse_lgc_functions(test_map))
+    main_result = decide_segments(parse_lgc_functions(main_map))
+
+    assert _names_of(test_result["export"]) == ["add"]
+    assert _names_of(main_result["export"]) == ["add"]
+
+    # defines() 在两张图中都独立成段
+    assert _names_of(test_result["segments"][0]) == ["defines"]
+    assert _names_of(main_result["segments"][0]) == ["mul", "div"]
+    assert _names_of(main_result["segments"][1]) == ["defines"]
 
 
 def test_compare_against_expected_csv() -> None:

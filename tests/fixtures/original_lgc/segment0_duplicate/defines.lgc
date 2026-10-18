@@ -1,0 +1,10 @@
+#ifndef DEFINES_H
+#define DEFINES_H aaa
+
+// Empty function: no line markers after compile, its owner file is unknown to the splitter
+
+defines()
+{
+}
+
+#endif

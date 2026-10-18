@@ -1,0 +1,21 @@
+// ==========================================
+// Entrance Map Script: test.lgc
+// ==========================================
+
+#include "core\export.lgc"
+#include "core\global_variable.lgc"
+
+#include "segment_02.lgc"
+
+main()
+{
+    int main_local0;
+
+    main_local0 = add(1, 2);
+    // --- Line 9 ---
+    // --- Line 10 ---
+    main_local0 = twice(main_local0);
+    // --- Line 11 ---
+    // return; mark end of function
+}
+

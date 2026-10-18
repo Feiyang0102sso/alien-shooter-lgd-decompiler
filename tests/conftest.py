@@ -24,6 +24,8 @@ LGD_FILES_DIR = FIXTURES_DIR / "lgd_files"
 EXPECTED_CSV_DIR = FIXTURES_DIR / "expected_csv"
 ASM_FILES_DIR = FIXTURES_DIR / "asm_files"
 GOLDEN_LGC_DIR = FIXTURES_DIR / "original_lgc"
+# 重组（--reorganize）回归输入：反编译得到、尚未拆分的大 LGC，每个用例一个子文件夹
+REORGANIZE_LGC_DIR = FIXTURES_DIR / "reorganize_lgc"
 REFINER_DB_DIR = FIXTURES_DIR / "refiner_db"
 
 # LGC regression golden (see TEST_PLAN_LGC_REGRESSION.md)

@@ -1,0 +1,29 @@
+#ifndef _SEGMENT_01_LGC_
+#define _SEGMENT_01_LGC_ aaa
+
+// ==========================================
+// file segment_01.lgc
+// references: 1
+// ==========================================
+
+#include "core\export.lgc"
+#include "core\global_variable.lgc"
+
+mul(int mul_arg0, int mul_arg1)
+{
+    return (mul_arg0 * mul_arg1);
+    // --- Line 8 ---
+}
+
+div(int div_arg0, int div_arg1)
+{
+    return (div_arg0 / div_arg1);
+    // --- Line 13 ---
+}
+
+defines()
+{
+    // return; mark end of function
+}
+
+#endif

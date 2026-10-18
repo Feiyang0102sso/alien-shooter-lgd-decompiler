@@ -10,6 +10,7 @@ from lgd_tool.lgd_decompiler.LGC_reorganizer import (
     LgcFunction,
     LgcSegmentPool,
     merge_decompiled_project,
+    write_segment_files,
 )
 
 
@@ -25,6 +26,8 @@ def test_segment_pool_match_and_deduplication(tmp_path: Path) -> None:
     func_a = LgcFunction(
         name="funcA",
         start_line_idx=10,
+        min_line=1,
+        max_line=1,
         lines=[
             "funcA()",
             "{",
@@ -38,6 +41,8 @@ def test_segment_pool_match_and_deduplication(tmp_path: Path) -> None:
     func_a_identical = LgcFunction(
         name="funcA",
         start_line_idx=20,
+        min_line=1,
+        max_line=1,
         lines=[
             "funcA()",
             "{",
@@ -78,6 +83,8 @@ def test_segment_pool_different_by_one_space(tmp_path: Path) -> None:
     func_a = LgcFunction(
         name="funcA",
         start_line_idx=10,
+        min_line=1,
+        max_line=1,
         lines=[
             "funcA()",
             "{",
@@ -90,6 +97,8 @@ def test_segment_pool_different_by_one_space(tmp_path: Path) -> None:
     func_a_with_space = LgcFunction(
         name="funcA",
         start_line_idx=20,
+        min_line=1,
+        max_line=1,
         lines=[
             "funcA()",
             "{",
@@ -127,6 +136,8 @@ def test_segment_pool_new_and_naming_collisions(tmp_path: Path) -> None:
     func_a = LgcFunction(
         name="funcA",
         start_line_idx=0,
+        min_line=1,
+        max_line=1,
         lines=["funcA() { int x = 1; }"]
     )
     
@@ -134,6 +145,8 @@ def test_segment_pool_new_and_naming_collisions(tmp_path: Path) -> None:
     func_b = LgcFunction(
         name="funcB",
         start_line_idx=0,
+        min_line=1,
+        max_line=1,
         lines=["funcB() { string s = \"hello\"; }"]
     )
 
@@ -184,7 +197,7 @@ def test_merge_decompiled_project_pipeline(tmp_path: Path) -> None:
             ],
             "segments": [
                 [
-                    LgcFunction(name="funcA", start_line_idx=0, lines=["funcA() { int x = 1; }"])
+                    LgcFunction(name="funcA", start_line_idx=0, lines=["funcA() { int x = 1; }"], min_line=1, max_line=1)
                 ]
             ],
             "last_segment_lines": [
@@ -203,7 +216,7 @@ def test_merge_decompiled_project_pipeline(tmp_path: Path) -> None:
             "segments": [
                 [
                     # 哈希相同，应去重合并！
-                    LgcFunction(name="funcA", start_line_idx=0, lines=["funcA() { int x = 1; }"])
+                    LgcFunction(name="funcA", start_line_idx=0, lines=["funcA() { int x = 1; }"], min_line=1, max_line=1)
                 ]
             ],
             "last_segment_lines": [
@@ -276,3 +289,63 @@ def test_merge_decompiled_project_pipeline(tmp_path: Path) -> None:
     assert idx_decl_02 < idx_inc_02
 
     assert 'func_level_02_main() { }' in content_02
+
+
+def test_empty_segment_naming_in_pool(tmp_path: Path) -> None:
+    """
+    测试 5：全由空函数（无行号）组成的段，在去重池中命名为 segment_XX.empty.lgc，
+    且与普通段共用同一个编号计数器，include guard 宏同步带上 EMPTY。
+    """
+    pool = LgcSegmentPool(tmp_path)
+
+    normal_func = LgcFunction(name="funcA", start_line_idx=0, lines=["funcA() { }"], min_line=1, max_line=1)
+    empty_func = LgcFunction(name="defines", start_line_idx=0, lines=["defines() { }"])
+
+    pool.register_file_segments("level_01.lgc", [[normal_func], [empty_func]])
+    pool.write_all_segments()
+
+    assert pool.file_references["level_01.lgc"] == ["segment_00.lgc", "segment_01.empty.lgc"]
+    empty_text = (tmp_path / "segment_01.empty.lgc").read_text(encoding="utf-8")
+    assert "#ifndef _SEGMENT_01_EMPTY_LGC_" in empty_text
+    assert "defines() { }" in empty_text
+
+
+def test_empty_segment_naming_in_single_file_mode(tmp_path: Path) -> None:
+    """
+    测试 6：单文件模式 write_segment_files 同样为空函数段使用 .empty.lgc 后缀。
+    """
+    normal_func = LgcFunction(name="funcA", start_line_idx=0, lines=["funcA() { }"], min_line=1, max_line=1)
+    empty_func = LgcFunction(name="defines", start_line_idx=0, lines=["defines() { }"])
+
+    names = write_segment_files([[normal_func], [empty_func]], tmp_path)
+
+    assert names == ["segment_00.lgc", "segment_01.empty.lgc"]
+    assert (tmp_path / "segment_01.empty.lgc").exists()
+
+
+def test_merge_exits_on_multiple_segment0_versions(tmp_path: Path) -> None:
+    """
+    测试 7：各地图的 segment 0 内容不一致时，export.lgc 无法只引用一份，必须直接报错退出。
+    """
+    export_func = LgcFunction(name="add", start_line_idx=0, lines=["add() { }"], min_line=13, max_line=13)
+    glued_empty = LgcFunction(name="defines", start_line_idx=0, lines=["defines() { }"])
+
+    project_data = {
+        "main.lgc": {
+            "exports": [],
+            "export_functions": [export_func],
+            "globals": [],
+            "segments": [[export_func]],
+            "last_segment_lines": ["main() { }"],
+        },
+        "test.lgc": {
+            "exports": [],
+            "export_functions": [export_func, glued_empty],
+            "globals": [],
+            "segments": [[export_func, glued_empty]],
+            "last_segment_lines": ["main() { }"],
+        },
+    }
+
+    with pytest.raises(SystemExit):
+        merge_decompiled_project(project_data=project_data, output_dir=tmp_path)

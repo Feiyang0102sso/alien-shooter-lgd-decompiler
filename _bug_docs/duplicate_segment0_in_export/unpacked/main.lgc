@@ -1,0 +1,24 @@
+// ==========================================
+// Entrance Map Script: main.lgc
+// ==========================================
+
+#include "core\export.lgc"
+#include "core\global_variable.lgc"
+
+#include "segment_01.lgc"
+#include "segment_02.lgc"
+
+main()
+{
+    int main_local0;
+
+    main_local0 = sub(5, 2);
+    // --- Line 11 ---
+    // --- Line 12 ---
+    main_local0 = mul(main_local0, 3);
+    // --- Line 13 ---
+    main_local0 = twice(main_local0);
+    // --- Line 14 ---
+    // return; mark end of function
+}
+

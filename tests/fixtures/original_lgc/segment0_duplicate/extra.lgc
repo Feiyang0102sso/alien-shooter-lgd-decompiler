@@ -1,0 +1,16 @@
+#ifndef EXTRA_H
+#define EXTRA_H aaa
+
+// Only main.lgc includes this file
+
+mul(int a, int b)
+{
+  return a * b;
+}
+
+div(int a, int b)
+{
+  return a / b;
+}
+
+#endif

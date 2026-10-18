@@ -7,6 +7,7 @@ reorganizer.py
 """
 
 import shutil
+import sys
 from pathlib import Path
 from lgd_tool.logger import logger
 
@@ -86,18 +87,37 @@ def merge_decompiled_project(
     pool.write_all_segments()
 
     # 收集全部原始文件排在最前的第 0 号分段（即含有前置调用的段落）去重文件名，写入核心 core/export.lgc 的尾部
-    segment_0_files = set()
+    # 记录每个 segment 0 版本来自哪些原始文件，便于报错定位，格式为 { "segment_00.lgc": ["main.lgc", ...] }
+    segment_0_sources = {}
     for file_name, parts in project_data.items():
         export_funcs = parts.get("export_functions", [])
         if len(export_funcs) > 0:
             refs = pool.file_references.get(file_name, [])
             if len(refs) > 0:
-                segment_0_files.add(refs[0])
+                seg_0_name = refs[0]
+                if seg_0_name not in segment_0_sources:
+                    segment_0_sources[seg_0_name] = []
+                segment_0_sources[seg_0_name].append(file_name)
+
+    # export.lgc 被所有地图共享，segment 0 必须全工程唯一，否则每张地图都会重复定义其中的函数
+    if len(segment_0_sources) > 1:
+        detail_lines = []
+        for seg_0_name, source_files in segment_0_sources.items():
+            detail_lines.append(f" * {seg_0_name} <- {', '.join(source_files)}")
+        error_message = (
+            f"[MERGER] Found {len(segment_0_sources)} different versions of segment 0, "
+            f"core/export.lgc must include exactly one!\n"
+            + "\n".join(detail_lines)
+        )
+        logger.error(error_message)
+        sys.exit(1)
+
+    segment_0_files = list(segment_0_sources.keys())
 
     write_export_file(
         extern_declarations=clean_exports,
         output_path=public_export_file,
-        include_segments=list(segment_0_files)
+        include_segments=segment_0_files
     )
 
     # 4. 第四阶段：物理组装并在各大文件主相对位置落盘主入口引导脚本
