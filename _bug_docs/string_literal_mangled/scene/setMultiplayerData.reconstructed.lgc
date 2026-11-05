@@ -1,0 +1,75 @@
+setMultiplayerData()
+{
+    string setMultiplayerData_local0;
+    string setMultiplayerData_local1;
+    string setMultiplayerData_local2;
+
+    setMultiplayerData_local0 = "31";
+    // --- Line 2049 ---
+    // --- Line 2050 ---
+    multiplayerAddPossibleServerUrl("wss://asgoldlobby.sigma-team.net/");
+    // --- Line 2061 ---
+    multiplayerAddPossibleServerUrl("wss://asgoldlobby1.sigma-team.net/");
+    // --- Line 2062 ---
+    multiplayerInitialize("net.sigma-team.asfree", setMultiplayerData_local0);
+    // --- Line 2065 ---
+    setMultiplayerData_local1 = "gamma;missionName;gameMode;mode;map;level;checkpoints;number;pvpSide;rating;disableBanOnLeave;";
+    // --- Line 2066 ---
+    // --- Line 2067 ---
+    multiplayerSetRoomPayloadKeys(setMultiplayerData_local1);
+    // --- Line 2068 ---
+    setMultiplayerData_local2 = (((((("light;banner;title;title_level;clan;rating;rank;gameTime;enemiesKilled;compleatedMissions;runplatform;protocolVersion;team;" + getVIPZombieAddonKey()) + ";") + "game_width") + ";") + "game_height") + ";");
+    // --- Line 2068 ---
+    // --- Line 2069 ---
+    if (isSteam()) {
+        setMultiplayerData_local2 += "idHiPart;idLoPart;";
+        // --- Line 2071 ---
+    }
+    multiplayerSetPlayerPayloadKeys(setMultiplayerData_local2);
+    // --- Line 2072 ---
+    multiplayerSetSessionDataKeys("store_equiped;");
+    // --- Line 2073 ---
+    multiplayerAddSequence("nightfall", -1);
+    // --- Line 2076 ---
+    multiplayerAddSequence("grand_master", -1);
+    // --- Line 2077 ---
+    multiplayerAddSequence("side_mission_type", -1);
+    // --- Line 2078 ---
+    multiplayerAddSequence("map_0_strike", -1);
+    // --- Line 2079 ---
+    multiplayerAddSequence("map_1_strike", -1);
+    // --- Line 2080 ---
+    multiplayerAddSequence("map_2_strike", -1);
+    // --- Line 2081 ---
+    multiplayerAddSequence("weekly_reset", -1);
+    // --- Line 2082 ---
+    multiplayerAddSequence("monthly_reset", -1);
+    // --- Line 2083 ---
+    multiplayerAddSequence("shop_sale", -1);
+    // --- Line 2084 ---
+    multiplayerAddSequence("merchant_sale", -1);
+    // --- Line 2085 ---
+    multiplayerAddSequence("gacha_special", -1);
+    // --- Line 2086 ---
+    multiplayerAddSequence("battle_pass", -1);
+    // --- Line 2087 ---
+    multiplayerAddSequence("arena_mission", -1);
+    // --- Line 2088 ---
+    multiplayerAddSequence("architector_cristals", -1);
+    // --- Line 2089 ---
+    multiplayerAddSequence("architector_second_cristals", -1);
+    // --- Line 2090 ---
+    multiplayerAddSequence("lost_sector_master", -1);
+    // --- Line 2091 ---
+    multiplayerAddSequence("legendary_zombie", -1);
+    // --- Line 2092 ---
+    multiplayerAddSequence("dungeon_mods", 0);
+    // --- Line 2093 ---
+    multiplayerAddSequence("dungeon_adept_weapons", 1);
+    // --- Line 2094 ---
+    multiplayerAddSequence("lost_sector_adept_weapons", 2);
+    // --- Line 2095 ---
+    SetRegInt("temp.multiplayer.gathering.timeout", 14);
+    // --- Line 2098 ---
+    // return; mark end of function
+}

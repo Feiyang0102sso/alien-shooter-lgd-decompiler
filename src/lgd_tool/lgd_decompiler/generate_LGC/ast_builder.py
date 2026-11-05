@@ -8,6 +8,7 @@ from typing import Dict, Tuple
 from lgd_tool.logger import logger
 
 from lgd_tool.lgd_decompiler.generate_LGC.cfg_structs import BasicBlock
+from lgd_tool.lgd_decompiler.common.string_literal import escape_string
 from lgd_tool.lgd_decompiler.generate_LGC.ast_structs import *
 
 class ASTBuilder:
@@ -74,13 +75,14 @@ class ASTBuilder:
                     val_str = str(ops[0]).strip()
                     stack.append(ConstNode(val_str, 'int'))
                 elif mne == 'PUSH_STR':
-                    val = " ".join(ops) if ops else ""
-                    if val.startswith('"') and val.endswith('"'):
-                        val = val[1:-1]
-
-                    # to make each \ become \\ otherwise the game would crash
-                    val = val.replace('\\', '\\\\').replace('"', '\\"')
-                    stack.append(ConstNode(val, 'str'))
+                    # AsmParser keeps the whole literal as one operand, already unescaped to the raw value.
+                    # Escape it exactly once for LGC (an unescaped \ used to crash the game).
+                    if len(ops) != 1:
+                        logger.error_and_stop(
+                            f"[AST-BUILDER] PUSH_STR expects exactly 1 operand in '{self.current_method_name}' "
+                            f"at 0x{self.current_offset:X}, got {ops}")
+                    raw_value = "".join(ops)
+                    stack.append(ConstNode(escape_string(raw_value), 'str'))
 
                 elif mne == 'PUSH_VAR':
                     var_name = ops[0]

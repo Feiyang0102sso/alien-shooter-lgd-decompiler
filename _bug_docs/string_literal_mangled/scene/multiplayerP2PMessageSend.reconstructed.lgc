@@ -1,0 +1,6 @@
+multiplayerP2PMessageSend(string multiplayerP2PMessageSend_arg0, string multiplayerP2PMessageSend_arg1)
+{
+    multiplayerSendMessageViaLobby(multiplayerP2PMessageSend_arg0, "temp.p2p_to_send.", ("message_type;" + multiplayerP2PMessageSend_arg1));
+    // --- Line 986 ---
+    // return; mark end of function
+}

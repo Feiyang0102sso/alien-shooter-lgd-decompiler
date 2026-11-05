@@ -1895,7 +1895,7 @@ adSetup()
     // --- Line 18 ---
     adSetupProvider("IronSource", "{\"app_id\":\"166576045\"}");
     // --- Line 21 ---
-    adRegisterAdvertisement("DefaultRewardedVideo", "IronSource", "{\"revardedVideo\": true \"currency\": \"Fuel\" \"ammount\": 1}");
+    adRegisterAdvertisement("DefaultRewardedVideo", "IronSource", "{\"revardedVideo\": true, \"currency\": \"Fuel\", \"ammount\": 1}");
     // --- Line 23 ---
     // return; mark end of function
 }

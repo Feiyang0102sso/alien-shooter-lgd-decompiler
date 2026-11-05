@@ -10,6 +10,7 @@ import os
 from typing import List, Dict, Set, Optional, Tuple
 from collections import defaultdict
 from lgd_tool.logger import logger
+from lgd_tool.lgd_decompiler.common.string_literal import escape_string
 from lgd_tool.lgd_decompiler.core.context import LgdAnalysisContext
 from lgd_tool.lgd_decompiler.common.structures import BytecodeEntry
 from lgd_tool.lgd_decompiler.common.opcodes import LgdOpcodes
@@ -320,7 +321,8 @@ class LgdAsmRenderer:
         for idx, op in enumerate(entry.operands):
             val_str = str(op)
             if isinstance(op, str):
-                safe_str = op.replace('\n', '\\n').replace('\r', '\\r')
+                # Escape \ " and control chars so AsmParser can read the literal back unambiguously
+                safe_str = escape_string(op)
                 # Truncating long strings broke menu paths in decompiled LGC (e.g. open_box_reward).
                 # if len(safe_str) > 40: safe_str = safe_str[:37] + "..."
                 val_str = f'"{safe_str}"'

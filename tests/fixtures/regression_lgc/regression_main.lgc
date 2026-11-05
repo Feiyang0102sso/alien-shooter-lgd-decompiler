@@ -7687,15 +7687,15 @@ logSubwaveStat(int logSubwaveStat_arg0)
         // --- Line 267 ---
         // --- Line 268 ---
         if ((logSubwaveStat_local6 <= 2)) {
-            Log((" ------ + delimeter bonus = " + itoa(logSubwaveStat_local5)));
+            Log(("    ------ + delimeter bonus = " + itoa(logSubwaveStat_local5)));
             // --- Line 272 ---
             return logSubwaveStat_local5;
             // --- Line 273 ---
         }
     }
-    Log(" ---------------");
+    Log("    ---------------");
     // --- Line 277 ---
-    Log((((((" Sub Wave " + itoa(subwaveInPath[logSubwaveStat_arg0])) + ": start at = ") + itoa(logSubwaveStat_local1)) + " time length = ") + itoa(logSubwaveStat_local2)));
+    Log(((((("      Sub Wave " + itoa(subwaveInPath[logSubwaveStat_arg0])) + ":  start at = ") + itoa(logSubwaveStat_local1)) + ",  time length = ") + itoa(logSubwaveStat_local2)));
     // --- Line 278 ---
     logSubwaveStat_local7 = 0;
     // --- Line 278 ---
@@ -7719,7 +7719,7 @@ logSubwaveStat(int logSubwaveStat_arg0)
         logSubwaveStat_local11 = (logSubwaveStat_local10 * logSubwaveStat_local9);
         // --- Line 295 ---
         // --- Line 296 ---
-        Log((((((" Enemy " + itoa(inEnemyIndex[logSubwaveStat_local3])) + ": number = ") + itoa(logSubwaveStat_local10)) + " bonus = ") + itoa(logSubwaveStat_local11)));
+        Log(((((("       Enemy " + itoa(inEnemyIndex[logSubwaveStat_local3])) + ":  number = ") + itoa(logSubwaveStat_local10)) + " bonus = ") + itoa(logSubwaveStat_local11)));
         // --- Line 297 ---
         logSubwaveStat_local7 += logSubwaveStat_local11;
         // --- Line 299 ---
@@ -7727,7 +7727,7 @@ logSubwaveStat(int logSubwaveStat_arg0)
     logSubwaveStat_local12 = ((logSubwaveStat_local7 * 1000) / logSubwaveStat_local2);
     // --- Line 301 ---
     // --- Line 302 ---
-    Log((((" Sub Wave bonus = " + itoa(logSubwaveStat_local7)) + " average bonus per second = ") + itoa(logSubwaveStat_local12)));
+    Log(((("      Sub Wave bonus = " + itoa(logSubwaveStat_local7)) + ",  average bonus per second = ") + itoa(logSubwaveStat_local12)));
     // --- Line 303 ---
     return logSubwaveStat_local7;
     // --- Line 304 ---
@@ -7778,7 +7778,7 @@ initWaveEnemyPaths(int initWaveEnemyPaths_arg0, int initWaveEnemyPaths_arg1)
         initWaveEnemyPaths_local1 = getEquipmentByCategory(44, 23, initWaveEnemyPaths_arg1, -999999);
         // --- Line 394 ---
         // --- Line 395 ---
-        Log(((("ERROR Incorrect wave: " + initWaveEnemyPaths_local1) + " in mission there is no wave with index a_waveIndex = ") + itoa(initWaveEnemyPaths_arg1)));
+        Log(((("ERROR Incorrect wave: " + initWaveEnemyPaths_local1) + ", in mission there is no wave with index a_waveIndex = ") + itoa(initWaveEnemyPaths_arg1)));
         // --- Line 396 ---
         return;
         // --- Line 397 ---
@@ -7789,7 +7789,7 @@ initWaveEnemyPaths(int initWaveEnemyPaths_arg0, int initWaveEnemyPaths_arg1)
         initWaveEnemyPaths_local2 = getEquipmentByCategory(44, 23, initWaveEnemyPaths_arg1, -999999);
         // --- Line 402 ---
         // --- Line 403 ---
-        Log(((("ERROR Incorrect wave: " + initWaveEnemyPaths_local2) + " enemyPathCount > MAX_ENEMY_PATH enemyPathCount = ") + itoa(pathCount)));
+        Log(((("ERROR Incorrect wave: " + initWaveEnemyPaths_local2) + ", enemyPathCount > MAX_ENEMY_PATH,  enemyPathCount = ") + itoa(pathCount)));
         // --- Line 404 ---
         return;
         // --- Line 405 ---
@@ -7798,7 +7798,7 @@ initWaveEnemyPaths(int initWaveEnemyPaths_arg0, int initWaveEnemyPaths_arg1)
         initWaveEnemyPaths_local3 = getEquipmentByCategory(44, 23, initWaveEnemyPaths_arg1, -999999);
         // --- Line 408 ---
         // --- Line 409 ---
-        Log(((("ERROR Incorrect wave: " + initWaveEnemyPaths_local3) + " pathCount <= 0 enemyPathCount = ") + itoa(pathCount)));
+        Log(((("ERROR Incorrect wave: " + initWaveEnemyPaths_local3) + ", pathCount <= 0,  enemyPathCount = ") + itoa(pathCount)));
         // --- Line 410 ---
         return;
         // --- Line 411 ---
@@ -9345,7 +9345,7 @@ isSupplyBoxEnd()
     isSupplyBoxEnd_local0 = getEquipmentByCategory(225, supplyBoxCategory, supplyBoxIndex, -999999);
     // --- Line 177 ---
     // --- Line 178 ---
-    Log(((((((("XXX supplyRecievedNumber = " + itoa(supplyRecievedNumber)) + " from supplyBoxItemsCount = ") + itoa(isSupplyBoxEnd_local0)) + " supplyBoxCategory = ") + itoa(supplyBoxCategory)) + " supplyBoxIndex = ") + itoa(supplyBoxIndex)));
+    Log(((((((("XXX supplyRecievedNumber = " + itoa(supplyRecievedNumber)) + ",  from supplyBoxItemsCount = ") + itoa(isSupplyBoxEnd_local0)) + ",  supplyBoxCategory = ") + itoa(supplyBoxCategory)) + ",  supplyBoxIndex = ") + itoa(supplyBoxIndex)));
     // --- Line 179 ---
     if ((supplyRecievedNumber >= isSupplyBoxEnd_local0)) {
         return 1;
@@ -12995,7 +12995,7 @@ generatePerk(string generatePerk_arg0, int generatePerk_arg1, int generatePerk_a
         }
     }
     if ((generatePerk_local200 == 0)) {
-        Log(((((((((((("ERROR: Can't generatePerk baseKey = " + generatePerk_arg0) + " perkIndex = ") + itoa(generatePerk_arg1)) + " category = ") + itoa(generatePerk_arg2)) + " index = ") + itoa(generatePerk_arg3)) + " major = ") + itoa(generatePerk_arg4)) + " negative = ") + itoa(generatePerk_arg5)));
+        Log(((((((((((("ERROR: Can't generatePerk baseKey = " + generatePerk_arg0) + ",  perkIndex = ") + itoa(generatePerk_arg1)) + ",  category = ") + itoa(generatePerk_arg2)) + ",  index = ") + itoa(generatePerk_arg3)) + ",  major = ") + itoa(generatePerk_arg4)) + ",  negative = ") + itoa(generatePerk_arg5)));
         // --- Line 994 ---
         return;
         // --- Line 995 ---
@@ -24914,7 +24914,7 @@ randomTemlateModel(int randomTemlateModel_arg0, int randomTemlateModel_arg1, int
         }
     }
     if ((randomTemlateModel_local5 == 0)) {
-        Log(((((((("ERROR: randomTemlateModel EMPTY Visible! supplyType = " + itoa(randomTemlateModel_arg1)) + " targetQualityLevel = ") + itoa(randomTemlateModel_arg2)) + " maxLevel = ") + itoa(randomTemlateModel_local3)) + " minLevel = ") + itoa(randomTemlateModel_local4)));
+        Log(((((((("ERROR: randomTemlateModel EMPTY Visible! supplyType = " + itoa(randomTemlateModel_arg1)) + ",  targetQualityLevel = ") + itoa(randomTemlateModel_arg2)) + ",  maxLevel = ") + itoa(randomTemlateModel_local3)) + ",  minLevel = ") + itoa(randomTemlateModel_local4)));
         // --- Line 151 ---
         return -1;
         // --- Line 152 ---
@@ -32639,7 +32639,7 @@ FinishGame()
     SessionTimeInSecondsString = TimeToString(SessionTimeInSeconds);
     // --- Line 219 ---
     if ((SessionTimeInSeconds <= 0)) {
-        Log(("Logic error: SessionTimeInSeconds <= 0 " + itoa(SessionTimeInSeconds)));
+        Log(("Logic error: SessionTimeInSeconds <= 0  ,  " + itoa(SessionTimeInSeconds)));
         // --- Line 222 ---
         SessionTimeInSeconds = 0;
         // --- Line 223 ---
@@ -33497,7 +33497,7 @@ processHeader(int processHeader_arg0, int processHeader_arg1)
             return 1;
             // --- Line 155 ---
         }
-        logDebug(("Pause current menu: " + itoa(currentMenu)));
+        logDebug(("Pause, current menu: " + itoa(currentMenu)));
         // --- Line 156 ---
     }
     if (isState("temp.action.skip.tutorial", 1)) {
@@ -38864,7 +38864,7 @@ generateBlackMarketModel(int generateBlackMarketModel_arg0, int generateBlackMar
         }
     }
     if ((generateBlackMarketModel_local4 == 0)) {
-        Log(((("ERROR: generateBlackMarketModel EMPTY Visible! maxLevel = " + itoa(generateBlackMarketModel_local2)) + " minLevel = ") + itoa(generateBlackMarketModel_local3)));
+        Log(((("ERROR: generateBlackMarketModel EMPTY Visible!   maxLevel = " + itoa(generateBlackMarketModel_local2)) + ",  minLevel = ") + itoa(generateBlackMarketModel_local3)));
         // --- Line 111 ---
         return -1;
         // --- Line 112 ---
@@ -38892,7 +38892,7 @@ generateBlackMarketModel(int generateBlackMarketModel_arg0, int generateBlackMar
         }
         }
     }
-    Log(((((("generateBlackMarketModel randomVisible = " + itoa(generateBlackMarketModel_local9)) + " from totalVisible = ") + itoa(generateBlackMarketModel_local4)) + " index = ") + itoa(generateBlackMarketModel_local6)));
+    Log(((((("generateBlackMarketModel randomVisible = " + itoa(generateBlackMarketModel_local9)) + ",  from totalVisible = ") + itoa(generateBlackMarketModel_local4)) + ",  index = ") + itoa(generateBlackMarketModel_local6)));
     // --- Line 136 ---
     return generateBlackMarketModel_local6;
     // --- Line 140 ---
@@ -41319,28 +41319,28 @@ goldMigration()
     goldMigration_local2 = GetRegStr((goldMigration_local0 + "PlayerMoney"), 0);
     // --- Line 105 ---
     // --- Line 106 ---
-    Log(("GOLD_MIGRATION PlayerMoney = " + itoa(goldMigration_local2)));
+    Log(("GOLD_MIGRATION  PlayerMoney  = " + itoa(goldMigration_local2)));
     // --- Line 107 ---
     goldMigration_local3 = GetRegStr((goldMigration_local0 + "PlayerScores"), 0);
     // --- Line 108 ---
     // --- Line 109 ---
     increasePlayerScore(goldMigration_local3);
     // --- Line 110 ---
-    Log(("GOLD_MIGRATION PlayerScores = " + itoa(goldMigration_local3)));
+    Log(("GOLD_MIGRATION  PlayerScores  = " + itoa(goldMigration_local3)));
     // --- Line 111 ---
     goldMigration_local4 = GetRegInt((goldMigration_local0 + "TotalSeconds"), 0);
     // --- Line 112 ---
     // --- Line 113 ---
     incStatistics(totalTimeKey(), goldMigration_local4);
     // --- Line 114 ---
-    Log(("GOLD_MIGRATION TotalSeconds = " + itoa(goldMigration_local4)));
+    Log(("GOLD_MIGRATION  TotalSeconds = " + itoa(goldMigration_local4)));
     // --- Line 115 ---
     goldMigration_local5 = GetRegInt((goldMigration_local0 + "TotalKills"), 0);
     // --- Line 116 ---
     // --- Line 117 ---
     incStatistics(killKey(), goldMigration_local5);
     // --- Line 118 ---
-    Log(("GOLD_MIGRATION TotalKills = " + itoa(goldMigration_local5)));
+    Log(("GOLD_MIGRATION  TotalKills = " + itoa(goldMigration_local5)));
     // --- Line 119 ---
     setCurrentMissionStars(1);
     // --- Line 122 ---
@@ -41360,7 +41360,7 @@ goldMigration()
         }
         goldMigration_local8 += itoa(goldMigration_local1);
         // --- Line 131 ---
-        Log(("GOLD_MIGRATION compleated missionName = " + goldMigration_local8));
+        Log(("GOLD_MIGRATION  compleated missionName = " + goldMigration_local8));
         // --- Line 132 ---
         finishStoryMission(goldMigration_local8);
         // --- Line 133 ---
@@ -41389,7 +41389,7 @@ goldMigration()
         }
         goldMigration_local13 += itoa(goldMigration_local1);
         // --- Line 147 ---
-        Log(("GOLD_MIGRATION compleated missionName = " + goldMigration_local13));
+        Log(("GOLD_MIGRATION  compleated missionName = " + goldMigration_local13));
         // --- Line 148 ---
         finishStoryMission(goldMigration_local13);
         // --- Line 149 ---
@@ -41411,7 +41411,7 @@ goldMigration()
         // --- Line 161 ---
         goldMigration_local2 += (goldMigration_local17 * FREE_DEPRECATED_AmmoPrice[goldMigration_local1]);
         // --- Line 162 ---
-        Log(("GOLD_MIGRATION ammo money = " + itoa((goldMigration_local17 * FREE_DEPRECATED_AmmoPrice[goldMigration_local1]))));
+        Log(("GOLD_MIGRATION  ammo money = " + itoa((goldMigration_local17 * FREE_DEPRECATED_AmmoPrice[goldMigration_local1]))));
         // --- Line 163 ---
         goldMigration_local18 = GetRegStr(((goldMigration_local0 + "PlayerWeapon") + itoa(goldMigration_local1)), 0);
         // --- Line 164 ---
@@ -41434,7 +41434,7 @@ goldMigration()
         for (goldMigration_local22 = 0; (goldMigration_local22 <= goldMigration_local21); (++goldMigration_local22)) {
         goldMigration_local2 += FREE_DEPRECATED_weapons_cost[((goldMigration_local1 * 11) + goldMigration_local22)];
         // --- Line 175 ---
-        Log(((((("GOLD_MIGRATION weapon " + itoa(goldMigration_local1)) + " upgrade = ") + itoa(goldMigration_local22)) + " cost = ") + itoa(FREE_DEPRECATED_weapons_cost[((goldMigration_local1 * 11) + goldMigration_local22)])));
+        Log(((((("GOLD_MIGRATION weapon " + itoa(goldMigration_local1)) + "  upgrade = ") + itoa(goldMigration_local22)) + "  cost = ") + itoa(FREE_DEPRECATED_weapons_cost[((goldMigration_local1 * 11) + goldMigration_local22)])));
         // --- Line 176 ---
         }
         }
@@ -41449,7 +41449,7 @@ goldMigration()
         for (goldMigration_local24 = 0; (goldMigration_local24 < goldMigration_local23); (++goldMigration_local24)) {
         goldMigration_local2 += FREE_DEPRECATED_ImplantPrice[(goldMigration_local1 + (4 * goldMigration_local24))];
         // --- Line 188 ---
-        Log(((((("GOLD_MIGRATION implant " + itoa(goldMigration_local1)) + " number = ") + itoa(goldMigration_local24)) + " cost = ") + itoa(FREE_DEPRECATED_ImplantPrice[(goldMigration_local1 + (4 * goldMigration_local24))])));
+        Log(((((("GOLD_MIGRATION implant " + itoa(goldMigration_local1)) + "  number = ") + itoa(goldMigration_local24)) + "  cost = ") + itoa(FREE_DEPRECATED_ImplantPrice[(goldMigration_local1 + (4 * goldMigration_local24))])));
         // --- Line 189 ---
         }
     }
@@ -41459,7 +41459,7 @@ goldMigration()
         // --- Line 196 ---
         goldMigration_local2 += (FREE_DEPRECATED_ItemPrice[goldMigration_local1] * goldMigration_local25);
         // --- Line 197 ---
-        Log(((("GOLD_MIGRATION inventory " + itoa(goldMigration_local1)) + " cost = ") + itoa((FREE_DEPRECATED_ItemPrice[goldMigration_local1] * goldMigration_local25))));
+        Log(((("GOLD_MIGRATION inventory " + itoa(goldMigration_local1)) + "  cost = ") + itoa((FREE_DEPRECATED_ItemPrice[goldMigration_local1] * goldMigration_local25))));
         // --- Line 198 ---
     }
     if (isRateUsCalled()) {
@@ -41497,9 +41497,9 @@ goldMigration()
     // --- Line 231 ---
     increasePlayerMoney(goldMigration_local2);
     // --- Line 232 ---
-    Log(("GOLD_MIGRATION old money summary = " + itoa(goldMigration_local28)));
+    Log(("GOLD_MIGRATION  old money summary = " + itoa(goldMigration_local28)));
     // --- Line 234 ---
-    Log(("GOLD_MIGRATION NEW money summary = " + itoa(goldMigration_local2)));
+    Log(("GOLD_MIGRATION  NEW money summary = " + itoa(goldMigration_local2)));
     // --- Line 235 ---
     postponeShowConfirmationGoldMigration(goldMigration_local28, goldMigration_local2);
     // --- Line 238 ---
@@ -42102,7 +42102,7 @@ on_snapshot_fetched(string on_snapshot_fetched_arg0, int on_snapshot_fetched_arg
     int on_snapshot_fetched_local1;
     int on_snapshot_fetched_local2;
 
-    Log(((((("on_snapshot_fetched: aRemoteSaveId = " + on_snapshot_fetched_arg0) + " aLastSaveId = ") + on_snapshot_fetched_arg2) + " RemotePlayedTime = ") + itoa(on_snapshot_fetched_arg1)));
+    Log(((((("on_snapshot_fetched: aRemoteSaveId = " + on_snapshot_fetched_arg0) + ",  aLastSaveId = ") + on_snapshot_fetched_arg2) + ",  RemotePlayedTime = ") + itoa(on_snapshot_fetched_arg1)));
     // --- Line 297 ---
     on_snapshot_fetched_local0 = 11;
     // --- Line 298 ---
@@ -42112,7 +42112,7 @@ on_snapshot_fetched(string on_snapshot_fetched_arg0, int on_snapshot_fetched_arg
             on_snapshot_fetched_local1 = getStatistics(totalTimeKey(), 0);
             // --- Line 304 ---
             // --- Line 305 ---
-            Log(((("on_snapshot_fetched: RemotePlayedTime = " + itoa(on_snapshot_fetched_arg1)) + " localPlayedTime = ") + itoa(on_snapshot_fetched_local1)));
+            Log(((("on_snapshot_fetched: RemotePlayedTime = " + itoa(on_snapshot_fetched_arg1)) + "  localPlayedTime = ") + itoa(on_snapshot_fetched_local1)));
             // --- Line 306 ---
             on_snapshot_fetched_local2 = 0;
             // --- Line 307 ---

@@ -9,6 +9,7 @@ import json
 from typing import List, Dict, Tuple
 from lgd_tool.lgd_decompiler.generate_LGC.lgc_header_manager import LgcHeaderManager
 from lgd_tool.logger import logger
+from lgd_tool.lgd_decompiler.common.string_literal import escape_string
 
 
 class LgcContext:
@@ -43,8 +44,9 @@ class LgcContext:
         """
         内部辅助方法：安全转义字符串中的反斜杠和双引号。
         专门用于绕过 Python 3.10 中 f-string 不能包含反斜杠的限制。
+        与函数体中的字符串常量共用 escape_string，换行、回车、制表符也一并转义。
         """
-        return str(raw_str).replace('\\', '\\\\').replace('"', '\\"')
+        return escape_string(str(raw_str))
 
     def _format_array_init(self, val_list: list, elem_type: str) -> str:
         """

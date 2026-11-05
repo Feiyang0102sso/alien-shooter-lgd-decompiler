@@ -1,0 +1,36 @@
+// ==========================================
+// string_literal.lgc
+// Minimal repro: string literals containing ';' ',' or whitespace runs
+// are mangled by the decompiler (asm_parser tokenizes the PUSH_STR line).
+// Mirrors ASW 7.3.4 main.lgd -> setMultiplayerData() / multiplayerP2PMessageSend()
+// ==========================================
+
+extern Log(string str, int level = 0) 154;
+extern SetRegStr(string name, string value) 181;
+
+main()
+{
+  string keys;
+
+  // 1. key list separated by ';' (room payload keys)
+  keys = "gamma;missionName;gameMode;mode;map;level;";
+  SetRegStr("temp.multiplayer.room.payload.keys", keys);
+
+  // 2. a lone separator
+  keys = keys + ";";
+
+  // 3. message prefix that ends with ';'
+  Log("message_type;" + keys);
+
+  // 4. comma followed by two spaces (log text)
+  Log(",  perkId: " + keys);
+
+  // 5. comma inside JSON
+  Log("{\"a\": 1, \"b\": 2}");
+
+  // 6. leading / inner whitespace runs
+  Log("  isMultiplayer =   ");
+
+  // 7. a ';' inside a quoted fragment
+  Log("x\";\"y");
+}

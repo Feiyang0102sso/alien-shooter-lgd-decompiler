@@ -1,0 +1,12 @@
+// ==========================================
+// string_newline.lgc
+// Minimal repro: a real line feed (0x0A) in a string literal becomes
+// the two characters backslash + n after decompile -> recompile.
+// ==========================================
+
+extern Log(string str, int level = 0) 154;
+
+main()
+{
+  Log("line1\nline2");
+}

@@ -30,7 +30,7 @@
 ; ------------------------------------------------------------
 
 ;Function GetMapName() Begin
-  0A17:  02 6D 61 70 73 5C  PUSH_STR     "maps\survive_01.map"
+  0A17:  02 6D 61 70 73 5C  PUSH_STR     "maps\\survive_01.map"
         73 75 72 76 69 76
         65 5F 30 31 2E 6D
         61 70 00
@@ -137,7 +137,7 @@ loc_0BA3:
 loc_0BB7:
   0BB7:  1E 03 00 00 00     CALL_FUNC    GetMapName
   0BBC:  26 1C 00 00 00     ASSIGN       test_advanced_assignments_local23
-  0BC1:  02 6D 61 70 73 5C  PUSH_STR     "maps\survive_01.map"
+  0BC1:  02 6D 61 70 73 5C  PUSH_STR     "maps\\survive_01.map"
         73 75 72 76 69 76
         65 5F 30 31 2E 6D
         61 70 00

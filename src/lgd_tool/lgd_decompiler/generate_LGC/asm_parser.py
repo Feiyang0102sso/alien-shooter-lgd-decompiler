@@ -7,6 +7,7 @@ from typing import List, Optional
 from lgd_tool.logger import logger
 
 from lgd_tool.lgd_decompiler.generate_LGC.asm_structs import AsmMethod, AsmInstruction
+from lgd_tool.lgd_decompiler.common.string_literal import QUOTED_LITERAL_PATTERN, unescape_string
 
 
 
@@ -19,6 +20,23 @@ class AsmParser:
     # Group 2: Mnemonic
     # Group 3: Operands + Comments
     RE_INSTR = re.compile(r"^\s*([0-9A-Fa-f]+):\s+(?:(?:[0-9A-Fa-f]{2}\s?)+)\s+(\w+)(?:\s+(.*))?")
+
+    # String operand (PUSH_STR): one quoted literal, optionally followed by a ';' comment.
+    # Must not go through the generic split below: ';' ',' and whitespace runs are string content here.
+    RE_STRING_OPERAND = re.compile(r"^" + QUOTED_LITERAL_PATTERN + r"\s*(?:;.*)?$")
+
+    def _parse_string_operand(self, raw_args: str) -> str:
+        """
+        解析字符串操作数，返回反转义后的原始字符串（整串作为一个操作数）。
+        格式不符直接抛 ValueError，由调用处统一报错。
+
+        :param raw_args: 指令行助记符之后的全部文本，以双引号开头
+        :return: 字节码中的原始字符串
+        """
+        match = self.RE_STRING_OPERAND.match(raw_args)
+        if not match:
+            raise ValueError(f"Malformed string operand: {raw_args}")
+        return unescape_string(match.group(1))
 
     def parse_file(self, file_path: str) -> List[AsmMethod]:
         methods = []
@@ -119,8 +137,11 @@ class AsmParser:
                         # operands = raw_args.split(';')[0].strip().split()
                         # operands = [op for op in operands if op]
 
-                        clean_args_str = raw_args.split(';')[0].replace(',', ' ').strip()
-                        operands = clean_args_str.split()
+                        if raw_args.startswith('"'):
+                            operands = [self._parse_string_operand(raw_args)]
+                        else:
+                            clean_args_str = raw_args.split(';')[0].replace(',', ' ').strip()
+                            operands = clean_args_str.split()
 
                         instr = AsmInstruction(offset, mnemonic, operands)
                         current_method.add_instruction(instr)
